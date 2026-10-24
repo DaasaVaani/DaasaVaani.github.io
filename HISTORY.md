@@ -1,5 +1,75 @@
 # Documentation history
 
+## 2026-10-25: owner-requested publication of retained Website evidence
+
+- The owner requested committing and pushing all pending changes and explicitly
+  selected renewed blocker investigation/full validation across all four
+  repositories, including a non-wiping Android restart. This includes the
+  retained Website restore-publication record below, not a waiver of failed or
+  unavailable required checks.
+- Fresh `npm test` passed137/137 tests across16 files. With the verified clean
+  pinned fixture publisher override
+  `DAASAVAANI_FIXTURE_PUBLISHER_ROOT` pointing at the retained c2837ccf worktree,
+  `node node_modules\@playwright\test\cli.js test --workers=1 --global-timeout=900000`
+  performed fresh fixture publication, production typecheck/build and all456
+  browser tests across desktop/mobile/narrow, passing in10.2min. The watchdog
+  did not fire; no cases, projects, assertions or per-case limits were weakened.
+  Logs: `commit-all-20261025-web-{units,browsers}.log` in the session workspace.
+- Installed actionlint1.7.12 with ShellCheck0.11.0, strict parsing of all four
+  tracked YAML files, working/staged Git whitespace and documentation UTF8/
+  newline/whitespace/link/fence checks (20 Markdown files,53 local anchors)
+  passed. This batch changes only this history file; application behavior,
+  settings, generated assets and the independent Shared b9ed532 pin are unchanged.
+- Android's runtime slot was released only after the complete Website suite
+  finished. Native and Library publication retain their own independent gates;
+  their success is not inferred from these Website results.
+
+## 2026-10-24: publishing verified Website restore-writer fencing
+
+- Published final Website main02d00ec789a380352609c37d2be2730a2441d9d4/
+  treee78143b781890268bf1ee4d4e8aff7de825e9ed3, including implementation
+  bad72d7 and its revalidated cancellation-selector follow-up. Shared remains
+  independently clean b9ed5321791bfc69f466caa4cd46c58f2c60631f.
+  Owner explicitly authorized Website-only commit/publication. Fresh actor/
+  ruleset checks confirmed the existing temporary admin role5 exception and
+  separate active no-bypass force/delete guard; no protections were changed.
+  Main advanced by ordinary fast-forward only after exact preflight success.
+- Corrected exact preflight40114450119 passed137 units/456 browsers using2
+  workers. Main/Pages40115125649 independently passed137 units/456 browsers
+  using2 workers, then artifact upload and deployment. CodeQL40115125595 passed
+  both JavaScript/TypeScript and Actions analyses with result uploads.
+  REST run/job/attempt endpoints returned empty step arrays, so vacuous step
+  checks were not accepted as verification: retained authentic run-log archives
+  were checked for every configured execution/cleanup stage, exact checkout
+  identity, full test totals and no error markers, alongside fresh paginated
+  exact-SHA completed-success job metadata. Only non-main preflight upload/
+  deployment were intentionally absent. API step-conclusion metadata remained
+  unavailable; no zero-step result was presented as complete step verification.
+- Downloaded only the exact successful main github-pages artifact and safely
+  extracted30 members/25 files. Retained verify-web-backup-hosted.mjs, parameterized
+  with the full deployed SHA and extracted artifact directory, passed byte-exact
+  comparison of all25 public HTTPS bodies plus stable export, full preview/
+  replacement, fresh epoch/raw IDs/latest pair, actual Kannada/preferences,
+  peer invalidation/cancellation and actual installed-shell offline restart/
+  restore. Zero Library requests;13 interface cache bodies totaled
+  1321464/8388608 bytes, without Library/media cache.
+- `node node_modules\@playwright\test\cli.js test --config` with the retained
+  web-restore-fences-hosted.config.cjs passed16/16 actual public-HTTPS mobile
+  cases, without a local server. This reused the backup and reading-preference
+  cases against deployed assets, including delayed pre-restore read refusal,
+  cold-reader hydration/history, exact font-boundary keyboard focus, real
+  quota/locked-transaction cancellation, preserving migrations and offline use.
+  Synthetic permitted lyric artifacts remained isolated; no linguistic or
+  complete production/offline/platform conformance is inferred.
+- Verified local/remote main exact02d00ec and clean source/Shared, then removed
+  only the owned validation/restore-writer-fences-bad72d7-20261024 ref after exact
+  containment and no-PR checks. No ancillary test server/browser helpers remain.
+  User5173 was preserved. Android stays owner-paused with the separately
+  authorized retained-emulator shutdown completed; no native commit/push or
+  further restart. Library's EBUSY/provisional-review blockers remain unchanged.
+- This post-deployment evidence is retained locally for the next coherent
+  documentation/implementation batch, rather than a separate housekeeping push.
+
 ## 2026-10-24: correcting cancellation outcome selection in remote preflight
 
 - Owner-authorized Website commit bad72d7d76b13c76aec8f567c6bf89446a618ba1/
