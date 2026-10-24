@@ -24,7 +24,7 @@ export function ListRecite({ record, initialIndex, remember, labels, personal, p
   record: ListRecord; initialIndex: number; labels: typeof messages.en; personal: PersonalStore;
   remember: (entryId: string, signal: AbortSignal) => Promise<void>;
   publication?: Publication; lyrics?: LyricLibrary; onLyrics: (library: LyricLibrary) => void;
-  opened: (reference: PersonalReference) => void; change: ReadingPreferencesProps["change"]; exit: () => void;
+  opened: (reference: PersonalReference, epoch: string | undefined) => void; change: ReadingPreferencesProps["change"]; exit: () => void;
 }) {
   const [index, setIndex] = useState(initialIndex), [attempt, setAttempt] = useState(0);
   const [moving, setMoving] = useState(false), [movementError, setMovementError] = useState<{ index: number; message: string }>();
@@ -66,7 +66,7 @@ export function ListRecite({ record, initialIndex, remember, labels, personal, p
       request.signal.throwIfAborted();
       setReading({ entryId: entry.id, status: "ready", item });
       opened(entry.kind === "lyric" ? { kind: "lyric", lyricId: entry.lyricId }
-        : { kind: "legacyVideo", videoId: entry.videoId });
+        : { kind: "legacyVideo", videoId: entry.videoId }, personal.control.epoch);
     })().catch(reason => {
       if (!request.signal.aborted) setReading({ entryId: entry.id, status: "failed",
         error: reason instanceof Error ? reason.message : String(reason) });

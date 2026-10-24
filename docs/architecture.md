@@ -614,6 +614,21 @@ positions without merging or repair guesses. A quota error or cancellation befor
 commit rolls the entire transaction back. Old editor revisions are invalid after
 success. The local control header is never imported.
 
+Preference/favorite commands and history clear/enable commands additionally carry
+the writer epoch captured by their initiating UI. They retain latest-state
+rebasing within that epoch but reject a replacement epoch before calling the
+mutator, including no-op commands. Reader history completion carries the epoch
+captured when that selected read began, not whichever epoch happens to be current
+when its asynchronous content arrives. A late pre-restore read can still display
+verified text, but it cannot append activity to restored history; stale writes
+are reported explicitly. Existing exposed readers do not replay history on
+replacement. A read that starts before personal hydration captures its epoch
+through an independent database snapshot, without blocking text display.
+Preference commands retain immediate committed-value rendering for focus at font
+bounds, but apply a returned value only while the observer's current epoch still
+matches the initiating epoch. A late old-command return cannot overwrite restored
+preference rendering.
+
 ### Same-platform personal backup v1
 
 Settings implements the [Shared v1 wire contract](../shared/docs/full-personal-backup.md)

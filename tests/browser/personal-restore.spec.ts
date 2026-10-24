@@ -7,7 +7,8 @@ import { personalSnapshot } from "../lyric-browser";
 
 declare global {
   interface Window {
-    personalRestoreApi: Pick<typeof import("../../src/personal"), "readStore" | "restorePersonalContents" | "saveList">;
+    personalRestoreApi: Pick<typeof import("../../src/personal"),
+      "readStore" | "restorePersonalContents" | "saveList" | "updatePersonal" | "updateHistory" | "recordOpened">;
   }
 }
 
@@ -126,3 +127,31 @@ for (const failure of ["quota", "abort"] as const) {
     expect(await personalSnapshot(page)).toEqual(before);
   });
 }
+
+test("restoration fences captured preference, favorite and history writers without blocking same-epoch changes", async ({ page }) => {
+  const { candidate, expected } = await prepare(page);
+  const errors = await page.evaluate(async ({ candidate, expected }) => {
+    const api = window.personalRestoreApi, before = await api.readStore();
+    await api.updatePersonal(value => ({ ...value, theme: "dark" }), expected.epoch);
+    await api.updateHistory(value => ({ ...value, enabled: false }), expected.epoch);
+    const latest = await api.readStore();
+    if (latest.control.epoch !== before.control.epoch || latest.control.revision !== before.control.revision + 2) {
+      throw new Error("Same-epoch commands did not retain latest-state mutation semantics");
+    }
+    await api.restorePersonalContents(candidate, latest.control, new AbortController().signal);
+    const restored = await api.readStore(), errors: string[] = [];
+    for (const command of [
+      () => api.updatePersonal(value => ({ ...value, theme: "light" }), expected.epoch),
+      () => api.updatePersonal(value => ({ ...value, favorites: [] }), expected.epoch),
+      () => api.updateHistory(value => ({ ...value, entries: [] }), expected.epoch),
+      () => api.recordOpened({ kind: "legacyVideo", videoId: "old-reader-completion" }, expected.epoch),
+      () => api.updateHistory(value => value, undefined),
+    ]) {
+      try { await command(); errors.push("unexpected success"); }
+      catch (reason) { errors.push(reason instanceof Error ? reason.message : String(reason)); }
+    }
+    if (JSON.stringify(await api.readStore()) !== JSON.stringify(restored)) throw new Error("An old writer changed restored data");
+    return errors;
+  }, { candidate, expected });
+  expect(errors).toEqual(Array.from({ length: 5 }, () => expect.stringContaining("Personal data changed")));
+});

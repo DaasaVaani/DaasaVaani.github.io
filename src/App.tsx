@@ -45,7 +45,7 @@ function ListRoute({ labels, personal, publication, lyrics }: {
 const errorText = (error: unknown) => error instanceof Error ? error.message : String(error);
 interface ReaderProps {
   publication: Publication; labels: Labels; personal: Personal; store: PersonalStore;
-  toggle: (reference: PersonalReference) => void; opened: (reference: PersonalReference) => void;
+  toggle: (reference: PersonalReference) => void; opened: (reference: PersonalReference, epoch: string | undefined) => void;
   change: ReadingPreferencesProps["change"];
 }
 
@@ -58,10 +58,12 @@ function Reader({ publication, labels, personal, store, toggle, opened, change }
   const fromBrowsing = origin === "/" || origin === "/favorites" || origin === "/lists" || origin === "/recent" || origin === "/learning";
   const [params] = useSearchParams();
   const [item, setItem] = useState<FixtureItem>();
+  const readingEpoch = useRef(store.control.epoch);
   const [error, setError] = useState("");
   const lineId = params.get("line");
   useEffect(() => {
     const controller = new AbortController();
+    readingEpoch.current = store.control.epoch;
     setItem(undefined);
     setError("");
     if (!id) { setError("Missing item identity"); return; }
@@ -75,7 +77,7 @@ function Reader({ publication, labels, personal, store, toggle, opened, change }
     if (item && lineId) document.getElementById(lineId)?.scrollIntoView({ block: "center" });
   }, [item, lineId]);
   useEffect(() => {
-    if (item && item.videoId === id) opened({ kind: "legacyVideo", videoId: item.videoId });
+    if (item && item.videoId === id) opened({ kind: "legacyVideo", videoId: item.videoId }, readingEpoch.current);
   }, [id, item, opened]);
   return <section className={styles.reader}>
     <Link to={fromBrowsing ? origin : "/"} className={styles.back}
@@ -233,14 +235,15 @@ export default function App() {
   const [lyrics, setLyrics] = useState<LyricLibrary>();
   const [personalReady, setPersonalReady] = useState(false);
   const [store, setStore] = useState<PersonalStore>();
+  const observedEpoch = useRef<string | undefined>(undefined);
   const [personal, setPersonal] = useState<Personal>(browserDefaultPersonal);
   const [deviceDark, setDeviceDark] = useState(() => matchMedia("(prefers-color-scheme: dark)").matches);
   const [error, setError] = useState("");
   const [fixtureError, setFixtureError] = useState("");
   const [attempt, setAttempt] = useState(0);
   const labels = messages[personal.language];
-  const opened = useCallback((reference: PersonalReference) => {
-    void recordOpened(reference).catch(reason => setError(errorText(reason)));
+  const opened = useCallback((reference: PersonalReference, epoch: string | undefined) => {
+    void recordOpened(reference, epoch).catch(reason => setError(errorText(reason)));
   }, []);
   useEffect(() => {
     const media = matchMedia("(prefers-color-scheme: dark)");
@@ -254,6 +257,7 @@ export default function App() {
     setFixtureError("");
     setPersonalReady(false);
     setStore(undefined);
+    observedEpoch.current = undefined;
     const failed = (reason: unknown) => {
       if (!controller.signal.aborted) setError(current => [current, errorText(reason)].filter(Boolean).join("\n"));
     };
@@ -262,11 +266,12 @@ export default function App() {
     }).catch(reason => { if (!controller.signal.aborted) setFixtureError(errorText(reason)); });
     const stop = watchPersonal(state => {
       if (!controller.signal.aborted) {
+        observedEpoch.current = state.control.epoch;
         setStore(state);
         setPersonal(state.personal ?? browserDefaultPersonal());
         setPersonalReady(true);
       }
-    }, reason => { setPersonalReady(false); setStore(undefined); failed(reason); });
+    }, reason => { observedEpoch.current = undefined; setPersonalReady(false); setStore(undefined); failed(reason); });
     return () => { controller.abort(); stop(); };
   }, [attempt]);
   useEffect(() => {
@@ -290,7 +295,11 @@ export default function App() {
       "content-width": __WEB_CONFIG__.contentWidth, "reader-width": __WEB_CONFIG__.readerWidth })) root.style.setProperty(`--${name}`, `${value}px`);
   }, [personal.language, personal.theme, personal.fontSize, personal.density, deviceDark]);
   async function change(mutator: (state: Personal) => Personal) {
-    try { setPersonal(await updatePersonal(mutator)); }
+    const epoch = store?.control.epoch;
+    try {
+      const value = await updatePersonal(mutator, epoch);
+      if (observedEpoch.current === epoch) setPersonal(value);
+    }
     catch (reason) { setError(errorText(reason)); }
   }
   const toggle = (reference: PersonalReference) => { void change(state => toggleFavorite(state, reference)); };
@@ -352,7 +361,7 @@ export default function App() {
               {theme === "device" ? labels.followDevice : labels[theme]}</button>)}
           </fieldset>
           <ReadingPreferences labels={labels} personal={personal} change={change} />
-          {store && <HistoryControls labels={labels} history={store.history} />}
+          {store && <HistoryControls labels={labels} history={store.history} epoch={store.control.epoch} />}
           {store && <PersonalBackup labels={labels} store={store} />}
           </>}
           <ListPreview labels={labels} personal={store} publication={publication} lyrics={lyrics} />

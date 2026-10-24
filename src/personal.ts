@@ -168,10 +168,11 @@ export function watchPersonal(next: (state: PersonalStore) => void, error: (reas
 export async function readPersonal(): Promise<Personal> {
   return (await readStore()).personal ?? browserDefaultPersonal();
 }
-export async function updatePersonal(change: (value: Personal) => Personal): Promise<Personal> {
+export async function updatePersonal(change: (value: Personal) => Personal, expectedEpoch: string | undefined): Promise<Personal> {
   await ready();
   return db.transaction("rw", [personal, lists, control, recentHistory, learningLabels, recitationPosition], async transaction => {
     const state = await stored(transaction);
+    if (state.control.epoch !== expectedEpoch) throw new PersonalError("stale");
     const previous = state.personal ?? browserDefaultPersonal();
     const value = change(previous);
     validatePersonal(value);
@@ -203,10 +204,12 @@ export async function deleteList(id: string, expected: Revision): Promise<void> 
     await control.put(next.control);
   });
 }
-export async function updateHistory(change: (history: RecentHistoryV1) => RecentHistoryV1): Promise<void> {
+export async function updateHistory(change: (history: RecentHistoryV1) => RecentHistoryV1, expectedEpoch: string | undefined): Promise<void> {
   await ready();
   await db.transaction("rw", [personal, lists, control, recentHistory, learningLabels, recitationPosition], async transaction => {
-    const state = await stored(transaction), history = change(state.history);
+    const state = await stored(transaction);
+    if (state.control.epoch !== expectedEpoch) throw new PersonalError("stale");
+    const history = change(state.history);
     if (history === state.history) return;
     const next = { ...nextRevision(state, state.control), history };
     validateStore(next);
@@ -214,8 +217,8 @@ export async function updateHistory(change: (history: RecentHistoryV1) => Recent
     await control.put(next.control);
   });
 }
-export function recordOpened(reference: PersonalReference): Promise<void> {
-  return updateHistory(history => promoteRecent(history, reference));
+export function recordOpened(reference: PersonalReference, expectedEpoch: string | undefined): Promise<void> {
+  return updateHistory(history => promoteRecent(history, reference), expectedEpoch);
 }
 export async function updateLearningLabel(reference: PersonalReference, label: LearningLabel | undefined, expected: Revision): Promise<void> {
   await ready();

@@ -3,7 +3,8 @@ import { gzipSync, gunzipSync } from "node:zlib";
 import { readFileSync } from "node:fs";
 import messages from "../../shared/generated/web/ui.json" with { type: "json" };
 import type { FullPersonalBackupV1 } from "../../shared/types/personal";
-import { config, personalSnapshot } from "../lyric-browser";
+import { config, personalSnapshot, serveLyrics } from "../lyric-browser";
+import { lyricFixture } from "../lyric-fixture";
 import { replaceWorkerScript } from "../worker-script";
 
 const labels = messages.en;
@@ -151,3 +152,63 @@ for (const action of ["cancel", "depart"] as const) {
     await expect(region(page).getByText(labels.backupRestored, { exact: true })).toHaveCount(0);
   });
 }
+
+test("a reader that completes after peer replacement cannot add old activity to restored history", async ({ page, context }) => {
+  const fixture = lyricFixture(), item = fixture.manifest.catalog[0]!;
+  await serveLyrics(page, fixture);
+  await ready(page);
+  const before = await personalSnapshot(page);
+  let release!: () => void, requested = false;
+  const held = new Promise<void>(resolve => { release = resolve; });
+  await page.route("**/" + item.item.path, async route => {
+    requested = true; await held;
+    const bytes = fixture.files.get(item.item.path);
+    if (!bytes) throw new Error("Missing synthetic held lyric");
+    await route.fulfill({ body: bytes, contentType: "application/octet-stream",
+      headers: { "access-control-allow-origin": "*", "cache-control": "no-store" } });
+  });
+  try {
+    await page.goto("/#/lyrics/" + item.lyricId);
+    await expect.poll(() => requested).toBe(true);
+    const peer = await context.newPage(); await ready(peer);
+    if (absent.platform !== "web") throw new Error("Expected web fixture");
+    await choose(peer, { ...absent, data: { ...absent.data, history: { enabled: true, entries: [] } } });
+    await expect(replace(peer)).toBeEnabled(); await replace(peer).click();
+    await expect(region(peer).getByText(labels.backupRestored, { exact: true })).toBeVisible();
+    const restored = await personalSnapshot(peer);
+    expect(restored.tables.control[0].epoch).not.toBe(before.tables.control[0].epoch);
+    release();
+    await expect(page.getByRole("alert")).toContainText("Personal data changed");
+    expect(await personalSnapshot(page)).toEqual(restored);
+    await peer.close();
+  } finally { release(); }
+});
+
+test("a cold reader records its initial open after delayed personal hydration without blocking text", async ({ page, context }) => {
+  const fixture = lyricFixture(), item = fixture.manifest.catalog[0]!;
+  await ready(page);
+  await page.evaluate(async name => {
+    window.holdBackupTransaction = true;
+    const database = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open(name);
+      request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error);
+    });
+    const transaction = database.transaction("recitationPosition", "readwrite"), store = transaction.objectStore("recitationPosition");
+    transaction.oncomplete = transaction.onabort = () => database.close();
+    const keep = () => { store.get("recitation").onsuccess = () => { if (window.holdBackupTransaction) keep(); }; };
+    keep();
+  }, config.databaseName);
+  const reader = await context.newPage();
+  try {
+    await serveLyrics(reader, fixture);
+    await reader.goto("/#/lyrics/" + item.lyricId);
+    await expect(reader.locator("div[lang=kn] > p").first()).toBeVisible();
+    await page.evaluate(() => { window.holdBackupTransaction = false; });
+    await expect.poll(async () => (await personalSnapshot(reader)).tables.recentHistory[0]?.entries)
+      .toEqual([{ kind: "lyric", lyricId: item.lyricId }]);
+    await expect(reader.getByRole("alert")).toHaveCount(0);
+  } finally {
+    await page.evaluate(() => { window.holdBackupTransaction = false; });
+    await reader.close();
+  }
+});

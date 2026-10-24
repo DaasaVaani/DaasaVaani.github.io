@@ -4,6 +4,7 @@ import messages from "../shared/generated/web/ui.json";
 import { loadLyricCatalog, type LyricLibrary } from "./lyric-publication";
 import type { LyricItem } from "../shared/types/lyrics";
 import { hasFavorite, learningLabelFor, referenceKey, type PersonalStore } from "./personal-model";
+import { readStore } from "./personal";
 import type { Publication } from "./artifacts";
 import type { PersonalReference } from "./list-transfer-types";
 import { AddToList } from "./AddToList";
@@ -39,7 +40,7 @@ function AnotherLyric({ publication, labels, excludedId, reading = false }: {
 function LyricReader({ publication, labels, personal, preferences, change, toggle, opened }: {
   publication: LyricLibrary; labels: Labels; personal?: PersonalStore; toggle: (reference: PersonalReference) => void;
   preferences: ReadingPreferencesProps["personal"]; change: ReadingPreferencesProps["change"];
-  opened: (reference: PersonalReference) => void;
+  opened: (reference: PersonalReference, epoch: string | undefined) => void;
 }) {
   const { id } = useParams();
   const location = useLocation(), navigate = useNavigate();
@@ -50,14 +51,24 @@ function LyricReader({ publication, labels, personal, preferences, change, toggl
   const [busy, setBusy] = useState(false), [error, setError] = useState(""), [cancelled, setCancelled] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const controller = useRef<AbortController | null>(null);
+  const [readingEpoch, setReadingEpoch] = useState<{ id: string | undefined; epoch: string }>();
   const known = id ? publication.summary(id) : undefined;
   const item = !cancelled && id ? publication.item(id) ?? (loaded?.lyricId === id ? loaded : undefined) : undefined;
   const reference: PersonalReference | undefined = item && { kind: "lyric", lyricId: item.lyricId };
   const favorite = reference && personal?.personal ? hasFavorite(personal.personal, reference) : false;
   useEffect(() => {
-    setError(""); setCancelled(false);
-    if (!id || !publication.summary(id) || publication.item(id)) { setBusy(false); return; }
     const request = new AbortController();
+    setReadingEpoch(undefined);
+    setError(""); setCancelled(false);
+    if (personal) setReadingEpoch({ id, epoch: personal.control.epoch });
+    else void readStore().then(state => {
+      if (!request.signal.aborted) setReadingEpoch({ id, epoch: state.control.epoch });
+    }).catch(reason => {
+      if (!request.signal.aborted) setError(reason instanceof Error ? reason.message : String(reason));
+    });
+    if (!id || !publication.summary(id) || publication.item(id)) {
+      setBusy(false); return () => request.abort();
+    }
     controller.current = request; setBusy(true);
     void publication.read(id, request.signal).then(value => {
       if (!request.signal.aborted) setLoaded(value);
@@ -69,9 +80,10 @@ function LyricReader({ publication, labels, personal, preferences, change, toggl
     return () => { request.abort(); if (controller.current === request) controller.current = null; };
   }, [id, publication, attempt]);
   useEffect(() => {
-    if (item) opened({ kind: "lyric", lyricId: item.lyricId });
-  }, [item, opened]);
+    if (item && readingEpoch && readingEpoch.id === id) opened({ kind: "lyric", lyricId: item.lyricId }, readingEpoch.epoch);
+  }, [item, opened, readingEpoch, id]);
   return <section className={styles.reader}>
+    {item && error && <p role="alert" className={styles.error}>{labels.error}: {error}</p>}
     <Link to={fromBrowsing ? origin : "/lyrics"} className={styles.back} onClick={event => {
       if (fromBrowsing && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
         event.preventDefault(); navigate(-1);
@@ -153,7 +165,7 @@ export function Lyrics({ labels, publication, onPrepared, personal, preferences,
   labels: Labels; publication?: LyricLibrary; onPrepared: (publication: LyricLibrary) => void;
   personal?: PersonalStore; toggle: (reference: PersonalReference) => void;
   preferences: ReadingPreferencesProps["personal"]; change: ReadingPreferencesProps["change"];
-  opened: (reference: PersonalReference) => void;
+  opened: (reference: PersonalReference, epoch: string | undefined) => void;
 }) {
   const location = useLocation();
   const active = /^\/lyrics(?:\/|$)/u.test(location.pathname);
@@ -163,11 +175,11 @@ export function Lyrics({ labels, publication, onPrepared, personal, preferences,
   const paging = useLyricPaging("lyric-read");
   const controller = useRef<AbortController | null>(null);
   const lastOpened = useRef<{ publication: LyricLibrary; lyricId: string } | undefined>(undefined);
-  const rememberOpened = useCallback((reference: PersonalReference) => {
+  const rememberOpened = useCallback((reference: PersonalReference, epoch: string | undefined) => {
     if (reference.kind === "lyric" && publication?.summary(reference.lyricId)) {
       lastOpened.current = { publication, lyricId: reference.lyricId };
     }
-    opened(reference);
+    opened(reference, epoch);
   }, [opened, publication]);
   useEffect(() => {
     if (!active || publication) return;

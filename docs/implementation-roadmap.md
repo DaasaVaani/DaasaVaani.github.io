@@ -180,7 +180,7 @@ readers and Settings. Default platform rendering (Website28px/native28sp,
 Normal density) and literal line/layout
 identities are preserved. Latest-state transactions, no-op choices, peer updates,
 restart, old-history preservation and actual byte-capacity checks belong to the
-v8/native Room6 slices, with independent native font units and spacing. Onboarding, helper/script coverage, full-backup resume inclusion/Practice, persistent offline
+v8/native Room6 slices, with independent native font units and spacing. Onboarding, helper/script coverage, native full-backup inclusion/Practice, persistent offline
 use and the complete accessibility/font/device matrix remain unimplemented or
 unverified; this is not full UX-14 completion.
 

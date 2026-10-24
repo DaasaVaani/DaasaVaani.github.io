@@ -8,7 +8,7 @@ import { updateHistory } from "./personal";
 import styles from "./App.module.css";
 
 type Labels = typeof messages.en;
-export function HistoryControls({ labels, history }: { labels: Labels; history: RecentHistoryV1 }) {
+export function HistoryControls({ labels, history, epoch }: { labels: Labels; history: RecentHistoryV1; epoch: string }) {
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const recording = useRef<HTMLInputElement>(null);
   const restoreFocus = useRef<Element | null | undefined>(undefined);
@@ -22,7 +22,7 @@ export function HistoryControls({ labels, history }: { labels: Labels; history: 
   async function change(mutator: (value: RecentHistoryV1) => RecentHistoryV1) {
     restoreFocus.current = document.activeElement;
     setBusy(true); setError("");
-    try { await updateHistory(mutator); }
+    try { await updateHistory(mutator, epoch); }
     catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)); }
     finally { setBusy(false); }
   }
@@ -45,7 +45,7 @@ export function RecentHistory({ labels, personal, publication, lyrics }: {
   const location = useLocation();
   return <section hidden={location.pathname !== "/recent"} aria-label={labels.recentHistory}>
     <h1>{labels.recentHistory}</h1>
-    <HistoryControls labels={labels} history={personal.history} />
+    <HistoryControls labels={labels} history={personal.history} epoch={personal.control.epoch} />
     <div className={styles.grid}>{personal.history.entries.map(reference => {
       const item = reference.kind === "lyric" ? lyrics?.summary(reference.lyricId) : publication?.summary(reference.videoId);
       const pending = reference.kind === "lyric" ? !lyrics : !publication;

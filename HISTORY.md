@@ -1,5 +1,96 @@
 # Documentation history
 
+## 2026-10-24: extending restore fencing to asynchronous personal writers
+
+- Continued approved implementation after the owner requested an emulator
+  restart and further work. A direct Website writer audit found that list/
+  learning/recitation commands carried fences but preference/favorite and
+  history helpers still rebased onto any current epoch. An old read completion
+  or pending personal command could therefore mutate a newly restored snapshot.
+- Preference/favorite/history commands now carry the initiating epoch and reject
+  replacement before mutation, while ordinary same-epoch changes still use
+  latest state. Canonical/fixture/list read completion carries its selected-read
+  epoch without changing the stable opened callback or replaying mounted-reader
+  history. Preference results are applied only while the observer's current
+  epoch still matches the initiating epoch, preserving immediate committed-value
+  rendering without overwriting restored preferences with an old result.
+- Added actual-browser old-writer/no-op and delayed-read/peer-restore cases.
+  Incremental `node node_modules\typescript\bin\tsc --noEmit` passed;
+  `npm test -- personal-backup personal-restore recitation-position learning`
+  passed23/23. After native released the frozen runtime slot, the two-file browser
+  command `node node_modules\@playwright\test\cli.js test personal-backup personal-restore --workers=2`
+  passed42/42. The first full run passed137 units and444 browsers, failed6 and
+  left3 unrun. It exposed genuine boundary-focus and initial-hydration regressions:
+  observer-only preference rendering completed the busy/focus cycle before new
+  font bounds arrived, and a cold canonical read could start before personal
+  hydration supplied its epoch. Restored guarded immediate preference rendering;
+  cold reads now acquire their own initial snapshot independently of text loading,
+  with explicit errors and no mounted-reader replay. A held real database lock
+  tests text display before hydration and successful recording after release.
+- After fixing an optional-value TypeScript narrowing error, the repaired
+  `node node_modules\@playwright\test\cli.js test personal-backup personal-restore reading-preferences learning --workers=2`
+  passed99/99 across all three projects with a fresh strict build. A subsequent
+  complete `npm test` passed137/137; the unfiltered two-worker browser command
+  passed449, failed4 and left3 unrun over2.5 hours. Two failures were metadata/
+  browser timing failures (including context teardown); two were the unchanged
+  30-second in-memory API-bundle beforeAll budget. These are failures, not a pass,
+  and do not establish a new app root cause. A bounded host sample showed2857496KiB
+  free of24815196KiB; the queried Kernel-Power42/107 filter returned no events,
+  which does not establish absence of host suspension or another timing cause.
+  Final `npm test` passed137/137 across16 files. With the same clean pinned fixture
+  publisher override, the unfiltered
+  `node node_modules\@playwright\test\cli.js test --workers=1 --global-timeout=900000`
+  passed456/456 across all three projects in12.4 minutes, including fresh fixture
+  publication and strict production build. All original per-test/assertion limits
+  remained unchanged; the additional15-minute overall watchdog did not fire.
+  No cases failed, skipped or remained unrun. This verifies the complete Website
+  source batch locally, not a selected-test substitute or a new release claim.
+  No new commit/push/publication had been made at that validation checkpoint.
+  Owner subsequently explicitly approved committing and publishing this Website-
+  only fix; live actor/protection/baseline verification and exact-commit remote
+  preflight/main deployment verification remain mandatory.
+- Final ancillary checks passed:19 current Markdown files/180 local links and
+  all153 unique requirement IDs, strict YAML4 files, installed
+  actionlint1.7.12/ShellCheck0.11.0 and both Git whitespace checks. Shared remained
+  clean at its independent b9ed532 pin. Existing Vite chunk-size/plugin timing
+  notices and Git working-copy CRLF normalization notices were warnings only.
+- Clarified that the remaining full-backup coverage gaps in the current test
+  matrix are native gaps, superseding its older unqualified wording; Website v1
+  already includes history, learning, preferences and the exact latest pair.
+- Prior Website backup3b9dd7036d4c9d8c23ab6d66cb4d3a76c5c59343/
+  tree69bf2f5cd7b74215b0a3ca53ebe7a36176098716 independently pins Shared b9ed532.
+  Exact preflight40083556683, main/Pages40083995323 and CodeQL40083995098
+  passed every actual required job/step through paginated no-cache verification.
+  Only preflight upload/deploy were intentionally skipped; main passed137 units/
+  447 browsers. Owned contained no-PR validation ref was deleted. Exact Pages
+  artifact30 members/25 files matched every hosted body. Public HTTPS proof
+  passed stable export, full preview/replacement, fresh fence/raw IDs/exact pair,
+  restored Kannada/preferences, peer invalidation/cancel and actual installed-
+  shell offline restart/restore with0 Library requests.13 cached bodies totaled
+  1320758/8388608 bytes, without Library/media content. GitHub's Node-action/
+  runner-image deprecation notices remain warnings, not waived checks.
+- Native resume validation remains independent. Its full54 core/108-of110
+  device run exposed two10-second wait failures, not a pass. Isolated diagnostics
+  later passed Favorites preparation7065ms/41 items and identified a generic
+  Android-window false match before the actual chooser. The readiness test now
+  requires the actual resolver list within the unchanged10 seconds. Guest boot
+  and subsequent host restart did not establish a healthy UI: the retained
+  emulator showed System UI not responding. Native20 staged paths and related
+  HISTORY evidence remain uncommitted/unpushed, independently pinned c386bf8.
+  The owner's fresh18:12 authorization permitted one further non-wiping host
+  restart and conditional complete validation only after actual UI health. That
+  restart booted with system_server710 stable but SystemUIService ANR20.648s
+  (2.583s main CPU/15.946s runnable queue); deeper host/graphics cause remains
+  unproven. No fresh core/device/build/lint checks ran. Retained exact existing
+  AVD/serial5556/managed handle rec04-host2-emulator-replacement and the user's
+  5173/PID3840 server; no wipe, commit or push. Owner then explicitly selected
+  pause-android and continued Website work; no further native recovery was begun.
+- Library's one authorized fresh complete check again failed with Windows EBUSY
+  after build/typecheck; downstream validators were not reached. Hygiene917 files
+  and whitespace passed; only its HISTORY evidence changed. Source568db957,
+  independent Shared8bd8793a, originals and uncertain verse proposals remain
+  unchanged/unpublished. No speculative retries, locking-owner claims or fixes.
+
 ## 2026-10-24: resumed Website backup consumer implementation
 
 - Owner explicitly resumed work after the saved local05900bd checkpoint.

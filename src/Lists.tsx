@@ -18,7 +18,7 @@ interface EntryDraft { id?: string; kind: ListEntry["kind"]; identifier: string;
 
 export function Lists({ labels, personal, publication, lyrics, onLyrics, opened, change }: {
   labels: typeof messages.en; personal: PersonalStore; publication?: Publication; lyrics?: LyricLibrary;
-  onLyrics: (library: LyricLibrary) => void; opened: (reference: PersonalReference) => void; change: ReadingPreferencesProps["change"];
+  onLyrics: (library: LyricLibrary) => void; opened: (reference: PersonalReference, epoch: string | undefined) => void; change: ReadingPreferencesProps["change"];
 }) {
   const id = useId();
   const location = useLocation(), navigate = useNavigate();
