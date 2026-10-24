@@ -146,7 +146,8 @@ for (const action of ["cancel", "depart"] as const) {
       if (action === "cancel") await region(page).getByRole("button", { name: labels.cancel, exact: true }).click();
       else await page.getByRole("link", { name: labels.lists, exact: true }).click();
     } finally { await page.evaluate(() => { window.holdBackupTransaction = false; }); }
-    if (action === "cancel") await expect(region(page).getByRole("status")).toHaveText(labels.backupCancelled);
+    if (action === "cancel") await expect(region(page).getByRole("status").filter({ hasText: labels.backupCancelled }))
+      .toHaveText(labels.backupCancelled);
     else await page.getByRole("link", { name: labels.settings, exact: true }).click();
     expect(await personalSnapshot(page)).toEqual(before);
     await expect(region(page).getByText(labels.backupRestored, { exact: true })).toHaveCount(0);

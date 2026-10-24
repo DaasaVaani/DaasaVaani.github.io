@@ -1,5 +1,40 @@
 # Documentation history
 
+## 2026-10-24: correcting cancellation outcome selection in remote preflight
+
+- Owner-authorized Website commit bad72d7d76b13c76aec8f567c6bf89446a618ba1/
+  tree6c804b19a0493b7873e443ad978f094838761111 was pushed only to the owned
+  validation/restore-writer-fences-bad72d7-20261024 branch, not main. Exact
+  preflight40111346857 passed workflow lint and137 units but failed one browser
+  case, with455 passing. Main/Pages publication was not attempted.
+- Its locked-restore cancellation assertion selected every status in the backup
+  region while awaiting rollback. Before the transaction outcome, the legitimate
+  working status and nested duplicate-name warning status both existed, causing
+  strict locator failure instead of waiting for the exact cancellation outcome.
+  The assertion now targets the cancellation status by its message and retains
+  exact text plus complete database-preservation checks. No application behavior,
+  timeout, retry policy, test count or rollback requirement was weakened.
+- Full final-tree local checks and fresh exact-commit remote preflight remain
+  required after this test-only correction. Android remains explicitly paused;
+  no native/Library or Shared pin changes are included.
+- The subsequent full local run passed137 units/451 browsers, failed the
+  mobile API-bundle beforeAll at its unchanged30-second budget, and left4 cases
+  unrun. No application assertion failed, but this was not a complete pass.
+  Owner explicitly authorized gracefully stopping only the retained emulator
+  and rerunning all Website checks once to reduce host resource use, not a proven
+  root-cause claim. Verified exact AVDdaasavaani_fixture_api36/serial5556 and owned
+  qemu PID42048, then used serial-specific `adb emu kill`; qemu/emulator exited
+  without a wipe or configuration change. Stopped the remaining owned managed
+  launcher handle rec04-host2-emulator-replacement. User5173 remained HTTP200.
+  Android stays paused and no emulator restart was authorized by this selection.
+- The single authorized post-shutdown full attempt passed: `npm test`137/137
+  across16 files and, with the same clean pinned fixture override,
+  `node node_modules\@playwright\test\cli.js test --workers=1 --global-timeout=900000`
+  456/456 across all three projects in10.2 minutes, including fresh fixture
+  publication/strict build. No failures, skips, unrun cases, retries or raised
+  per-case/assertion limits. This is successful final local validation, not proof
+  that the emulator alone caused the earlier host/setup timing failures.
+
 ## 2026-10-24: extending restore fencing to asynchronous personal writers
 
 - Continued approved implementation after the owner requested an emulator
