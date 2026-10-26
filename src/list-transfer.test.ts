@@ -6,8 +6,10 @@ import { type ListSnapshot, TransferError } from "./list-transfer-types";
 
 const config = { ...__WEB_CONFIG__, ...__TRANSFER_LIMITS__ };
 const codec = new ListCodec(config);
-const fixtures: { accepted: { value: ListSnapshot }[]; rejected: { value: unknown }[] } =
+const fixtures: { accepted: { value: ListSnapshot }[]; rejected: { label: string; value: unknown }[] } =
   JSON.parse(readFileSync(new URL("../shared/fixtures/personal/list-transfer.json", import.meta.url), "utf8"));
+const typedFixtures: { accepted: { value: ListSnapshot }[]; rejectedEntries: unknown[] } =
+  JSON.parse(readFileSync(new URL("../shared/fixtures/personal/list-transfer-v2.json", import.meta.url), "utf8"));
 const sample = fixtures.accepted[1]!.value;
 const json = (value: unknown) => Buffer.from(JSON.stringify(value));
 const link = (bytes: Uint8Array) => new URL(config.listLinkPath, config.canonicalBaseUrl).href + "#/list/" + Buffer.from(bytes).toString("base64url");
@@ -20,6 +22,28 @@ function errorCode(action: () => unknown, code: TransferError["code"]) {
   }
 }
 describe("minimal list transport", () => {
+  it("round trips every Shared typed fixture with independent gzip/raw deflate, without downgrade or mutation", () => {
+    for (const { value } of typedFixtures.accepted) {
+      const before = structuredClone(value), decoded = json(value);
+      expect(codec.decodeFile(gzipSync(decoded))).toEqual(value);
+      expect(codec.decodeLink(link(deflateRawSync(decoded)))).toEqual(value);
+      expect(JSON.parse(gunzipSync(codec.encodeFile(value)).toString("utf8"))).toEqual(value);
+      expect(codec.decodeLink(codec.encodeLink(value))).toEqual(value);
+      expect(new ListCodec({ ...config, maxListDecodedBytes: decoded.length }).decodeFile(gzipSync(decoded))).toEqual(value);
+      errorCode(() => new ListCodec({ ...config, maxListDecodedBytes: decoded.length - 1 }).decodeFile(gzipSync(decoded)), "decodedLimit");
+      expect(value).toEqual(before);
+    }
+  });
+  it("rejects all typed invalid entries, mixed version identities and future versions through both decode and encode", () => {
+    const empty = typedFixtures.accepted[1]!.value;
+    for (const value of [...typedFixtures.rejectedEntries.map(entry => ({ ...empty, entries: [entry] })),
+      { ...empty, formatVersion: 3 }, { ...empty, formatVersion: 1, entries: typedFixtures.accepted[0]!.value.entries }]) {
+      errorCode(() => codec.decodeFile(gzipSync(json(value))), "invalid");
+      errorCode(() => codec.decodeLink(link(deflateRawSync(json(value)))), "invalid");
+      errorCode(() => codec.encodeFile(value), "invalid");
+      errorCode(() => codec.encodeLink(value), "invalid");
+    }
+  });
   it("round trips accepted fixtures losslessly and interoperates with independent Node gzip/raw deflate", () => {
     for (const { value } of fixtures.accepted) {
       const before = structuredClone(value);
@@ -54,7 +78,10 @@ describe("minimal list transport", () => {
     for (const data of [Buffer.from([0xc3, 0x28]), Buffer.concat([bom, bom, json(sample)]), Buffer.from("{bad json")]) {
       errorCode(() => codec.decodeFile(gzipSync(data)), "invalid");
     }
-    for (const { value } of fixtures.rejected) errorCode(() => codec.decodeFile(gzipSync(json(value))), "invalid");
+    for (const { label, value } of fixtures.rejected) {
+      if (label === "newer version") expect(codec.decodeFile(gzipSync(json(value)))).toEqual(value);
+      else errorCode(() => codec.decodeFile(gzipSync(json(value))), "invalid");
+    }
     const duplicate = '{"format":"daasavaani-list","formatVersion":2,"formatVersion":1,"name":"Test","entries":[]}';
     errorCode(() => codec.decodeFile(gzipSync(Buffer.from(duplicate))), "invalid");
     errorCode(() => codec.decodeFile(gzipSync(Buffer.from(duplicate.replace('"formatVersion":1', '"format\\u0056ersion":1')))), "invalid");

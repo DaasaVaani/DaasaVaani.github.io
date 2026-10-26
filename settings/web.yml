@@ -1,15 +1,34 @@
 formatVersion: 1
 base: /
 descriptorUrl: /demo/latest.json
+lyricPreview:
+  descriptorUrl: https://daasavaani.github.io/library/lyrics/latest.json
+  pageSize: 24
+  maxItems: 10000
+  maxEncodedBytes: 67108864
+  maxDecodedBytes: 67108864
+  concurrentRequests: 4
 canonicalBaseUrl: https://daasavaani.github.io/
 listLinkPath: open/
 listFileName: list.dvlist.json.gz
+backupFileName: personal.dvbackup.json.gz
 transferChunkBytes: 65536
 listCompressionLevel: 6
 demoPort: 5173
+appShell:
+  workerFile: sw.js
+  manifestFile: manifest.webmanifest
+  iconPrefix: app-icon
+  cacheId: DaasaVaani-app-interface
+  maxPrecacheBytes: 8388608
+  updateCheckIntervalMs: 60000
 databaseName: DaasaVaani-personal
 fontFamily: system-ui, "Nirmala UI", sans-serif
 readerFontSize: 28
+readerFontSizeMin: 16
+readerFontSizeMax: 80
+readerFontSizeStep: 2
+readerLineHeights: { compact: 1.8, normal: 2.3, relaxed: 2.8 }
 space: 8
 contentWidth: 1160
 readerWidth: 760
@@ -23,7 +42,7 @@ themes:
     text: "#242e29"
     muted: "#57645c"
     accent: "#285642"
-    border: "#d6dcd0"
+    border: "#7b877c"
     highlight: "#eee7d2"
   dark:
     background: "#17221d"
@@ -31,5 +50,13 @@ themes:
     text: "#f0f0e6"
     muted: "#bdc8bd"
     accent: "#a8d3b5"
-    border: "#405448"
+    border: "#768b7c"
     highlight: "#3c4130"
+  warm:
+    background: "#f4ead8"
+    surface: "#fff8e9"
+    text: "#382e25"
+    muted: "#695744"
+    accent: "#75502c"
+    border: "#8b765d"
+    highlight: "#e8d6b4"

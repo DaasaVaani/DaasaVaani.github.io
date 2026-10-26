@@ -1,7 +1,7 @@
 # DaasaVaani Requirements
 
 - Status: Approved product scope; staged implementation authorized, production gates incomplete
-- Scope: Initial release of the Android app, responsive website/PWA, and content automation
+- Scope: Initial release of the Android app, responsive website/PWA, and reviewed-content publication; YouTube ingestion automation is deferred to a later release
 
 The [Shared implementation specification](https://github.com/DaasaVaani/shared/blob/main/docs/implementation-specification.md)
 owns current technical contracts and unresolved gates. Staged implementation follows
@@ -31,7 +31,7 @@ technical directions from unresolved contracts and unverified implementation.
 
 | Term | Meaning |
 | --- | --- |
-| Item | One YouTube video, identified by its video ID, with its own lyrics and metadata. |
+| Item | One independently reviewed lyric record/edition, identified by a permanent video-independent `lyricId`; videos and images are optional reviewed associations. |
 | Canonical lyrics | Reviewed Kannada text from which other script variants are generated. |
 | Transliteration | Representing the same lyric words in another script, without translating their meaning. |
 | UI translation | Translating interface labels and messages, independently of lyric scripts. |
@@ -127,10 +127,10 @@ Source channel:
 
 | ID | Requirement |
 | --- | --- |
-| DATA-01 | Create one item per source video, keyed by the YouTube video ID. Repeated performances remain separate entries. |
-| DATA-02 | Store one flat source Markdown per video in `library/`, with grouped public/provenance/review YAML metadata, one canonical Kannada fence with stable line IDs and any supplied Source Latin literal fence. Reviewed verses use ordered UUID/end-line metadata, not added inline verse-marker lines. No generated variants or companion source file. Follow the approved filename/identity direction; remaining exact schemas are gated. |
+| DATA-01 | Give each reviewed lyric record/edition one permanent author-assigned canonical UUIDv4 `lyricId`, independent of videos, images, title, filename and content hash. Multiple reviewed performances may be associated with the same lyric; distinct lyric editions may remain separate. Never infer matches, automatically merge records or fabricate video IDs. |
+| DATA-02 | Store one flat source Markdown per lyric in `library/`, named `<lyricId>.md`, with grouped public/provenance/review YAML metadata, one canonical Kannada fence with stable line IDs and any supplied Source Latin literal fence. Reviewed verses use ordered UUID/end-line metadata, not added inline verse-marker lines. No generated variants or companion source file. Existing source migration/renaming requires separate authorization; remaining exact production schemas are gated. |
 | DATA-03 | Preserve Kannada lyric line breaks, verse boundaries, and spacing needed for reading. Blank/whitespace-only separators are explicit layout, not UUID-bearing lyric records or inferred verses. |
-| DATA-04 | Store the source identity, metadata, and provenance needed to trace an item back to its video. Do not present inferred classifications as known facts. |
+| DATA-04 | Store actual source identity/provenance and required rights evidence for owner-supplied or other reviewed lyrics. YouTube URLs/associations and images are optional; owner-supplied lyrics must be publishable/readable without either. Preserve lyric/line/verse identity and personal references when media is added later. Do not fabricate missing source metadata or present inferred classifications/matches as known facts. |
 | DATA-05 | Support optional reviewer-maintained classification. Missing optional values remain unclassified and appear as Unknown where applicable. |
 | DATA-06 | Make content and settings schemas extensible so new metadata and filter fields can be added without rewriting existing items. |
 | DATA-07 | Exclude legitimate incomplete drafts and items with a nonempty publication-hold reason from all public content/indexes/groups/packages. No general status field is required. Structural, reference and duplicate errors fail validation rather than becoming silently accepted drafts. |
@@ -143,11 +143,12 @@ will be selected in technical design. The following logical information is requi
 
 | Information | Policy |
 | --- | --- |
-| Video ID and source URL | Required; video ID is the stable item identity. |
+| Lyric ID | Required permanent canonical UUIDv4; author-assigned once during separately authorized authoring/import, never derived from title, media or a content hash. |
+| YouTube associations and source URLs | Optional zero-or-more reviewed associations; actual supplied URL/ID must agree. Their absence does not block otherwise valid lyrics. Legacy video identifiers retain distinct typed semantics. |
 | Public title | One reviewed title required for publication, not forced to the first lyric line. Original video title remains internal provenance; alternatives belong in tags. |
-| Channel identity | Required source metadata. |
-| Upload date | Required source metadata, not an upload-year filter. |
-| Source description/provenance | Retain the description used for extraction so reviewers can inspect the source. |
+| Channel identity | Optional applicable video provenance when available; never fabricated or required for owner-supplied text-only lyrics. |
+| Upload date | Optional applicable video provenance when available, not a lyric identity or upload-year filter. |
+| Source description/provenance | Record actual owner-supplied provenance/required rights evidence; retain any description actually used for extraction. No video description is required when none exists; exclude private evidence from public files/artifacts. |
 | Publication hold | A nonempty reviewed hold reason keeps otherwise complete uncertain content unpublished; legitimate incomplete drafts are also excluded. |
 | Thumbnail information | Record the local asset reference and relevant source information when available. |
 | Kannada lyrics | Required for publication; source of truth for transliteration. |
@@ -239,6 +240,13 @@ native Android resources. Exact message/plural/escaping contracts remain open.
 
 ## 6. Ingestion and review workflow
 
+**Later-release scope:** YouTube ingestion automation (ING-01 through ING-11)
+is deferred and is not an initial-release implementation or acceptance gate.
+These requirements remain the target for that later release; first API access
+still requires provider clarification. Initial-release work continues using
+reviewed existing content and its publication pipeline. Deferral does not waive
+review before publication, source preservation or applicable provider terms.
+
 | ID | Requirement |
 | --- | --- |
 | ING-01 | Use the official YouTube Data API for discovery and metadata retrieval. Run ingestion locally on the maintainer's machine; keep the API credential in an untracked local environment variable or file, never in repository files, logs, PRs or CI (`ingestion-credentials`). |
@@ -299,7 +307,7 @@ may share implementation helpers without collapsing these review boundaries.
 | --- | --- |
 | SEARCH-01 | Provide interactive browsing of generated groups, search results, and individual items on both platforms. |
 | SEARCH-02 | Initially search eligible descriptive metadata and full Kannada/Latin lyrics, including reviewed search-only Latin aliases and aligned eligible Source Latin. Other generated scripts remain readable, not initially lyric-query languages. Video IDs/upload dates/library-added dates are not text-search fields. |
-| SEARCH-03 | Rank metadata-containing matches above lyrics-only results. Within buckets add the best field weight per distinct term: title100, composer=ankita80, deity60, tags=form=category40, context labels20, context description10, lyrics5. No duplicate rendering/alias/occurrence bonus. Enough lower-field evidence may outweigh title. Then compare worst term edits, total edits and ASCII video ID; term quality comes from its winning-weight field. Values are snapshot-bound settings; exact equivalence/witness fixtures remain required. |
+| SEARCH-03 | Rank metadata-containing matches above lyrics-only results. Within buckets add the best field weight per distinct term: title100, composer=ankita80, deity60, tags=form=category40, context labels20, context description10, lyrics5. No duplicate rendering/alias/occurrence bonus. Enough lower-field evidence may outweigh title. Then compare worst term edits, total edits and ASCII canonical lyric ID; term quality comes from its winning-weight field. Values and identity semantics are snapshot-bound/versioned; existing fixture indexes retain legacy behavior. Exact equivalence/witness fixtures remain required. |
 | SEARCH-04 | Provide generated filters for combined Composer/Haridasa-Ankita, deity, composition form, broad category and narrative-context labels. Flat tags and context descriptions are searchable only; upload year is not a filter. |
 | SEARCH-05 | Combine multiple selected values within one field with OR, and selections across different fields with AND. Apply text search together with selected filters. |
 | SEARCH-06 | Offer the same generated groups, search, ranking, and filters offline after a complete content download. |
@@ -332,7 +340,7 @@ not permission to strip distinctions from display or technical scheme text.
 | UX-04 | Play YouTube videos inline only when online. Load the player only after an explicit Play action, not on initial item rendering. |
 | UX-05 | When offline, explain that video playback requires a connection without blocking downloaded lyrics. |
 | UX-06 | For unavailable/restricted/failed playback, show an explicit message and an Open in YouTube option. The fallback does not guarantee the external video will be playable. |
-| UX-07 | Provide a stable website URL for each video-ID-based item and support opening it directly under the configured canonical Pages base using the selected hash routing. Unresolved direct item links use generic unavailable messaging consistent with LIB-09. |
+| UX-07 | Provide a stable website URL for each lyric-ID-based item and support opening it directly under the configured canonical Pages base using the selected hash routing. Keep legacy video-based links distinguishable; do not reinterpret identifiers or infer redirects. Unresolved direct item links use generic unavailable messaging consistent with LIB-09. |
 | UX-08 | Provide separate Share item link and Share YouTube link actions through the available platform share mechanism, with copy-link fallback. |
 | UX-09 | Use website HTTPS links compatible with verified Android App Links for item/list navigation. Prefer opening the installed Android app when verification and user/platform settings permit; otherwise keep the website usable. Provide an explicit Open in app option on the website without trapping users in forced redirects or claiming installation guarantees app routing. Google Play distribution is not required for this association. |
 | UX-10 | Draw usability inspiration from established reading, lyrics, and personal-library apps without copying their designs. Keep Search, My Library, and lyric reading central; Explore is optional and must not displace fast access to known lyrics. |
@@ -346,7 +354,7 @@ not permission to strip distinctions from display or technical scheme text.
 | ID | Requirement |
 | --- | --- |
 | LIB-01 | Let users favorite/unfavorite items and access favorites quickly through My Library. |
-| LIB-02 | Support multiple named recitation lists with create, rename, and duplicate actions. Users can add/remove item references and reorder them. Item identity is the video ID, so separate performances remain distinct. |
+| LIB-02 | Support multiple named recitation lists with create, rename, and duplicate actions. Users can add/remove typed lyric references and reorder them, preserving distinct legacy video references. Adding videos/images never changes favorites, list references or bookmarks; distinct lyric editions and independent occurrences remain distinct. |
 | LIB-03 | Confirm list deletion. Deleting a list or removing an entry must not delete the library item, other lists, or favorites. |
 | LIB-04 | Persist favorites, list names, and entry order locally across restarts. Support list management and reading offline with available downloaded content, without accounts. |
 | LIB-05 | Removing/refreshing content preserves all personal state and unresolved identifiers, with no guessed replacement/dropped entries. Explain browser-managed loss. Minimal list exports contain references/user text only; the separate full personal backup under XFER-09 covers approved personal state/preferences. Neither is automatic synchronization or a content snapshot. |
@@ -354,7 +362,7 @@ not permission to strip distinctions from display or technical scheme text.
 | LIB-07 | Let users save multiple verse bookmarks per lyric and access them through Verse bookmarks in My Library. Open the full lyric at the corresponding reviewed verse in the selected script, including offline with downloaded content. Bookmarks persist independently of the last practised verse and can be removed without changing favorites, lists, or practice position. Preserve correspondence across scripts; explain changed/unresolved saved locations rather than jumping to an unrelated verse or inventing verse divisions. |
 | LIB-08 | Allow intentional text-only placeholders in any recitation list without requiring a library item/video ID. Require user-entered single-line plain text and show it alongside the standard Lyrics unavailable in DaasaVaani message in lists and recitation. Support add/edit/reorder/remove and explicit manual replacement with a library reference while preserving position. Do not infer matches, create fake library IDs, or automatically replace placeholders. |
 | LIB-09 | Allow a user-written single-line fallback label for an unresolved library reference, preserving its actual identifier. Distinguish intentional placeholders, unresolved identifiers, and known lyrics that only need downloading. Keep generic unavailable messaging for unresolved references, without a dedicated version-aware update-check action; ordinary library-update controls remain available. Before preparation, do not claim the identifier is definitely absent from an undownloaded library. Render user text as plain text, not executable markup or an automatic external link. No separate external-URL field is included. Placeholders/labels are local personal-list data, not publishable library content. |
-| LIB-10 | Allow repeated occurrences of the same library item or placeholder within one list. Add, edit, move, remove and manually replace occurrences independently; removing one must not remove its repetitions. Preserve every occurrence and its order through duplication, sharing, export, import and previous/next recitation. Do not deduplicate lists by video ID or placeholder text. |
+| LIB-10 | Allow repeated occurrences of the same library item or placeholder within one list. Add, edit, move, remove and manually replace occurrences independently; removing one must not remove its repetitions. Preserve every occurrence and its order through duplication, sharing, export, import and previous/next recitation. Do not deduplicate lists by lyric/legacy reference or placeholder text. |
 | LIB-11 | On create, rename, duplicate or import, warn when the chosen name is already used by another local list, but allow the same name after explicit confirmation. Do not force a unique name or numbered suffix. Lists remain independent; name matching must never merge, replace or overwrite them. Cancelling the operation leaves existing data unchanged. |
 
 ### 9.3. List sharing, export, and import
@@ -479,6 +487,10 @@ deployment access, and release credentials needed to enforce this workflow.
 
 ### 14.1. Content acquisition
 
+Owner-supplied reviewed Kannada follows a text-authoring/review path without
+YouTube or images. ID assignment/import still requires separate authorization.
+The provider-ingestion path below is optional and remains externally blocked.
+
 ```text
 Manual backfill OR manual local incremental discovery
     -> official YouTube Data API
@@ -499,7 +511,7 @@ correction. Existing reviewed entries are not automatically refreshed from YouTu
 ```text
 Reviewed library + reviewed settings + reviewed assets
     -> post-merge transliteration and full publication validation
-    -> per-video JSON/gzip + groups/filter data + prebuilt global JSON/gzip index
+    -> per-lyric JSON/gzip + groups/filter data + prebuilt global JSON/gzip index
     -> common SHA-256 manifest and shared ZIP STORE transport bundles
     -> GitHub Pages website/PWA and downloadable content artifacts
     -> Android/PWA generated-index queries and item display
@@ -605,7 +617,8 @@ The implementation must demonstrate at least the following outcomes.
   pending before first ingestion.
 - **YouTube access and quota:** Discovery depends on valid credentials, available
   quota, API access, and the channel's public content. Failures require visible
-  reporting and retry, not silent omission.
+  reporting and retry, not silent omission. This is a deferred-ingestion risk,
+  not an initial-release dependency.
 - **Extraction quality:** Description formats may vary. Kannada extraction and
   optional classification require review; missing data must not be fabricated.
 - **Transliteration quality:** Script mappings can be ambiguous or lossy. All five

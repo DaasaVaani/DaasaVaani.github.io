@@ -35,14 +35,14 @@ async function bounded(stream: ReadableStream<Uint8Array>, limit: number) {
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
   return bytes;
 }
-async function fetchBytes(url: URL, limit: number, signal?: AbortSignal) {
+export async function fetchBytes(url: URL, limit: number, signal?: AbortSignal, cache?: RequestCache) {
   const controller = new AbortController();
   const abort = () => controller.abort(signal?.reason);
   if (signal?.aborted) abort();
   signal?.addEventListener("abort", abort, { once: true });
   const timer = setTimeout(() => controller.abort(new Error("Metadata request timed out")), __BOUNDS__.metadataTimeoutMs);
   try {
-    const response = await fetch(url, { signal: controller.signal, credentials: "omit" });
+    const response = await fetch(url, { signal: controller.signal, credentials: "omit", ...(cache ? { cache } : {}) });
     if (!response.ok) throw new Error(`Artifact request failed: HTTP ${response.status}`);
     if (!response.body) throw new Error("Artifact response has no body");
     return await bounded(response.body, limit);
@@ -51,16 +51,20 @@ async function fetchBytes(url: URL, limit: number, signal?: AbortSignal) {
     signal?.removeEventListener("abort", abort);
   }
 }
-function parse(bytes: Uint8Array): unknown {
+export function parse(bytes: Uint8Array): unknown {
   return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
 }
-async function verified(base: URL, expected: { path: string; sha256: string; encodedBytes: number; decodedBytes: number },
-  encodedLimit: number, decodedLimit: number, signal?: AbortSignal) {
+export function validateReference(expected: { path: string; sha256: string; encodedBytes: number; decodedBytes: number },
+  encodedLimit: number, decodedLimit: number) {
   if (!safePath.test(expected.path) || !digestPattern.test(expected.sha256) ||
       expected.path !== `objects/${expected.sha256}.json.gz` ||
       !positiveInteger(expected.encodedBytes) || expected.encodedBytes > encodedLimit ||
       !positiveInteger(expected.decodedBytes) || expected.decodedBytes > decodedLimit) throw new Error("Invalid artifact identity or declared size");
-  const bytes = await fetchBytes(new URL(expected.path, base), expected.encodedBytes, signal);
+}
+export async function verified(base: URL, expected: { path: string; sha256: string; encodedBytes: number; decodedBytes: number },
+  encodedLimit: number, decodedLimit: number, signal?: AbortSignal, cache?: RequestCache) {
+  validateReference(expected, encodedLimit, decodedLimit);
+  const bytes = await fetchBytes(new URL(expected.path, base), expected.encodedBytes, signal, cache);
   if (bytes.length !== expected.encodedBytes) throw new Error("Artifact encoded size mismatch");
   const actual = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new Uint8Array(bytes)))]
     .map(value => value.toString(16).padStart(2, "0")).join("");
@@ -119,7 +123,11 @@ function manifest(value: unknown): Manifest {
     named: { index: value.named.index, policy: value.named.policy }, catalog };
 }
 export class Publication {
-  constructor(readonly base: URL, readonly manifest: Manifest) {}
+  private readonly summaries: Map<string, Manifest["catalog"][number]>;
+  constructor(readonly base: URL, readonly manifest: Manifest) {
+    this.summaries = new Map(manifest.catalog.map(summary => [summary.videoId, summary]));
+  }
+  summary(id: string) { return this.summaries.get(id); }
   async object(hash: string, role: ObjectRecord["role"], signal?: AbortSignal) {
     const entry = this.manifest.objects[hash];
     if (!entry || entry.role !== role) throw new Error("Missing or wrong-role artifact");
