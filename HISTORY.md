@@ -1,5 +1,1808 @@
 # Documentation history
 
+## 2026-10-25: owner-requested publication of retained Website evidence
+
+- The owner requested committing and pushing all pending changes and explicitly
+  selected renewed blocker investigation/full validation across all four
+  repositories, including a non-wiping Android restart. This includes the
+  retained Website restore-publication record below, not a waiver of failed or
+  unavailable required checks.
+- Fresh `npm test` passed137/137 tests across16 files. With the verified clean
+  pinned fixture publisher override
+  `DAASAVAANI_FIXTURE_PUBLISHER_ROOT` pointing at the retained c2837ccf worktree,
+  `node node_modules\@playwright\test\cli.js test --workers=1 --global-timeout=900000`
+  performed fresh fixture publication, production typecheck/build and all456
+  browser tests across desktop/mobile/narrow, passing in10.2min. The watchdog
+  did not fire; no cases, projects, assertions or per-case limits were weakened.
+  Logs: `commit-all-20261025-web-{units,browsers}.log` in the session workspace.
+- Installed actionlint1.7.12 with ShellCheck0.11.0, strict parsing of all four
+  tracked YAML files, working/staged Git whitespace and documentation UTF8/
+  newline/whitespace/link/fence checks (20 Markdown files,53 local anchors)
+  passed. This batch changes only this history file; application behavior,
+  settings, generated assets and the independent Shared b9ed532 pin are unchanged.
+- Android's runtime slot was released only after the complete Website suite
+  finished. Native and Library publication retain their own independent gates;
+  their success is not inferred from these Website results.
+
+## 2026-10-24: publishing verified Website restore-writer fencing
+
+- Published final Website main02d00ec789a380352609c37d2be2730a2441d9d4/
+  treee78143b781890268bf1ee4d4e8aff7de825e9ed3, including implementation
+  bad72d7 and its revalidated cancellation-selector follow-up. Shared remains
+  independently clean b9ed5321791bfc69f466caa4cd46c58f2c60631f.
+  Owner explicitly authorized Website-only commit/publication. Fresh actor/
+  ruleset checks confirmed the existing temporary admin role5 exception and
+  separate active no-bypass force/delete guard; no protections were changed.
+  Main advanced by ordinary fast-forward only after exact preflight success.
+- Corrected exact preflight40114450119 passed137 units/456 browsers using2
+  workers. Main/Pages40115125649 independently passed137 units/456 browsers
+  using2 workers, then artifact upload and deployment. CodeQL40115125595 passed
+  both JavaScript/TypeScript and Actions analyses with result uploads.
+  REST run/job/attempt endpoints returned empty step arrays, so vacuous step
+  checks were not accepted as verification: retained authentic run-log archives
+  were checked for every configured execution/cleanup stage, exact checkout
+  identity, full test totals and no error markers, alongside fresh paginated
+  exact-SHA completed-success job metadata. Only non-main preflight upload/
+  deployment were intentionally absent. API step-conclusion metadata remained
+  unavailable; no zero-step result was presented as complete step verification.
+- Downloaded only the exact successful main github-pages artifact and safely
+  extracted30 members/25 files. Retained verify-web-backup-hosted.mjs, parameterized
+  with the full deployed SHA and extracted artifact directory, passed byte-exact
+  comparison of all25 public HTTPS bodies plus stable export, full preview/
+  replacement, fresh epoch/raw IDs/latest pair, actual Kannada/preferences,
+  peer invalidation/cancellation and actual installed-shell offline restart/
+  restore. Zero Library requests;13 interface cache bodies totaled
+  1321464/8388608 bytes, without Library/media cache.
+- `node node_modules\@playwright\test\cli.js test --config` with the retained
+  web-restore-fences-hosted.config.cjs passed16/16 actual public-HTTPS mobile
+  cases, without a local server. This reused the backup and reading-preference
+  cases against deployed assets, including delayed pre-restore read refusal,
+  cold-reader hydration/history, exact font-boundary keyboard focus, real
+  quota/locked-transaction cancellation, preserving migrations and offline use.
+  Synthetic permitted lyric artifacts remained isolated; no linguistic or
+  complete production/offline/platform conformance is inferred.
+- Verified local/remote main exact02d00ec and clean source/Shared, then removed
+  only the owned validation/restore-writer-fences-bad72d7-20261024 ref after exact
+  containment and no-PR checks. No ancillary test server/browser helpers remain.
+  User5173 was preserved. Android stays owner-paused with the separately
+  authorized retained-emulator shutdown completed; no native commit/push or
+  further restart. Library's EBUSY/provisional-review blockers remain unchanged.
+- This post-deployment evidence is retained locally for the next coherent
+  documentation/implementation batch, rather than a separate housekeeping push.
+
+## 2026-10-24: correcting cancellation outcome selection in remote preflight
+
+- Owner-authorized Website commit bad72d7d76b13c76aec8f567c6bf89446a618ba1/
+  tree6c804b19a0493b7873e443ad978f094838761111 was pushed only to the owned
+  validation/restore-writer-fences-bad72d7-20261024 branch, not main. Exact
+  preflight40111346857 passed workflow lint and137 units but failed one browser
+  case, with455 passing. Main/Pages publication was not attempted.
+- Its locked-restore cancellation assertion selected every status in the backup
+  region while awaiting rollback. Before the transaction outcome, the legitimate
+  working status and nested duplicate-name warning status both existed, causing
+  strict locator failure instead of waiting for the exact cancellation outcome.
+  The assertion now targets the cancellation status by its message and retains
+  exact text plus complete database-preservation checks. No application behavior,
+  timeout, retry policy, test count or rollback requirement was weakened.
+- Full final-tree local checks and fresh exact-commit remote preflight remain
+  required after this test-only correction. Android remains explicitly paused;
+  no native/Library or Shared pin changes are included.
+- The subsequent full local run passed137 units/451 browsers, failed the
+  mobile API-bundle beforeAll at its unchanged30-second budget, and left4 cases
+  unrun. No application assertion failed, but this was not a complete pass.
+  Owner explicitly authorized gracefully stopping only the retained emulator
+  and rerunning all Website checks once to reduce host resource use, not a proven
+  root-cause claim. Verified exact AVDdaasavaani_fixture_api36/serial5556 and owned
+  qemu PID42048, then used serial-specific `adb emu kill`; qemu/emulator exited
+  without a wipe or configuration change. Stopped the remaining owned managed
+  launcher handle rec04-host2-emulator-replacement. User5173 remained HTTP200.
+  Android stays paused and no emulator restart was authorized by this selection.
+- The single authorized post-shutdown full attempt passed: `npm test`137/137
+  across16 files and, with the same clean pinned fixture override,
+  `node node_modules\@playwright\test\cli.js test --workers=1 --global-timeout=900000`
+  456/456 across all three projects in10.2 minutes, including fresh fixture
+  publication/strict build. No failures, skips, unrun cases, retries or raised
+  per-case/assertion limits. This is successful final local validation, not proof
+  that the emulator alone caused the earlier host/setup timing failures.
+
+## 2026-10-24: extending restore fencing to asynchronous personal writers
+
+- Continued approved implementation after the owner requested an emulator
+  restart and further work. A direct Website writer audit found that list/
+  learning/recitation commands carried fences but preference/favorite and
+  history helpers still rebased onto any current epoch. An old read completion
+  or pending personal command could therefore mutate a newly restored snapshot.
+- Preference/favorite/history commands now carry the initiating epoch and reject
+  replacement before mutation, while ordinary same-epoch changes still use
+  latest state. Canonical/fixture/list read completion carries its selected-read
+  epoch without changing the stable opened callback or replaying mounted-reader
+  history. Preference results are applied only while the observer's current
+  epoch still matches the initiating epoch, preserving immediate committed-value
+  rendering without overwriting restored preferences with an old result.
+- Added actual-browser old-writer/no-op and delayed-read/peer-restore cases.
+  Incremental `node node_modules\typescript\bin\tsc --noEmit` passed;
+  `npm test -- personal-backup personal-restore recitation-position learning`
+  passed23/23. After native released the frozen runtime slot, the two-file browser
+  command `node node_modules\@playwright\test\cli.js test personal-backup personal-restore --workers=2`
+  passed42/42. The first full run passed137 units and444 browsers, failed6 and
+  left3 unrun. It exposed genuine boundary-focus and initial-hydration regressions:
+  observer-only preference rendering completed the busy/focus cycle before new
+  font bounds arrived, and a cold canonical read could start before personal
+  hydration supplied its epoch. Restored guarded immediate preference rendering;
+  cold reads now acquire their own initial snapshot independently of text loading,
+  with explicit errors and no mounted-reader replay. A held real database lock
+  tests text display before hydration and successful recording after release.
+- After fixing an optional-value TypeScript narrowing error, the repaired
+  `node node_modules\@playwright\test\cli.js test personal-backup personal-restore reading-preferences learning --workers=2`
+  passed99/99 across all three projects with a fresh strict build. A subsequent
+  complete `npm test` passed137/137; the unfiltered two-worker browser command
+  passed449, failed4 and left3 unrun over2.5 hours. Two failures were metadata/
+  browser timing failures (including context teardown); two were the unchanged
+  30-second in-memory API-bundle beforeAll budget. These are failures, not a pass,
+  and do not establish a new app root cause. A bounded host sample showed2857496KiB
+  free of24815196KiB; the queried Kernel-Power42/107 filter returned no events,
+  which does not establish absence of host suspension or another timing cause.
+  Final `npm test` passed137/137 across16 files. With the same clean pinned fixture
+  publisher override, the unfiltered
+  `node node_modules\@playwright\test\cli.js test --workers=1 --global-timeout=900000`
+  passed456/456 across all three projects in12.4 minutes, including fresh fixture
+  publication and strict production build. All original per-test/assertion limits
+  remained unchanged; the additional15-minute overall watchdog did not fire.
+  No cases failed, skipped or remained unrun. This verifies the complete Website
+  source batch locally, not a selected-test substitute or a new release claim.
+  No new commit/push/publication had been made at that validation checkpoint.
+  Owner subsequently explicitly approved committing and publishing this Website-
+  only fix; live actor/protection/baseline verification and exact-commit remote
+  preflight/main deployment verification remain mandatory.
+- Final ancillary checks passed:19 current Markdown files/180 local links and
+  all153 unique requirement IDs, strict YAML4 files, installed
+  actionlint1.7.12/ShellCheck0.11.0 and both Git whitespace checks. Shared remained
+  clean at its independent b9ed532 pin. Existing Vite chunk-size/plugin timing
+  notices and Git working-copy CRLF normalization notices were warnings only.
+- Clarified that the remaining full-backup coverage gaps in the current test
+  matrix are native gaps, superseding its older unqualified wording; Website v1
+  already includes history, learning, preferences and the exact latest pair.
+- Prior Website backup3b9dd7036d4c9d8c23ab6d66cb4d3a76c5c59343/
+  tree69bf2f5cd7b74215b0a3ca53ebe7a36176098716 independently pins Shared b9ed532.
+  Exact preflight40083556683, main/Pages40083995323 and CodeQL40083995098
+  passed every actual required job/step through paginated no-cache verification.
+  Only preflight upload/deploy were intentionally skipped; main passed137 units/
+  447 browsers. Owned contained no-PR validation ref was deleted. Exact Pages
+  artifact30 members/25 files matched every hosted body. Public HTTPS proof
+  passed stable export, full preview/replacement, fresh fence/raw IDs/exact pair,
+  restored Kannada/preferences, peer invalidation/cancel and actual installed-
+  shell offline restart/restore with0 Library requests.13 cached bodies totaled
+  1320758/8388608 bytes, without Library/media content. GitHub's Node-action/
+  runner-image deprecation notices remain warnings, not waived checks.
+- Native resume validation remains independent. Its full54 core/108-of110
+  device run exposed two10-second wait failures, not a pass. Isolated diagnostics
+  later passed Favorites preparation7065ms/41 items and identified a generic
+  Android-window false match before the actual chooser. The readiness test now
+  requires the actual resolver list within the unchanged10 seconds. Guest boot
+  and subsequent host restart did not establish a healthy UI: the retained
+  emulator showed System UI not responding. Native20 staged paths and related
+  HISTORY evidence remain uncommitted/unpushed, independently pinned c386bf8.
+  The owner's fresh18:12 authorization permitted one further non-wiping host
+  restart and conditional complete validation only after actual UI health. That
+  restart booted with system_server710 stable but SystemUIService ANR20.648s
+  (2.583s main CPU/15.946s runnable queue); deeper host/graphics cause remains
+  unproven. No fresh core/device/build/lint checks ran. Retained exact existing
+  AVD/serial5556/managed handle rec04-host2-emulator-replacement and the user's
+  5173/PID3840 server; no wipe, commit or push. Owner then explicitly selected
+  pause-android and continued Website work; no further native recovery was begun.
+- Library's one authorized fresh complete check again failed with Windows EBUSY
+  after build/typecheck; downstream validators were not reached. Hygiene917 files
+  and whitespace passed; only its HISTORY evidence changed. Source568db957,
+  independent Shared8bd8793a, originals and uncertain verse proposals remain
+  unchanged/unpublished. No speculative retries, locking-owner claims or fixes.
+
+## 2026-10-24: resumed Website backup consumer implementation
+
+- Owner explicitly resumed work after the saved local05900bd checkpoint.
+  Adopted published Shared b9ed532 in Website only; native remains independently
+  c386bf8 while finishing REC-04 validation. Provisional transliteration resources
+  included in the new pin are not activated by either consumer.
+- Superseded the Website replacement-only/no-user-facing-backup limitation with
+  current-state backup v1 Settings export, complete local preview and explicit
+  atomic replacement. Existing fields/identities/raw text, absent preferences and
+  unavailable exact positions are preserved; no future personal collections,
+  content snapshots, native backup or full product conformance is claimed.
+- Extracted the existing bounded gzip/fatal-UTF8/duplicate-key JSON primitives
+  from minimal lists for reuse. Added strict Shared-schema/semantic/real-date/
+  byte validation and canonical-key encoding in an owned cancellable worker,
+  stable-snapshot export, revision-bound confirmation, privacy disclosures and
+  actual six-store replacement. Website locale remains a postcommit observer
+  binding, not a native OS-language setter.
+- Incremental strict typecheck and focused codec/transaction checks passed.
+  Browser development first exposed locale-sensitive test scoping after a real
+  Kannada restore; the expected region now follows the restored locale. A later
+  locked-cancel test exposed retained confirmation after cancellation; cancellation
+  now ends that preview only after the aborted transaction outcome is known,
+  without misrepresenting committed results. Final `npm test` passed137/137
+  across16 files. With the documented clean pinned fixture override,
+  `node node_modules\@playwright\test\cli.js test --workers=2` passed447/447
+  across all three projects in6.4 minutes, including fresh fixture publication
+  and strict production build, zero failures/skips. Production64MiB decoded and
+  65MiB encoded equality/+1 were tested with actual bytes, not reduced proxies.
+  The24 new UI cases include actual offline worker restore, peer invalidation,
+  final-write quota retry and real locked-transaction cancellation/departure.
+- Native's fresh host-only checks independently passed54 core tests/12 suites,
+  all builds/instrumentation compilation, both lints (58 debug/59 release
+  warnings, zero errors), config/hygiene/YAML/workflow/whitespace. App JVM remains
+  NO-SOURCE, not a pass. Fresh responsive emulator-service evidence permitted a
+  newly granted frozen-dist/device slot after the Website137/447 source pass.
+  Connected validation and publication remain independently pending.
+- Final ancillary checks: installed actionlint1.7.12/ShellCheck0.11.0 passed;
+  both GitHub YAML files passed strict parsing; current Markdown validation
+  passed19 files/180 local links/153 unique requirement IDs; staged/working
+  whitespace passed. `python shared\tools\check_repository.py` passed97 files
+  in the pinned Shared repository (that script resolves its own root, not the
+  Website root). Website Markdown/YAML/whitespace checks above are independent.
+  Large-chunk/plugin-timing build warnings remain visible. No app release,
+  peak-heap guarantee or full XFER-09/10 native-system-backup claim follows.
+
+## 2026-10-23: current-state backup scope and replacement prerequisite
+
+- Owner approved same-platform backup v1 covering every currently implemented
+  personal field, with versioned extension when new features arrive, rather than
+  blocking the entire feature on unimplemented bookmarks/Practice/setup contracts.
+  Shared owns the independent schema/fixture/catalog batch. Website consumers
+  remain independently pinned; no provisional transliteration activation follows.
+- Implemented the Website replacement prerequisite: complete copied allowlist,
+  preview revision check, fresh writer epoch, full prospective byte/collection
+  validation and cancellable six-store replacement. Reused the existing
+  recitation transaction cancellation path. No file codec, backup UI, automatic
+  restore, bookmark/Practice state or native restore is claimed.
+- Incremental `npm test -- personal-restore recitation-position personal-model`
+  passed33/33; `node node_modules\typescript\bin\tsc --noEmit` passed.
+  Final `npm test` passed130/130 across15 files. With the documented clean pinned
+  fixture publisher override,
+  `node node_modules\@playwright\test\cli.js test --workers=2` passed423/423
+  across all three projects in6.1 minutes, with fresh fixture publication and
+  strict production build, zero failures/skips. The12 replacement browser cases
+  exercised actual IndexedDB commit/restart, stale/invalid/aborted refusal and
+  quota/cancellation rollback at the final control write. The test-only API
+  bundle was compiled in memory, without production hooks or generated files.
+  The build retained its large-chunk and plugin-timing warnings; neither was
+  represented as a release-readiness pass.
+  `python shared\tools\check_repository.py` passed78 tracked files/local links;
+  installed actionlint1.7.12 with ShellCheck0.11.0 passed; both GitHub YAML files
+  passed strict parsing; `git diff --check` and `git diff --cached --check`
+  passed. Website's prerequisite is retained as a local-only checkpoint:
+  no Website push or consumer Shared-pin change accompanies the pause.
+- Owner then requested completion of in-flight tasks followed by a pause.
+  Further consumer UI/features remain queued, not automatically started.
+  Shared completed and published the approved prerequisite at
+  b9ed5321791bfc69f466caa4cd46c58f2c60631f/
+  tree626ae6537201f9e32c65c77d17d81e19bbcdee38. Its full125 tests,26 deterministic
+  outputs, hygiene97,13 strict YAML files,15 Markdown documents/31 anchors,
+  installed actionlint/ShellCheck and drift/whitespace checks passed.
+  Exact preflight39892761347/job120216103093 and
+  main39892894437/job120216525444 passed every actual job/all10 steps through
+  paginated no-cache verification. Its owned validation ref was deleted.
+  No consumer pin/adoption, user-facing backup or native restore followed.
+  Both agents are paused with no owned active helpers.
+- The published Website resume batch a614c5c/tree95ccb434 independently pinned
+  Shared c386bf8. Exact preflight39879555836, main/Pages39880270926 and
+  CodeQL39880271459 passed every actual required job/step. The owned contained
+  no-PR validation ref was deleted. Exact Pages artifact24-file comparison and
+  public HTTPS proof passed:871 catalog,6 Library requests through exact repeated
+  occurrence/explicit Continue, native70-to80 preservation, literal layout digest
+  `33e63f6fa2e6967abebafe827a7d897bacc1b3f35c189b82073e2d80ab1e7f6f`,
+  installed-shell offline placeholder Continue without autoentry/awake, and
+  12 cache bodies plus worker1025429/8388608 bytes without Library/media caching.
+- Shared independently published provisional Latin rules e409162 and all14
+  directions a049a242. Its final115 tests and24 deterministic generated outputs
+  passed; exact preflight39880471928/main39880626539 passed all actual steps.
+  Both consumers retain c386bf8; no linguistic review or client activation is
+  inferred. Library's local verse proposals568db957 remain unpublished after a
+  required full37-test run failed36/37 with Windows EBUSY; deferred workflow
+  support667a2a7 remains separately preserved.
+- Native's final resume validation ended with2 device passes,1 failure during an
+  Android system crash and107 unrun. Earlier54-core/110-device evidence predates
+  its final guard and is not a final pass. The aborted final command executed
+  no core tests; core build/release assembly/both full lints did not finish.
+  Its17 staged files remain uncommitted/
+  unpushed at79acdb3, staged tree5786601e, independent Shared c386bf8. Device/
+  local-runtime ownership was released; only bounded read-only diagnosis remains
+  authorized before the requested pause. That read-only diagnosis confirmed
+  a system-server watchdog/foreground handler blocked185 seconds under CPU
+  pressure, with system-server process replacement but no emulator reboot.
+  It established no application assertion failure or justified source fix.
+  Resource quiescence/responsive system-service health and, if necessary, an
+  explicitly authorized non-wiping restart remain prerequisites to a newly
+  granted full run. Native is paused; no retry/restart/helper was started.
+
+## 2026-10-23: exact saved-list position implementation and parallel review drafts
+
+- Replaced Website v7/native70 five-store current protocol with v8/native80
+  six-store protocol. Frozen v7 accounting remains exactly
+  `{format:"daasavaani-personal-storage",formatVersion:7,control,personal,lists,recentHistory,learningLabels}`;
+  its rows, raw values and learning assignments are preserved. Every supported
+  upgrade adds only null position and a fresh epoch; the old session-only
+  list cursor/no-position behavior is superseded by explicit latest-pair storage.
+- Implemented bounded REC-04 exact list/occurrence persistence, explicit Continue
+  and per-entry selection, commit-before-cursor movement, no-op repeats,
+  deletion recovery without substitution, empty-list preservation and strict
+  minimal-transfer exclusion. Whole-state transactions retain unrelated rows;
+  own-write receipts cannot rebase unrelated stale editor revisions.
+  Native resume remains independently owned; full backup/durable snapshots and
+  full REC-04/XFER-09 conformance are not claimed.
+- Targeted `npm test -- personal-model learning unicode-names list-recite
+  recitation-position` passed81 units; strict production build passed.
+  `runTests` found no registered editor tests, so actual documented Vitest was
+  used instead; the editor tool's result was not counted as a test pass.
+  `node node_modules\@playwright\test\cli.js test list-recite --workers=2`
+  passed54 browser cases across all three configured projects, including
+  quota rollback/retry, real database-lock cancellation and native70 upgrade.
+- Initial browser setup correctly refused the parallel Library worktree after
+  its source-tooling batch advanced HEAD. Created an isolated clean detached
+  fixture publisher at configured c2837cc with its own pinned Shared, restored
+  its missing locked dependencies after an actual MODULE_NOT_FOUND failure and
+  used the documented environment override. No fixture pin/clean guard was
+  weakened. Explicit Node runner reported two workers; the earlier npm
+  invocation did not forward that worker flag and never started browser tests.
+- Owner authorized parallel implementation and best-guess global transliteration
+  rules/verse boundaries for subsequent review. Shared/Library agents own
+  isolated provisional batches, not automatic approval or linguistic proof.
+  Canonical text, protected sources and125 held originals remain unchanged.
+  Full final Website source validation subsequently passed:
+  `npm test`126/126 and
+  `node node_modules\@playwright\test\cli.js test --workers=2`411/411 across all
+  three projects with fresh strict build, zero failures/skips; actual browser
+  duration7.0 minutes. Hygiene78, installed actionlint1.7.12/ShellCheck0.11.0,
+  both GitHub YAML files and whitespace passed. Current Markdown validation
+  covered16 files/174 local links and153 unique requirement IDs. The first
+  temporary ID regex omitted the four I18N IDs; baseline comparison confirmed
+  no ID changed, and the corrected alphanumeric-family validator passed.
+  No tracked standalone shell scripts exist; actionlint uses installed ShellCheck
+  for workflow shell analysis. Frozen dist/device/HTTP ownership then passed
+  explicitly to native for its complete independent validation. Publication
+  and hosted verification remain required.
+- Prior ordered-list publication follow-up8853f9d/treeeebf218 independently pinned
+  Shared397988. Exact preflight39843733332, main/Pages39844401526 and
+  CodeQL39844401260 passed every actual required job/step. Final exact29-entry
+  artifact matched24 hosted bodies; isolated public proof exercised871 catalog/
+  3 Library requests,8 mixed occurrences+empty, literal layout, full native70
+  schema/personal/history preservation, actual offline session traversal and
+  installed interface restart without autoentry.12 cache bodies plus worker
+  totaled1016553/8388608 bytes, with no Library/media cache. Owned publication
+  refs/helpers/extracted artifacts were cleaned and user pages/processes preserved.
+
+## 2026-10-23: YouTube ingestion automation deferred
+
+- Owner deferred YouTube ingestion automation to a later release. Previously,
+  initial scope included official-API local historical/incremental ingestion,
+  and roadmap P8 depended on P3. ING-01 through ING-11 and the local ingestion
+  design remain later-release targets; P3 is no longer an initial-release
+  dependency or acceptance gate.
+- Provider clarification remains mandatory before first API ingestion, but is
+  not an initial-release blocker. Reviewed existing-content publication,
+  source preservation, content review, applicable provider terms and all other
+  release validation gates remain unchanged. No API access is authorized by
+  this deferral.
+
+## 2026-10-22: list publication and selected-content readiness synchronization
+
+- Website9170414fc789df679fc0d0b577901d417e523e91/tree20adf7d independently
+  pins Shared397988. Exact preflight39827310611 passed every actual required
+  job/step, with only intended upload/deployment skips. Fresh live admin/main/
+  no-bypass guard/clean tree/pin/78da baseline/ancestry gates preceded normal
+  main push. Main/Pages39828274614 and CodeQL39828282463 passed every actual
+  job/step; main browser/platform dependency installation itself took11m31s.
+  No incomplete metadata or running installation was counted as a pass.
+- Safely extracted the exact29-entry Pages artifact and compared24 deployed
+  bodies byte-for-byte. Fresh isolated public Chromium exercised actual871
+  catalog/3 Library requests,8 mixed exact ordered occurrences and an empty list,
+  literal canonical layout/fonts, full native70 five-table/index-schema/personal/
+  history preservation, actual offline verified-session traversal and installed
+  interface Settings restart without automatic Recite entry.12 cache bodies
+  plus worker totaled1016553/8388608 bytes; no Library/media was cached.
+- The first hosted probe asserted cached fixture text immediately after the
+  new occurrence heading. That heading correctly appears before the separate
+  selected-content ready commit, even for a verified in-memory item; no old
+  occurrence text is exposed. Awaited the exact paragraph count before comparing
+  the unchanged digest. Final hosted proof passed. Added the same explicit
+  readiness boundary to three new browser assertions, preserving all digest/
+  personal/request-count assertions, retry settings and time limits.
+  This test-only follow-up still requires complete final validation after the
+  native-owned frozen dist/device/HTTP slot is explicitly released. No production
+  source or frozen output changed during native ownership.
+- Native released the slot after complete successful validation and committed,
+  without pushing,79acdb3b885c73382714ca8b0dd9b6ad9b39e875/tree39ca35a,
+  independently pinned to Shared397988. Config, clean51 core/all application
+  variants/both lints/all95 connected cases passed, zero failures/errors/skips.
+  Hygiene101/YAML5/actionlint/ShellCheck/all whitespace passed; lint58/59 warnings,
+  zero errors, and app JVM NO-SOURCE remain distinguished. It preserved
+  PID3840/emulator5556 and removed only its owned logs/helpers. Parent verified
+  the exact clean commit/tree/pin/trailer and submitted only that validated tree
+  for preflight. Archived prior Native-individual-only/list-validation-open
+  descriptions: bounded native REC-03 now retains complete preparation, exact
+  occurrences/typed history, scoped awake continuity and original list/Back
+  context. No durable offline or REC-04/release claim follows.
+- First post-release full Website check passed121 units/build and383/384 browsers:
+  the unchanged font-bound/density/reload journey exhausted its30s test budget.
+  Targeted3-repeat/all-viewport stress at the auto-selected8 workers passed5/9;
+  atomic same-style measurement passed8/9 and mixed real-keyboard/pointer
+  actions passed6/9, still hitting that total budget rather than a wrong font
+  value. Trace timing confirmed repeated browser action/assertion overhead.
+  Discarded both tentative font-test changes, restoring the exact existing
+  pointer/keyboard assertions. No runtime, timeout, retry, tested font step,
+  density, viewport or equality requirement was changed. The next complete check
+  attempted a2-worker command; actual concurrency was verified rather than
+  inferred from that command's name (see the final result below).
+- The Native preflight gate initially assumed at least two jobs, as in Website.
+  Actual declared Native hygiene has one job. Corrected only this local helper
+  assumption, retaining exact complete job pagination and every actual step/
+  success check. Fresh exact Native preflight39840910332 passed all actual
+  job/steps and live policy/admin/tree/pin/dd155 baseline/ancestry checks preceded
+  normal main publication. Exact main39842267213 subsequently passed every
+  actual job/step; no unfinished/skipped required step was accepted.
+- Final `npm run check -- -- --workers=2` passed121 units, strict TypeScript/
+  production build and all384 browser cases, zero failures/skips. Its actual
+  expanded command was `npm test && npm run test:e2e --workers=2`: nested npm
+  consumed the flag, and the observed runner still used8 workers, not2. Removed
+  the unverified forwarding recipe from current guidance; no concurrency change
+  or2-worker success is claimed. The complete unchanged configured suite passed
+  at its existing30s test budgets, with original font tests restored byte-for-byte.
+  Current-guide/archive validation passed17 files/237 local links/anchors/
+  153 unique IDs; pinned Shared hygiene75, strict Node YAML4, actionlint/
+  ShellCheck and all whitespace checks passed. Only three explicit list-test
+  content-readiness waits and native capability/publication documentation remain
+  in this follow-up, not runtime/default/schema or test-limit changes.
+
+## 2026-10-22: saved-list Recite and final individual-mode publication evidence
+
+- Archived the superseded Website-only individual Recite limitation: saved-list
+  traversal/boundaries were unimplemented, and list reading preferences remained
+  uncovered. REC-03 now has session-only ordered stored occurrences, literal
+  placeholders/repetitions, exact typed resolution, explicit empty/start/end/
+  unavailable/cancellation/retry states, one optional awake owner and original
+  mounted draft/Back-focus restoration. Active-list changes end mode explicitly.
+  No REC-04 position, schema/default, backup, verse identity or durable offline
+  readiness is introduced. Native adoption/validation remains independent.
+- Archived final individual-mode Website78da1db4b20e2f8cba6d13c604baf3b8182301fe:
+  preflight39813680606 stalled after successful steps; a full fresh exact-ref
+  dispatch39815715890 passed every actual required job/step (the original later
+  completed too). Fresh admin/main/guard/exact tree/pin/68b baseline/ancestry
+  gates preceded normal main push. Main/Pages39817016489 and CodeQL39817016517
+  passed all actual required jobs/steps; both owned contained refs were cleaned.
+- Isolated hosted Chromium compared24 exact deployed artifact bodies from the
+ 29-entry Pages artifact, actual871 catalog/3 Library requests, exact canonical
+  text/layout digest, fonts and full native70 five-table/schema preservation.
+  Explicit entry/controls/Escape/exit, offline session Recite and actual offline
+  shell Settings restart passed.12 cache bodies plus worker were1010002/
+ 8388608 bytes. Real headless wake acquisition was denied and explicitly reported,
+  not counted as an active lease; controlled lifecycle/native flags remain
+  separate evidence. The first external probe incorrectly expected immediate
+  control after worker readiness; a normal explicit online reload established
+  actual control without changing app activation policy. Final proof passed twice,
+  including full database schema metadata. Owned browser/helper/extracted artifact
+  scratch were cleaned; user pages/servers/emulator were preserved, logs retained.
+- Website independently adopted published Shared397988's seven additive bilingual
+  captions. Extracted the unchanged literal lyric renderer and controlled wake
+  test adapter for both reader modes. Initial strict TypeScript found two extra
+  JSX closing parentheses; corrected them and strict TypeScript passed.
+  `npm test -- list-recite screen-awake` passed13 units. First focused browser
+  command passed48/54: a real history-boundary bug passed occurrence IDs/fallbacks
+  into strict typed history, and a new fixture expectation assumed three rather
+  than its actual two lines. Projected only typed kind/ID at successful opens;
+  strengthened coverage for both canonical/legacy fallbacks and exact history.
+  Corrected the fixture expectation and asserted different literal content.
+  `node node_modules\@playwright\test\cli.js test recite` then passed54/54
+  across desktop/Pixel7/320px, zero failures/skips. No retry/time-limit or integrity/
+  stale-state/history assertion was weakened.
+- Final `npm run check` passed121 units, strict TypeScript/production build and
+  all384 browser cases, zero failures/skips. `python shared\tools\check_repository.py`
+  passed75 tracked Shared files; actionlint1.7.12 with ShellCheck0.11.0 passed.
+  Existing strict Node YAML parsed all4 GitHub/settings files. Python PyYAML
+  was unavailable, so no Python YAML pass is claimed and no dependency was
+  installed. The inline documentation checker initially omitted I18N IDs;
+  corrected its alphanumeric-prefix grammar and checked all17 UTF8/newline/
+  whitespace/fence-clean guides/archive,237 local links/anchors and153 unique
+  requirement IDs. Both whitespace checks passed. Fresh dist was frozen and
+  exclusive native device/HTTP ownership granted only after full Website success.
+  Native reported51 clean core tests/all builds/both lints/compiled95 connected
+  cases before this grant; connected results remain unclaimed until execution.
+
+## 2026-10-22: Recite publication and committed-history test synchronization
+
+- Archived the prior Website-only REC-01/02 capability/Native-adoption-open
+  descriptions. Native now independently implements the bounded individual
+  mode, explicit Back exit and ownership-preserving scoped screen-awake lifecycle;
+  list recitation/resume, verse Practice, durable offline content and broad
+  device/power-policy acceptance remain open.
+- Exact Website68b2119 preflight39800427732 attempt1 had successful steps but
+  stale unfinished job metadata; publication remained blocked. A complete
+  unchanged-SHA rerun (attempt2) passed every actual required job/step with only
+  the intended preflight upload/deployment skips. Fresh live admin/main/
+  no-bypass guard/clean-tree/pin/baseline/ancestry checks preceded normal main
+  publication. Shared525 remains independently pinned.
+- First main39808952967 passed115 units and356/357 browser cases, then correctly
+  withheld artifact upload/deployment. The failed Learning peer-clear test used
+  a disabled button as a proxy for the completed history transaction; that
+  button is also disabled while clearing is pending. Its baseline could still
+  contain the old entry and then incorrectly blame the later label assignment
+  for the completed clear. Added an explicit wait for the exact committed empty,
+  enabled history record before taking the preservation baseline. Existing
+  equality/layout/request-count assertions and all suite/time limits remain.
+  This change still needs final full validation; the native-owned stable
+  dist/device/HTTP slot must be released before any parent rebuild.
+- Native reported finaldd1551a8c7b042fae372af3ed1d3fbd611e2f354/tree1769711
+  with independent Shared525: `npm run config` and clean core/all app builds/
+  both lints/full connected command passed48 core/88 connected, zero failures/
+  errors/skips. Lints58/59 warnings, zero errors; app JVM NO-SOURCE and existing
+  SDK XML diagnostic distinguished. Hygiene96/YAML5/actionlint/ShellCheck and
+  all whitespace checks passed. It released the frozen slot and preserved
+  user5173/PID3840/emulator5556. Parent verified the exact clean tree/pin/trailer
+  and submitted only that validated commit for native preflight.
+- After slot release, the first complete Website rerun passed115 units and
+  356/357 browsers. A different fixture Learning case selected a label before
+  the initial successful-open history transaction completed and correctly
+  received the existing stale-data error. Added the same exact committed
+  initial-history wait already used by the canonical case before testing its
+  normal assignment journey. No stale-write protection, error assertion,
+  runtime behavior, retry count or timeout was changed.
+- The next complete run again passed115 units/356 browsers: the canonical
+  case's deliberate full reload legitimately recorded a new successful open
+  after its peer-cleared history, racing its immediate final label clear.
+  Added the exact initial-history assertion at that reload boundary as well.
+  All three initial/reloaded reader boundaries now distinguish a successful
+  initial history write from forbidden history replay by a mounted control.
+- Focused stress command
+  `node node_modules\@playwright\test\cli.js test learning --grep 'reader assignments persist|fixture reader assignment' --repeat-each 3`
+  passed18 cases across all three viewports. Final `npm run check` passed115
+  units, strict TypeScript/production build and357 browser cases, zero failures/
+  skips. Hygiene75, strict YAML4, actionlint1.7.12/ShellCheck0.11.0 and both
+  whitespace checks passed. No production runtime, personal schema/default or
+  consumer Shared pin changed in this synchronization follow-up.
+- Exact Native preflight39810715872/main39811787648 passed every actual required
+  job/step for dd1551a8c7b042fae372af3ed1d3fbd611e2f354. Parent checked current
+  admin/main/guard, exact clean tested tree/pin, unchanged128e9eb baseline and
+  ancestry before normal main push. Owned contained no-PR ref cleaned; this
+  does not create a signed release or broad device/power-policy acceptance.
+- Shared list-caption397988ff2b74a1cc14152ecc706441b28b6d4556 passed37 tests,
+  hygiene75/YAML11/actionlint/ShellCheck/whitespace, exactly7 additive keys per
+  locale with prior captions/contracts/settings unchanged and21 deterministic
+  outputs. Exact preflight39808837612/main39809055003 passed every actual job/
+  step; live gates preceded normal main push. Owned contained no-PR ref cleaned.
+  Both current clients still pin525 independently; these captions do not
+  implement REC-03/04 or authorize automatic consumer adoption.
+
+## 2026-10-22: focused individual Recite and prior learning publication
+
+- Archived the preceding blanket Recite limitation: no dedicated focused
+  individual-reader mode or screen-awake adapter existed. The new bounded
+  REC-01/02 slice does not complete REC-03/04 list traversal/latest-occurrence
+  Continue recitation, reviewed verse Practice or persistent offline content.
+  Verse bookmarks remain blocked on reviewed public verse locations; no source
+  file, verse split, lyric identity, personal schema or setting is changed.
+- Final learning Websitebb95ddef44d5c79ce8dbda1e04fd8c18d6e33865 published
+  after108 units/330 browsers and ancillary/docs checks. Exact
+  preflight39782360104, main/Pages39784239350 and CodeQL39784243463 passed every
+  actual required job/step. Fresh owned hosted Chromium matched17 exact artifact
+  bodies and12 cache bodies,1002887/8388608 bytes including worker. Actual871
+  catalog/4 Library requests, preserving native60-to70 migration,5 label writes,
+  literal layout digests, Learning focus, personal collections and offline-shell
+  restart management passed. Owned browser/helper/artifact scratch/contained
+  no-PR ref were cleaned; logs retained.
+- Native learning128e9ebfd2edd9debc1100e32b71895f6071953b independently
+  adopted Shared166 and passed48 core/82 connected, zero failures/errors/skips,
+  all builds and both lints (57/58 warnings, zero errors); app JVM NO-SOURCE.
+  Hygiene94/YAML5/actionlint/ShellCheck/whitespace passed. Exact
+  preflight39792047897 and main39793316648 passed every actual required step.
+  Parent checked unchanged tree/pin/baseline/ancestry and live admin/main/
+  no-bypass guard before normal main push. Native released the frozen local
+  slot and preserved user5173/emulator5556. Both mains/pins were clean.
+- Incremental `npm test -- screen-awake` passed7 lifecycle/race/failure units.
+- Shared52564f6bc5954f077749a333cfb6e97bbea59b6f published12 additive
+  bilingual captions without changing prior contracts/settings/defaults.
+  `npm run check` passed36 tests; hygiene75/YAML11/actionlint/ShellCheck/
+  whitespace passed, and21 generated/schema outputs were deterministic.
+  Exact preflight39797232648 and main39798496458 passed every actual job/step.
+  Cached job snapshots initially remained in progress despite completed steps;
+  gates correctly stopped until fresh no-cache REST run/job metadata confirmed
+  complete success. No unfinished job was counted as passed. The owned contained
+  no-PR validation ref was removed after main success.
+- Final Website `npm run check` passed115 units, strict TypeScript/production
+  build and357 browser cases across desktop/Pixel7/320px, zero failures/skips.
+  The27 added browser cases verify canonical/fixture literal layout and complete
+  personal preservation, focus/control restoration, unsupported support,
+  explicit requests/system release, visible request/release failures and retry,
+  pending-acquisition departure races and background cleanup without automatic
+  foreground reacquisition. Controlled platform adapters do not establish
+  OS power-policy or the complete supported-browser/device matrix.
+- `python shared\tools\check_repository.py` passed75 tracked Shared files;
+  strict YAML checked4 workflow/settings files, actionlint1.7.12 with
+  ShellCheck0.11.0 and both git whitespace checks passed. Native received the
+  frozen Website dist/device/HTTP slot only after the complete Website pass;
+  no parent rebuild is permitted during its connected validation.
+- Inline `python -` documentation checks passed17 UTF-8/newline/whitespace/
+  fence-clean files,233 local links/anchors and all153 unique normative IDs.
+
+## 2026-10-22: local learning-label prerequisite and preserving web storage evolution
+
+- Archived preceding current Website storage v6: native60, four stores
+  `personal/lists/control/recentHistory`, control format6 and current envelope6.
+  Inputs native10/20/30/40/50 migrated to60 with fresh fence, earlier preference
+  rows gained configured font/density and earlier history was initialized empty;
+  future70 was refused. Every mutation covered all four tables. Raw names had no
+  persisted Unicode-key cache. The preceding saved-export paragraph incorrectly
+  called the complete read a three-table transaction; the executable v6 reader
+  already included recent history. The new complete read includes all five.
+  These replaced descriptions are historical, not downgrade instructions.
+- Shared published166b7af343064f2190f2fe89aee98d42fef8e03a with the additive
+  label contract/schema/types/fixtures and12 bilingual captions. Full
+  `npm run check` passed35 tests; hygiene75, strict YAML11,
+  actionlint/ShellCheck and whitespace passed. All21 generated/schema resources
+  were byte-identical on repeat generation; all prior captions/settings/schemas/
+  fixtures stayed unchanged. Exact preflight39776808369/main39777169354 passed
+  every actual required step. Live policy/clean-tree/pin/baseline/ancestry gates
+  preceded unchanged normal main push; owned contained no-PR ref was cleaned.
+- Website independently adopts published Shared166. Its v7/native70 schema adds
+  only the learning store/empty row on migration, preserving v6 preferences,
+  disabled history, exact typed references and all list/occurrence identities.
+  All old accounting stays frozen; prospective v7 accounting includes labels.
+  Future80 is refused without repair/reset. The local label/filter slice does
+  not implement reviewed verse Practice, full backups or durable offline lyrics.
+- Incremental `npm test -- personal-model unicode-names learning` passed69
+  tests. The editor test-discovery tool previously returned no tests, not a pass;
+  the documented CLI provided the actual executed evidence.
+- The first four-suite browser run passed183/195 and failed12: nine old migration
+  expectations omitted the intentionally added learning store; three new helper
+  assertions waited for a Saved status inside a correctly filtered-away card.
+  Updated exact schema/empty-row assertions and checked the committed assignment,
+  removed card and restored heading focus instead. The first full run passed
+  108 units and327/330 browser cases; three synthetic stale-fence tests failed
+  because Dexie had captured the native transaction adapter before a late hook.
+  Moved the armed one-shot fault adapter before application loading, retaining
+  the actual transaction, strict stale-error/whole-snapshot rollback assertions
+  and explicit successful retry. No product behavior, assertion, suite or timeout
+  was relaxed. Documentation validation initially counted149 IDs with an
+  alphabetic-only prefix regex; included the existing alphanumeric A11Y prefix
+  and verified all153 unique IDs without changing requirements.
+- Final Website `npm run check` passed108 units, strict TypeScript/production
+  build and330 browser cases across desktop/Pixel7/320px, zero failures/skips.
+  This includes actual10000-label capacity and exact64MiB/+1 prospective label
+  admission, actual native60 preserving/invalid/schema/over-capacity rollback,
+  all previous migrations/future80 refusal and controlled offline-shell restart.
+  `python shared\tools\check_repository.py` passed75 tracked Shared files;
+  strict-YAML Node parser checked4 workflow/settings files, actionlint1.7.12 with
+  ShellCheck0.11.0 and both git whitespace checks passed. `python -` inline
+  documentation validation checked20 UTF8/newline-clean files, local links/
+  anchors/fences and all153 unique normative IDs. None establishes broad
+  browser/device, reviewed linguistic/verse Practice or release acceptance.
+- Native independently adopted published Shared166 and staged Room6/label/
+  Learning changes after config, clean-core/all builds/both lints/test-APK
+  compilation:48 core cases, debug57/release58 warnings and zero lint errors.
+  App JVM remains NO-SOURCE, not a passing suite. Full connected validation is
+  required independently before native publication. Website's passed output was
+  frozen and its local dist/device/HTTP slot explicitly granted to the native
+  owner; no parent rebuild is permitted during that slot.
+- Final preceding cross-client discovery documentation was published as
+  Rootbae12585503ac75133a4d14173049f06c4d55fbc: exact preflight39772885740,
+  main/Pages39773549183 and CodeQL39773549405 passed every actual required step.
+  Safely inspected29-entry final artifact and all17 public resource bodies were
+  byte-identical to the browser-verified ef05 runtime. Owned refs/artifact
+  scratch were cleaned; logs retained. Native1699f417 publication main39772764234
+  passed every actual config/build/core/lint/hygiene step after exact
+  preflight39771896064; its72 device cases remain local emulator evidence.
+
+## 2026-10-22: cross-client discovery validation and publication evidence
+
+- Website discovery committedef05ac36f27996f24a83a4835dc7871630f9a374
+  with independently adopted published Sharedf4f8aec. Local and Linux full
+  checks passed101 units/294 browser cases. Exact preflight39766079581,
+  main/Pages39767405046 and CodeQL39767403341 passed every actual required
+  job/step. Live policy/admin/no-bypass guard/clean-tree/pin/baseline/ancestry
+  gates preceded unchanged normal main push. Only expected preflight
+  upload/deploy skips were permitted.
+- The successful29-entry Pages artifact was inspected with explicit path,
+  entry-type/count/size bounds and extracted only into owned session scratch.
+  Fresh isolated hosted Chromium matched all17 public resource bodies and12
+  actual cache bodies byte-for-byte with that artifact. Cached bodies plus worker
+  totaled992595/8388608 bytes; no Library/demo/compressed/media objects entered
+  the interface cache. Actual871-catalog selection reached beyond title filtering,
+  excluded the current item and used only four successful browser Library
+  requests for metadata plus two chosen items. Literal Kannada/layout/line IDs
+  were compared by hashes without logging source payloads. Typed favorite/list
+  controls, every personal row, original return focus and memory-only offline
+  reuse were preserved; offline reload honestly lost content readiness.
+- The first hosted helper incorrectly expected the Warm background as browser
+  theme-color. Existing product tests specify the resolved accent; corrected
+  only that helper assertion and reran the complete fresh proof successfully.
+  No product behavior/assertion/suite/retry/timeout was weakened. Owned helper,
+  artifact extraction and no-PR validation ref contained by main were cleaned;
+  successful and diagnostic logs were retained.
+- Native discovery committed1699f41709f6cba736cbb20fd430c258b5d5c8f2
+  independently adopting the same published Sharedf4 from preceding44.
+  Final generated configuration and full clean-core/all-variant build/both-lint/
+  connected command passed44 core/72 device cases, zero failures/errors/skips.
+  Both lints reported58 warnings/zero errors; app JVM remains NO-SOURCE.
+  Hygiene88, strict YAML5, actionlint/ShellCheck and whitespace passed.
+  Its owning HISTORY records the exact commands, corrected test discovery/
+  transition synchronization failures and Compose-collected Favorites rejection
+  state fix, without dropping assertions or narrowing final suites.
+- Native released the frozen Website/dist/device/HTTP slot after validation,
+  cleaned owned helpers and preserved user5173/emulator5556. Current guides now
+  describe both clients' bounded discovery and truthful origin continuity;
+  durable snapshots, reviewed groups/dates, Practice and release gates remain open.
+- Exact native preflight39771896064 passed every actual configuration/build/core/
+  lint/hygiene step. Parent independently checked the unchanged commit/tree,
+  independently pinned Sharedf4, baseline ancestry and live admin/no-bypass guard
+  before a normal fast-forward main push. CI device coverage is not claimed;
+  the72 connected cases are actual local API36 emulator evidence.
+- Cross-client Root documentation finalization reran complete `npm run check`:
+  101 units, strict TypeScript/production build and294 browser cases passed.
+  Hygiene72, strict workflow/settings YAML4, actionlint/ShellCheck, whitespace
+  and all20 UTF8/newline-clean Markdown files/213 local links/153 unique
+  normative IDs passed. No runtime, dependency, settings or consumer pin changes
+  accompany this documentation batch.
+
+## 2026-10-22: canonical Show another lyric
+
+- Archived P5's preceding discovery status: full discovery remained incomplete
+  and there was no explicit real-catalog selection action. The new EXP-02 slice
+  uses the entire verified canonical catalog, not filtered/paged results, without
+  inventing taxonomy, personalization or offline readiness. Reviewed groups,
+  first-publication dates, Practice and complete production discovery remain open.
+- Shared publishedf4f8aecb2af5f7614ba81a3fb770048324b8850f after full32 tests,
+  hygiene72, strict YAML11, actionlint/ShellCheck/whitespace and three byte-identical
+  regenerated resources. Exact preflight39762681122/main39762972394 passed
+  every actual job/step; live policy/admin/no-bypass guard/clean-tree/ancestry
+  gates preceded unchanged normal main push. The owned no-PR contained ref was
+  cleaned. Exactly3 keys per locale were added against Website241,8 against
+  Native44 (including5 preceding shell captions); all old captions and settings/
+  schema/type/fixture bytes were unchanged. Consumers adopt independently.
+- Added bounded pure selection, explicit catalog/reader action and session-only
+  last-successful-open reference. Reader choices replace the current reader while
+  retaining its origin, so Back remains truthful. No collection/schema/default/
+  dependency/source/lyric change accompanies selection; normal successful reader
+  history remains independent and optional.
+- Initial new unit incorrectly treated an empty published catalog as valid;
+  corrected it to assert the existing strict nonempty manifest refusal, without
+  weakening the schema. Incremental full `npm test` passed101 units; the focused
+  loader/discovery subset passed14. Initial browser run passed6/15 but failed9
+  focus assertions because a global constant Math.random stub also forced
+  React Router history keys to collide. Replaced that injection with one selector
+  call followed by restoration of real randomness before navigation; no router,
+  focus assertion, suite, retry or timeout was weakened. Corrected
+  `node node_modules\@playwright\test\cli.js test discovery` passed all15 cases
+  across desktop/Pixel7/320px, including exact personal/revision/request checks.
+- Final Website `npm run check` passed101 units, strict TypeScript/production
+  build and294 browser cases without failures/skips. Shared consumer hygiene72,
+  strict YAML4, actionlint/ShellCheck and both whitespace checks passed.
+  Documentation checks covered20 UTF8/newline-clean files,213 local links and
+  all153 unique normative IDs. The tested production output was frozen while
+  Native used the shared connected-test/HTTP slot.
+- Preceding Root evidence batchdd3ebb06c58e4eec45991d4f7b8ccc632ffad0bd
+  passed exact preflight39759918112/main/Pages39760680680 and
+  CodeQL39760680574, every actual required job/step. Its final safely inspected
+  Pages artifact and all17 hosted resource bodies matched the earlier
+  browser-verified71ad82a byte-for-byte: no runtime/dependency/settings/pin/
+  manifest/icon/worker body changed. Owned no-PR contained ref and artifact
+  scratch were cleaned; complete logs retained. Native334dab8 remained clean
+  and independently pinned44 before this new discovery slice.
+
+## 2026-10-22: native explicit link sharing and installation publication evidence
+
+- Website installation batch71ad82a6cdc51623e6eca1905963bde1bc7ac729
+  published unchanged after exact successful preflight39754547654; all actual
+  required jobs/steps passed. Live temporary role5 admin authority, actor admin,
+  no-bypass force/delete guard, clean tree/independent Shared241158f and
+  fast-forward ancestry were verified before normal main push.
+  Main/Pages39755558770 and CodeQL39755559348 passed every actual job/step.
+  The successful29-entry Pages artifact was safely extracted with path/type/
+  bounds guards. Fresh owned hosted Chromium matched17 public resources and12
+  actual cached bodies byte-for-byte with that exact artifact; cache plus worker
+  990569 bytes stayed below8388608. Actual manifest/PNG diagnostics, device/Warm
+  browser chrome, locale-independent identity, offline root/open, cached lazy
+  transfer decoding and window restart preserved all personal data. No Library/
+  demo/compressed/media objects entered the interface cache. Owned browser,
+  helper, extraction directory and contained no-PR validation ref were cleaned;
+  retained logs record hashes. OS installation and offline lyrics remain unproved.
+- Native explicit link sharing committed334dab8a5b1303c115e41901e2e16ead83e849f2
+  with independently pinned Shared44c21b9 unchanged. The common v1/v2/saved-list
+  export surface now offers explicit standard chooser/ACTION_SEND/text/plain
+  handoff of only the complete validated link. Select/copy/Create Document
+  fallbacks remain, with no FileProvider/temp file, network, personal write,
+  automatic action or delivery claim. Archived the preceding native coverage:
+  display/copy and file export existed, but no explicit Sharesheet action.
+  Direct file sharing, signed incoming App Links and actual receiver/provider/
+  device interoperability remain open.
+- Native corrected an initially unquoted PowerShell test selector and the real
+  localized configuration-context/Activity mismatch by using the owning Activity
+  result registry, not NEW_TASK or guessed result meanings. Focused5 device
+  cases and full config/core/all-variant build/lint/connected checks passed:
+  40 core/66 connected, no failures/errors/skips; both lints53 warnings/zero
+  errors; app JVM NO-SOURCE, not a pass. Full Gradle took13m49s. Hygiene85,
+  YAML5, actionlint/ShellCheck and whitespace passed. An actual emulator chooser/
+  Android Back smoke case supplements intercepted exact-intent/failure/fallback/
+  no-write tests; neither establishes receiver delivery. No dependency/source/
+  consumer pin changed. Native released its connected/HTTP slot with all owned
+  helpers complete and user5173/emulator5556 unchanged.
+- Exact native preflight39758561746 and main39759465425 passed every actual
+  config/build/core/lint/hygiene job/step. Parent verified clean exact334dab8,
+  independent Shared44, baseline ancestry, live role5/admin authority and
+  no-bypass force/delete guard before unchanged normal main push. The contained
+  owned no-PR validation ref was cleaned; no signed APK or receiver delivery
+  is claimed. Hosted Actions warn about pinned Node20 action runtimes and
+  setup-java-v4 deprecation; no unrelated toolchain update was bundled.
+- Related Root documentation validation reran full `npm run check`:98 units,
+  strict TypeScript/production build and279 browser cases passed, no skips or
+  retries. Strict YAML4, actionlint/ShellCheck, whitespace and documentation
+  UTF8/newline/local-link checks passed20 files/210 local links/all153 unique
+  normative IDs. Root runtime/dependencies/settings/Shared pin are unchanged.
+
+## 2026-10-22: declarative PWA installation metadata and original artwork
+
+- Archived the preceding installation status: manifest/icons and installation UX
+  were unimplemented; P6 covered only shell caching and normal updates.
+  Declarative metadata/artwork now implement the next bounded PLAT-01/06 slice;
+  actual OS installation and the complete supported-platform matrix stay open.
+- The preceding shell batch publishedae72ffad9995585ed9bd625b4d1c31aaf7d197a0
+  with exact Linux preflight39745429179, main/Pages39746230615 and
+  CodeQL39746230056 passed. Local and Linux suites covered95 units/270 browsers.
+  Fresh isolated hosted Chromium compared12 public resources and11 cached
+  response bodies byte-for-byte with the exact successful Pages artifact;
+  cache plus worker985456 bytes stayed below8388608. Canonical literal/layout/IDs,
+  typed favorite, Warm/font/density, disabled history and every personal row
+  survived actual offline root/open/restart and explicit local transfer save.
+  Interface cache contained no Library/demo/compressed/media objects. Owned
+  helper/browser/artifact extraction and contained no-PR validation ref were
+  cleaned; user server/emulator were preserved. This did not establish offline lyrics.
+- Added original font-independent geometric book artwork and explicit
+  `npm run icons` using existing Chromium, with no dependency/toolchain changes.
+  Initial screenshot capture failed at Chromium's Page.captureScreenshot;
+  generation now uses native SVG image decoding/canvas PNG encoding instead of
+  HTML/viewport capture. Generation and strict TypeScript/production build passed.
+  PNG/SVG outputs are committed resources; normal builds verify rather than rasterize.
+- `npm test -- app-manifest app-shell` passed6 units. Initial focused browser
+  run passed27/30: the three new media cases incorrectly assumed the configured
+  initial Light preference was Follow device. Corrected the expectation and
+  explicitly select Follow device before checking automatic/no-write media changes.
+  Strict TypeScript also caught missing helper configuration projections and an
+  incorrect caption key; both were corrected with actual schema-backed types/
+  existing `followDevice`, not casts or new captions.
+- Corrected full `npm run check` passed98 units, strict TypeScript/production
+  build and all279 browser cases across desktop/Pixel7/320px, no skips or retries.
+  All30 manifest/shell cases are included. `npm run icons` regenerated all four
+  outputs byte-identically; direct isolated Vite development HTTP verification
+  passed actual HTML/manifest identity and PNG MIME without worker registration.
+  Strict YAML4, actionlint1.7.12/ShellCheck0.11.0 and both whitespace checks passed.
+  Documentation checked20 files/210 local links/all153 unique normative IDs.
+  Vite chunk/plugin-timing and Node experimental type-strip warnings remain
+  non-release evidence; actual OS installation/device coverage is still open.
+
+## 2026-10-22: app-interface shell and normal-update work
+
+- Archived the preceding P6 implementation status: no executable service-worker
+  lifecycle or persistent offline snapshot. The selected Workbox/normal activation
+  direction was documentation-only. Persistent complete-library snapshots remain
+  unimplemented; interface caching must not be called offline lyric readiness.
+- Shared published five additive bilingual shell/support/error/update captions in
+  241158f9856d15cf7ff2d1c57c71e9eb4f2db035: full31 tests, hygiene72, strict YAML11,
+  actionlint/ShellCheck/whitespace and all three byte-identical regenerated UI
+  resources passed. Exactly five keys per locale were added; all old captions and
+  schema/settings/type/fixture resources were unchanged. Exact preflight39739394210
+  and main39739916707 passed before the Website independently adopted the pin.
+  Native Library continuity remains on its independently approved44c21b9 pin.
+- Added pinned Workbox7.4.1 after checking its Node compatibility. The npm restore
+  warned that transitive glob11.1.0 is deprecated; `npm audit --json` reported
+  zero known advisories, not a vulnerability-free or release-security claim.
+- Incremental strict TypeScript found a captured optional registration and two
+  incorrect test caption names, corrected without casts. The exact-byte unit
+  exposed repeated legal-notice appends on regeneration; notice generation is now
+  idempotent. Complete-skipped generation correctly throws Workbox's native error;
+  a separate partially skipped case verifies the explicit warning refusal.
+  `npm test -- app-shell` passed3 tests, including exact total bytes/+1.
+  Subsequent strict `node node_modules\typescript\bin\tsc --noEmit` and full
+  `npm test` passed all95 units; final source types/whitespace passed after
+  adding real-navigation exclusion and exact focus-interval/in-flight assertions.
+  Browser/build/publication verification remains pending the native slot release;
+  these source/unit checks do not establish a working deployed shell.
+  No Website demo/build/check/e2e ran during native's reserved connected/HTTP slot.
+- The initial shell browser run found a missing native JSON import attribute in
+  the new test; corrected it without an app change. The next focused run passed
+  all18 cases across desktop/Pixel7/320px. The first full `npm run check` passed95
+  units and262 browser cases but failed5 existing worker fault/concurrency cases:
+  the real precache bypassed HTTP worker-script replacement, so the expected
+  synthetic failures/stalls were not injected. Replaced those four tests'
+  HTTP-only injection with a shared same-origin Blob/native Worker adapter,
+  preserving real worker/error/termination/concurrency and all service-worker
+  behavior. No suite, retry or timeout was weakened. Focused
+  `node node_modules\@playwright\test\cli.js test lists pagination transfers --grep
+  'an export changed during encoding|search worker failure removes|cancelling saved-list encoding|cancelling a pending worker'`
+  passed all12 cases across the three viewports.
+- Mounted synthetic canonical-reader update preservation passed3 focused cases,
+  with exact literal/layout/line identities, all personal rows/history and only3
+  owner-family requests through failed and waiting candidates. Corrected complete
+  final-tree `npm run check` passed95 units, fixture publication/strict
+  TypeScript/Vite/Workbox production build and all270 browser cases, no retries
+  or skips. This includes21 shell-specific cases across desktop/Pixel7/320px.
+  Documentation checked20 tracked Markdown files/203 local links/all153 unique
+  normative IDs; strict YAML4, actionlint/ShellCheck and whitespace passed.
+  Vite chunk-size/plugin-timing warnings are not performance or release evidence.
+- Native Library continuity publishedcde5b199eb08a285e3fc441c90c4d5d00710f5f5
+  with independent Shared44 unchanged. Full config/core/all builds/lints/connected
+  checks passed40 core/61 connected, no failures/errors/skips; both lints55
+  warnings/zero errors, app JVM NO-SOURCE. Hygiene83,YAML5,actionlint/ShellCheck
+  and whitespace passed. Actual touch return focus and test lifecycle
+  synchronization were corrected without weakening assertions.
+  Archived the earlier native Library-continuity-pending status: prepared Library
+  now retains its literal query/pages/viewport and reader/Back/Settings return
+  session independently of Favorites, with no incidental preparation or writes.
+  Exact preflight39743079485/main39743550567 passed; parent independently
+  verified all successful jobs/steps, clean exact local/remote SHA and Shared44
+  pin without re-inspecting delegated source. The owned no-PR validation ref was
+  cleaned. Connected/HTTP helpers stopped before parent Website builds resumed;
+  user server5173/emulator5556 stayed untouched. Device evidence remains local.
+
+## 2026-10-22: independent lyric font size and reading density
+
+- Archived Website v5/native IndexedDB50: preference rows had exactly
+  `id,favorites,language,theme`; its logical UTF8 envelope and control header
+  used version5, with typed lists and one `id,enabled,entries` history row.
+  Versions10/20/30/40 upgraded to50, adding only empty default history and
+  structural legacy discriminants as applicable. Future60 was refused.
+  Those input grammars/accounting remain frozen for preserving migration.
+  Reading used a fixed28px lyric font and2.3 line-height, with8px paragraph
+  padding. Personal font/density controls were not implemented.
+- Shared published additive bilingual reading controls in
+  a404e0a9a81407588870150b9f0fbc22a9cd605a:29 tests, hygiene72,
+  YAML11, actionlint/ShellCheck, whitespace and deterministic generation passed;
+  exact preflight39731083818/main39731223346 passed.
+  Portable density defaults/type followed in44c21b9d139239e3003c293dfe8058ad80393fa6:
+  Normal plus Compact/Normal/Relaxed, with30 tests and all the same checks
+  passing. Exact preflight39731901423/main39732154093 passed before either
+  consumer was authorized to adopt this independent pin.
+- Website implementation keeps28px/2.3 and literal paragraph padding as Normal,
+  owns16..80px bounds/2px steps and1.8/2.3/2.8 density line heights, and uses
+  Shared portable density choices/captions. Its v6/native60 migration validates
+  exact old and prospective accounting, preserves history and identities, and
+  adds only reading defaults to existing preference rows. Default display and
+  unchanged choices do not create rows or increment revisions.
+- Incremental `npx tsc --noEmit` and `npm test` passed92 unit tests. Initial
+  targeted checks identified missing canonical-reader prop wiring and legacy
+  tests deriving old rows from the newly extended default shape; both were
+  corrected without weakening the old grammar. Full browser/publication
+  validation is not established by these incremental checks.
+- The first full Website `npm run check` passed92 units and245 browser cases,
+  failing4: three viewports of an existing current-Unicode seed still opened
+  native50 instead of60; the narrow future-schema case selected two independent
+  alerts. Its intended schema refusal was present alongside a fixture decode
+  `network error`; captured HTTP200 bytes independently matched their encoded
+  SHA256 and decoded as valid gzip/JSON. Updated the current-version seed, and
+  explicitly failed the independent fixture endpoint in the future-schema test,
+  asserting the exact schema-refusal alert and unchanged database instead of
+  assuming the page has only one error. No retry, timeout increase, product
+  fallback or weakened database-preservation assertion was added.
+  Focused `node node_modules\@playwright\test\cli.js test lists --grep
+  'new Unicode16 equivalence|newer personal schemas'` passed all6 cases across
+  desktop, mobile and320px after a fresh production build.
+- Archived native Room4/accounting4 descriptions. The independent native
+  font/density slice uses Room5/accounting5 and preserves28sp/48sp/20dp Normal
+  rendering, previous personal values/history and identities. Full
+  `npm run config` and
+  `.\gradlew.bat :core:build :app:build :app:lintDebug :app:lintRelease :app:connectedDebugAndroidTest --no-daemon --console=plain`
+  passed40 core/58 connected tests, zero failures/errors/skips, in8m36s.
+  Initial device failures came from a prohibited tab in a synthetic placeholder;
+  the seed was corrected without relaxing validation. Both lints reported55
+  warnings/zero errors; app JVM is NO-SOURCE. Hygiene82/whitespace passed.
+  The native slot was explicitly released before Website fresh builds;
+  existing server5173/emulator5556 were preserved. Publication remained pending
+  at this validation handoff; connected evidence is local, not CI.
+- Corrected Website final-tree `npm run check` passed92 unit tests, the fresh
+  fixture publication/strict TypeScript/Vite production build and all249 browser
+  cases across desktop, Pixel7 and320px (no retries/skips). This includes actual
+  configured font bounds/steps/line heights, bound keyboard focus, peer history
+  independence, preserving native50-to60 upgrades and the actual64MiB old/new
+  accounting boundary. Workflow lint/ShellCheck and whitespace passed.
+  Documentation checks passed20 Markdown files/201 local links/all153 unique
+  normative requirement IDs; strict YAML passed4 files.
+  Vite's500kB chunk-size advisory remains a warning, not a performance pass.
+- Website published1ee3dca067d0151e62b0ac6ca1215a5e7341f539 after exact
+  preflight39737355639; main/Pages39737932282 and CodeQL39737931925 passed.
+  Fresh isolated Chromium matched all8 hosted resources to the successful Pages
+  artifact; main JS741667 bytes,SHA256
+  c4b7a43bccad182b2b9920993156336fb9ad4b32ca3e642f5a1adc6190859774.
+  Actual owner metadata2/item1 requests per session (6 total including restart)
+  verified all18 literal paragraphs/layout/line IDs,30px/Relaxed then28px/Compact,
+  typed favorite, Warm/Kannada independence, disabled history and320px persistence.
+  The first hosted helper incorrectly used immediate `.uncheck()` on an
+  asynchronous committed checkbox; click plus awaited unchecked state fixed the
+  helper without changing application behavior. Owned browser/helpers/artifact
+  extraction and main-contained no-PR validation ref were cleaned.
+- Native independently published33cd2eff7b34177d6e14b41f870712c206bfb9de after
+  exact preflight39736253545/main39736619241 passed. Parent verified complete
+  successful job/step conclusions, exact local/remote SHA and independent Shared44
+  pin; owned completed validation ref was cleaned. The40 core/58 connected result
+  and55 warnings/variant above remain local device evidence, not CI coverage.
+
+## 2026-10-22: on-demand online reading and accelerated delivery
+
+- The owner approved parallel Website/native slices, larger coherent validated
+  batches, text-first reading/search/personal/offline priority, escalation only
+  for genuine decisions and reuse of Shared contracts/conformance resources.
+  No approved feature was removed and no validation or publication gate waived.
+- Archived the preceding Website real-reader lifecycle: merely opening
+  `#/lyrics` or a UUID link made no owner request; explicit consent downloaded
+  and validated the complete publication before exposing catalog/reading.
+  All content was in memory, reload required consent again, reads after
+  preparation made no item request, and list Read initially reached that gate.
+  Whole-library count/byte planning and worker abort/settle behavior belonged to
+  that preparation path. The independently pinned Android complete-preparation
+  requirement remains unchanged; Website online loading now uses the approved
+  metadata-plus-selected-item direction, not persistent offline activation.
+- The prior Website750ec0ca3e69a6904d07e1c35e5fb41b2d548c4e passed exact
+  preflight39719424532, main/Pages39719671491 and CodeQL39719670656.
+  Public HTML/JS/CSS/legal resources matched the exact CI artifact. Its JS was
+  assets/index-5N3HRknV.js,712478 bytes,SHA256
+  e39877bc4c34e5dcf2d3f58f215af295d1f41cfb27696e72158d6ac240ae6b84.
+  Isolated Chromium verified873 requests for871 actual approved lyrics,
+  canonical desktop/320px reading, exact typed recent ordering/repeat no-write,
+  return/control focus, clear/disable/restart/re-enable and no implicit owner
+  requests. Early hosted harness attempts selected the still-mounted old
+  Recently opened control before Settings rendered; waiting for the actual
+  Settings heading fixed the harness, without changing application behavior.
+- Archived native Room3/history-pending descriptions. Android published
+  c13171f6ed874aa5178c6c0cd0e5dc9dd3c09d0d with independent Shared9b8845a,
+  Room4/accounting4 and preserving v1/v2/v3 upgrades. Full `npm run config`
+  and `.\gradlew.bat :core:build :app:build :app:lintDebug :app:lintRelease
+  :app:connectedDebugAndroidTest --no-daemon --console=plain` passed36 core/
+  48 connected tests without failures/skips. Hygiene74,YAML5,actionlint and
+  whitespace passed; lint reported54 warnings per variant, app JVM NO-SOURCE.
+  Exact preflight39720260569/main39721301287 passed and parent verified every
+  required CI step and local/remote SHA. Connected evidence is local, not CI.
+  Its completed main-contained/no-PR validation branch was removed; its tree/
+  Shared were clean and no Website/server/emulator mutation occurred.
+- Shared published4111fea55b927d3be85ddee6b6fc8e256b8be36c with additive
+  platform-distinct online-loading labels only; existing native preparation
+  labels/contracts remain unchanged. Full28 tests, hygiene72,YAML11,
+  deterministic generation, actionlint/ShellCheck/whitespace passed; exact
+  preflight39721959010/main39722156616 passed before Website independently
+  adopted it. Native remains independently pinned to9b8845a.
+- Extracted shared catalog/item validation and retained complete-preparation
+  conformance coverage, including the actual64MiB boundary. Focused loader
+  tests passed11: metadata-only requests, selected immutable references, cache
+  reuse/unknown IDs, exact budgets, failure-reservation rollback, retries and
+  late valid responses after ignored cancellation. First combined browser run
+  passed51/failed3: the old exact bare catalog-heading assertion no longer
+  matched the immediately available counted catalog heading. Its semantic
+  catalog-region/count/focus assertions retain the intended navigation proof.
+- The next full `npm run check` passed90 units/227 browser cases and failed
+  one repeated reader-to-list addition with an explicit stale-data refusal.
+  Successful own commits could re-enable the chooser before its asynchronous
+  personal subscription delivered the new list/revision. The chooser now waits
+  for observation of its returned commit before allowing another selection;
+  concurrent changes still invalidate captured choices, without automatic retry
+  or rebasing. A deterministic browser case queues a real nonmutating IndexedDB
+  transaction to delay observation, requires disabled controls during that delay,
+  then checks two independent typed occurrences, exactly two revisions and
+  unchanged personal/history rows. `node node_modules\typescript\bin\tsc
+  --noEmit` passed after the coupled fix.
+- `npm run test:e2e -- lyrics --grep 'own committed|explicit real favorites'`
+  ran all33 lyric browser cases because the npm/Windows argument forwarding
+  omitted the grep flag; all passed. Final `npm run check` passed90 units,
+  fresh production build/typecheck and231 browser cases with zero retries,
+  failures or skips. The existing500kB chunk advisory remains, not a
+  production performance pass. VS Code's unit-test tool found no adapter;
+  the repository's configured `npm test` also independently passed90.
+- Documentation bootstrap checks passed20 Markdown files/199 local links and
+  anchors, UTF8/newline/whitespace/fences and153 unchanged normative requirement
+  rows; four strict YAML documents, actionlint with ShellCheck and both
+  whitespace checks passed. The first inline requirement-count assertion
+  incorrectly included SHA-256/UTF-16 prose tokens; anchoring to normative table
+  rows fixed the checker without changing requirements.
+- Partial coverage: UX-12/13, OFF-11/12, DATA-03/04 and LIB-01/05/09/10.
+  This is bounded current-publication online reading, not full search,
+  persistent offline activation, transliteration or release acceptance.
+  Android complete preparation and independent Shared pin remain unchanged.
+- Live Website rulesets25497312/25525161 matched the current operating guide:
+  the temporary owner-authorized role5 direct-main implementation exception
+  remains on PR/check rules only; force/delete protection has no bypass.
+  Publication still requires successful exact-SHA lint/full-app preflight and
+  unchanged-SHA main validation/deployment; normal policy remains a release gate.
+- Exact preflight39725029407 for7112a5d passed lint/90 units but failed four
+  browser cases (227 passed); no main push occurred. The Favorites paging case
+  could count the old unresolved Favorite cards before the catalog view rendered,
+  and a reloaded favorite's Remove control was visible before its reader loaded.
+  Those tests now await the loaded title filter and actual canonical paragraphs,
+  respectively, before asserting the unchanged exact request budgets. No retry,
+  timeout extension, weaker budget or additional product change was introduced.
+- After those two readiness corrections, full `npm run check` again passed90
+  units, fresh build/typecheck and all231 browser cases, with zero retries,
+  failures or skips. The Shared pin and application implementation were unchanged.
+- Published89d69a5dd803c52e6ab87e5453db67c70496e58f after successful exact
+  preflight39725998499; main/build/Pages39726395617 and CodeQL39726395899
+  passed. Every required main job/step and unchanged local/remote SHA was checked.
+  The temporary exception bypassed only the owner-authorized PR requirement,
+  not lint/app validation, force/delete protection or any release gate.
+- Downloaded the exact successful Pages artifact and compared public HTML,
+  both workers, main JS/CSS and all three license notices byte-for-byte.
+  Main JS assets/index-C2qe8Vx4.js was715478 bytes, SHA256
+  7e7a1e191877bd2ee42bb723f35499aa3a834d579321da15fa68a8be96987742.
+  The isolated `verify-hosted-online.mjs` command passed for871 actual lyrics:
+  two metadata requests, one selected item, encoded hash/size, exact canonical
+  text/layout/line IDs, cached repeat/no-write, typed favorite and two independent
+  list occurrences, recent history,320px reading and return focus. Restarted
+  personal routes made no owner request; direct reload made2+1 and the next
+  uncached item one, for seven owner requests across the whole journey.
+  Disabled history and unrelated personal rows remained unchanged.
+- Its first hosted harness run expected an uncounted Favorites heading;
+  accepting the actual semantic heading's optional numeric count fixed the
+  harness, not the application. Every browser closed in `finally`. Exact public
+  notice checks also passed separately through Node/tar byte comparisons.
+  Completed/main-contained/no-PR Website history/online validation refs and the
+  Shared online-UI ref were deleted. Owned old history helper/artifact scratch
+  was removed; other worktrees, original inputs, server and emulator were preserved.
+- Android published7d754ea3f4e9a0a1b463cd153f8a6ad6f807c522 with
+  independent Shared9b8845a21bb529268bba49ffbf6a44dece45a9ed unchanged.
+  Its real Favorites now has independent literal filtering, complete configured
+  expandable paging/query reset, retained viewport and reader/Android Back
+  context, without dropping unresolved typed references or incidental writes.
+  Successful explicit reader history remains enabled by its existing protocol.
+  Partial coverage: SEARCH-01, UX-13 and LIB-01, not full linguistic search.
+- The first full native run passed38 core/48 connected but failed two existing
+  history cases: an unnecessary navigation reset cleared reader selection.
+  Removing that reset preserved history and return behavior. Preparation-progress
+  thread affinity was also corrected. The final exact-tree `npm run config`
+  and `.\gradlew.bat :core:build :app:build :app:lintDebug :app:lintRelease
+  :app:connectedDebugAndroidTest --no-daemon --console=plain` passed38 core/
+  50 connected with zero failures/errors/skips; each lint reported52 warnings
+  and zero errors. App JVM remained NO-SOURCE. Hygiene76/YAML5/actionlint/
+  ShellCheck/whitespace passed. No source/media identity, schema or pin migration.
+- Native exact preflight39728901931 and main39729188660 passed at the same
+  SHA. Parent independently checked clean local/remote main and Shared, both
+  workflow conclusions and every named main step. Connected evidence remains
+  local, not CI. The owned main-contained/no-PR validation branch was deleted;
+  server5173 and emulator5556 stayed available. Production offline/language/
+  full-personal/signing/device-release gates remain open.
+- The combined publication/coverage handoff changed only this history and three
+  current guides. Its full `npm run check` passed90 units, fresh build/typecheck
+  and231 browser cases without failures/skips; Markdown20/local links199/
+  unchanged normative requirement rows153, strict YAML4, actionlint/ShellCheck
+  and whitespace passed. Native was not rebuilt for these Website-only guide
+  edits; its separately verified38/50 and exact-SHA CI evidence remain above.
+
+## 2026-10-22: Website successful-open history and personal v5
+
+- Archived the preceding v4 protocol: native40/control4, three stores, the
+  exact daasavaani-personal-storage/version4 envelope containing only control/
+  personal/lists, metadata-only initialization and future50 refusal. Reading
+  previously made no personal write and recents were unimplemented. V5 uses
+  native50/control5, a fourth recentHistory store/one history row and future60
+  refusal; every remaining old typed identity/text/order/accounting rule stays.
+- Independently adopted verified Shared9b8845a21bb529268bba49ffbf6a44dece45a9ed.
+  Its owner-approved default-on setting, existing50-entry bound, strict typed
+  logical schema/fixtures and bilingual labels drive Website behavior. Native
+  recent implementation is separate, not inferred from the Shared publication.
+- Native10/20/30 structurally preserve legacy references; native40 preserves
+  every typed favorite/list/occurrence/preference unchanged. Each migration
+  validates exact old schema/rows and old/prospective capacity, atomically adds
+  empty configured history and a fresh v5 epoch/revision0, or fully rolls back.
+  No prior opens are invented from favorites/lists. Invalid/newer/blocked/
+  over-capacity data is never reset or silently trimmed.
+- Successful explicitly opened real/fixture readers promote exact typed IDs
+  into a device-only distinct most-recent-first window. Preparation/catalog/
+  preview/unknown/failed routes do not record. Already-first and disabled opens
+  have no write/revision. No timestamps, queries, lyrics, URLs or catalog titles
+  are stored or exported. Unresolved references persist without implicit fetch,
+  and UUID-looking legacy references never resolve as real lyrics.
+- Recently opened and Settings provide independent clear/disable controls before
+  preparation. Disabled state retains entries/restarts; Clear retains enabled
+  state and all other records. Cross-tab clear/re-enable cannot manufacture
+  another open from a still-mounted reader. Quota failure is explicit and atomic
+  while verified canonical text remains readable; deliberate retry/reopen works.
+  Controls and reader return retain available focus without stealing focus from
+  navigation. History uses the existing complete personal transaction/fence and
+  exact UTF8 envelope accounting, including the actual64MiB boundary fixture.
+- Partial coverage: LIB-06, SET-04, QUAL-05, DATA-04 and UX-13. Selected-script/
+  offline/native history parity, bookmarks/learning/recitation, full backup and
+  release/platform acceptance remain separate. All original source files stay local.
+- `npm run build` first found an optional fixture-reader item guard and one
+  old Unicode test's missing history argument; proper guards/current fixtures
+  fixed them. Focused model tests passed22. Initial canonical/history browser
+  run passed14/failed25: immediate checkbox-helper assumptions did not wait for
+  the actual async commit, and the new setup had prevented an init-script hook
+  from running on a fresh document. Tests now click and await committed state,
+  with fresh-document isolation; no fake persistence or weakened assertion.
+  The repeated focused run passed39 cases.
+- Initial full `npm run check` passed85 units and210 browser cases but failed
+  the three list-origin snapshots because default-on history intentionally wrote
+  its row/header. Updated those assertions to permit exactly the verified
+  history/reference and one revision, still comparing every unrelated record
+  and preserving focus/unsaved context; further Back/Forward is fully no-write.
+  Added explicit quota/current-capacity/focus cases; focused `node
+  node_modules\@playwright\test\cli.js test recent-history lists --grep
+  'history|list-origin'` passed24 cases.
+- The next full run passed85 units/216 browser cases and failed3 desktop
+  cases. Two reported compressed-resource network/worker errors; captured
+  manifest bytes independently passed gzip CRC, declared length and SHA256.
+  No artifact corruption or definitive environmental cause was established.
+  Neither case was bypassed, retried automatically or given a longer timeout.
+  The clear-control focus failure exposed restoration scheduled before React
+  had necessarily committed the enabled fieldset. Restoration now runs after
+  the DOM commit, retains the existing hidden/navigation/focus-owner guards and
+  does not scroll the page. The three-case regression command with
+  `--repeat-each=3` passed27 viewport cases.
+- A subsequent full run passed85 units/218 browser cases and failed1 assertion:
+  its unscoped status locator also matched the concurrent fixture-validation
+  status. Scoped the existing exact-text assertion to Recently opened, without
+  suppressing either status. Added real commit/focus-movement/navigation
+  journeys proving restoration never steals focus. Combined history/migration
+  regression passed30 cases; final `npm run check` passed85 units and222
+  browser cases at configured concurrency, without retries or skipped tests.
+- Documentation/bootstrap validation passed20 Markdown files,197 local
+  links/anchors and all153 unchanged unique requirement IDs; the initial
+  checker pattern was corrected to include the existing A11Y family.
+  Strict YAML passed4 files, configured actionlint1.7.12 with ShellCheck0.11.0
+  and `git diff --check`/`git diff --cached --check` passed. The existing
+  advisory Vite chunk-size warning remains; this is not release/performance
+  acceptance. Native validation and publication are independently owned.
+- Prior documentation35ad0bb16d0b11985b93651244214f55d9005ef0 passed exact
+  preflight39715044951, main/build/Pages39716036863 and CodeQL39716036697.
+  Hosted application bytes remained identical to the previously verified
+  Favorites deployment. Completed main-contained validation branches and exact
+  owned deployment scratch were removed; user emulator/demo server were preserved.
+
+## 2026-10-22: native typed collections and actual cross-client handoff
+
+- Archived current Root descriptions of native read-only canonical reading,
+  preview-only imports, inability to save durable lists/occurrences and absent
+  native list-name behavior. Native Room3 now stores typed favorites and durable
+  lists/independent occurrences, with preserving upgrades, Unicode16 duplicate
+  confirmation/fences, v1/v2 previews/new-list save/saved-v2 exports and reader/
+  list navigation. Full personal collections/backup/offline parity remain open.
+- Android published4a89004c3c119fcab09099fc2d6482d176a5f640 with independently
+  pinned Shared7ad993c. Its agent ran `npm run config` and
+  `.\gradlew.bat :core:build :app:build :app:lintDebug :app:lintRelease
+  :app:connectedDebugAndroidTest --no-daemon --console=plain`: all builds/lints,
+  33 core and37 API36 connected tests passed without failures/skips. Hygiene69,
+  strict YAML5, actionlint and whitespace passed. Exact preflight39712923897
+  and main39713501257 passed; parent independently verified matching remote SHA,
+  clean tree and every required CI step including all-variant/JVM/lint build.
+  Connected checks are local evidence, not a claim that CI ran an emulator.
+- Actual Website worker-generated v2 gzip/link were consumed by native's real
+  codec and re-exported. Reverse verification decoded native's actual237-byte
+  gzip and actual URL through the built Website worker, independently decoded
+  gzip with Node/zlib and compared both to the exact mixed Shared fixture.
+  Native gzip SHA256 was
+  f0acf892c49e0c8cdd9bbfba5cf69ed410ea8991c9d026b6567288165e2dd7e9.
+  Actual Website file preview also succeeded with byte-equivalent native40
+  personal records and zero owner-content requests. No OS/App Links/receiving-app
+  delivery or production offline readiness is inferred.
+- Website Favorites bc5517d232a8abd357a37a105f3e32511fc5c0e7 passed exact
+  preflight39711835970, main/build/Pages39712144043 and CodeQL39712144152.
+  Hosted HTML/JS/CSS/notices/Unicode license matched the exact CI Pages artifact.
+  Fresh Chromium exercised49 actual owner-lyric favorites across all three
+  configured pages with new-page focus, exact available-title filtering/reset,
+  zero requests before consent,873 preparation requests for871 lyrics, unchanged
+  personal preferences/favorites and desktop/320px fit.
+- The owner selected default-on device-only Recently opened recording. Shared
+  defines the ordered distinct typed50-entry record and explicit clear/disable
+  behavior; consumer history implementation remains pending. No prior activity
+  is fabricated from existing favorites/lists. Owner originals remain untouched.
+- Shared9b8845a21bb529268bba49ffbf6a44dece45a9ed passed28 tests and exact
+  preflight39713315903/main39714010247 before further consumer adoption.
+  This handoff keeps the Website independently pinned7ad993c; history is not
+  yet exposed by this Website revision. Final `npm run check` for this
+  documentation handoff passed82 units and198 browser cases without failures,
+  skips or cancellations, including the unchanged fresh TypeScript/Vite build.
+- Documentation checks passed20 Markdown files,195 local links,153 unique
+  requirement IDs and4 strict YAML files; actionlint1.7.12/ShellCheck0.11.0
+  and Git whitespace passed. Temporary cross-client preview/browser helpers
+  were closed; the user's demo server/emulator were preserved.
+
+## 2026-10-22: independent real Favorites title browsing
+
+- Archived the preceding real Favorites presentation: it rendered every real
+  reference without paging or a title filter, while the adjacent fixture search
+  was not explicitly headed as legacy search. The real catalog already offered
+  literal title filtering and configured-size pages.
+- Shared the existing catalog paging/focus behavior with real Favorites:
+  independent queries/pages, complete reachability, first-new-result focus,
+  query reset and available reader-return context. Filtering uses only verified
+  in-memory titles; unresolved references remain reachable with an empty query.
+  No implicit download, personal schema/write, source change or language-search
+  claim is introduced. Existing generated English/Kannada labels are reused.
+- Partial requirement coverage: LIB-01/02 and UX-07/13. Production linguistic
+  search, full personal collections and release gates remain open.
+- `npm run build` passed strict TypeScript/production build. The initial full
+  `npm run check` passed82 units and195 browser cases but failed the three new
+  viewport cases because the seeded test preference used invalid capitalized
+  Light rather than the actual lowercase theme value; no application fallback
+  was added. After correcting the fixture, `node
+  node_modules\@playwright\test\cli.js test lyrics --grep
+  'real Favorites have independent'` passed3 cases. Final `npm run check`
+  passed82 units and all198 browser cases with no failed/skipped/cancelled
+  cases. Documentation/bootstrap checks passed20 Markdown files,195 local
+  links,153 unique requirement IDs and4 strict YAML files; actionlint1.7.12/
+  ShellCheck0.11.0 and Git whitespace passed. The Vite chunk warning remains
+  advisory; broad platform/language/performance/release acceptance is not claimed.
+- The preceding Website d2fb1bfe3e6e571948f5e54df5e042c7f0535cbb passed exact
+  preflight39709509872, main/build/Pages39709888619 and CodeQL39709889421.
+  Independent downloads matched the CI artifact's hosted HTML/JS/CSS/notices/
+  Unicode license bytes. Fresh standalone Chromium verified zero owner requests
+  before consent,873 preparation requests for871 lyrics, exact18 canonical/
+  layout rows and line IDs for003cdfdd-bc88-4c61-a120-3a7848aaaab4, unchanged
+  native40 personal tables, visible favorite control, desktop/320px fit and
+  no fixture notice or read-time request. Integrated-browser activation attempts
+  stalled; only the independent successful Chromium run is counted as live proof.
+
+## 2026-10-22: typed lyric favorites, personal v4 and minimal-list v2
+
+- Archived the preceding current Website limitations: real canonical reading
+  offered no favorite/list controls, personal native30/control3 retained string
+  favorites and v1 item entries, minimal transfers accepted only v1 and old
+  native10/20 upgrades retained rows while replacing only the v3 control fence.
+  The old logical envelope was fixture-personal-storage/version3; its current
+  successor has an explicitly independent typed version4. Unicode name matching
+  itself still requires no absent-key cache migration.
+- Adopted published Shared7ad993c8362231aec95bb1b980ebd3b386059488, after its
+  exact preflight39706619174 and main39706731354 passed. Shared adds separate
+  reference/transfer-v2/record-v2 schemas/types/fixtures/UI labels; frozen v1
+  schema files were independently byte-compared against the old Git versions.
+- Website now stores exact lyric versus legacyVideo favorites/occurrences,
+  preserving UUID-looking legacy values, raw names/user text/order/repetitions
+  and every old list/occurrence ID. Native10/20/30-to40 validates each actual old
+  schema and old/prospective accounting, then atomically writes typed rows and a
+  fresh epoch/revision0. Invalid, blocked, future50 and capacity failures preserve
+  the prior database. No title/video/media mapping or source migration occurs.
+- Explicit real-reader favorites and Add to list persist locally; unresolved
+  real/legacy favorites remain visible/removable without fetching content.
+  Lyric-ID forms and placeholder replacement preserve independent occurrence
+  IDs/fallbacks. Real and fixture lookups stay separate. List/Favorites origins
+  retain available focus/scroll and unsaved list editor state through reading.
+  Preparation remains explicit, complete and memory-only; reload still needs
+  consent. Reading itself causes no personal write or extra lyric request.
+- Worker codecs accept strict v1/v2 independently. V1 previews re-export their
+  original shape; confirmed v1 imports adapt only item-to-legacyVideo, allocate
+  fresh local IDs and export saved records as v2. All privacy/size/stream/UTF8/
+  duplicate-key/cancellation/revision rules remain; no lyric copies/local IDs/
+  catalog titles or silent v2 downgrade. No dependencies/toolchain were added.
+- Requirements covered partially: DATA-01/04, LIB-01/02/03/04/05/08/09/10/11,
+  XFER-01/02/03/04/05/06/08 and UX-13. Native parity, full personal collections/
+  backups, persistent offline lifecycle, language/media/publication and release
+  acceptance remain distinct work; original owner inputs are untouched.
+- `runTests` found no VS Code test adapter; the documented npm runner was used.
+  Focused `npm test -- personal-model list-transfer` passed27 tests. The first
+  `node node_modules\@playwright\test\cli.js test lists lyrics` passed129 and
+  failed6 assertions: saved snapshots correctly became v2, and a test helper
+  mistakenly counted lyric UUIDs as local occurrence IDs. Corrected only those
+  expectations/helper; a focused rerun of both affected journeys passed all6
+  viewport cases. Additional strict/current-capacity cases were added afterward.
+- Final `npm run check` passed all82 units and195 browser cases across desktop,
+  Pixel7 and320px, with strict TypeScript and a fresh production build from the
+  clean pinned Library fixture publisher. Zero failed/skipped/cancelled cases.
+  Vite reported its advisory500kB chunk-size warning; no timing/memory/release
+  performance pass is inferred. The Node documentation/bootstrap check passed20
+  Markdown files and153 stable requirement IDs; strict YAML passed4 tracked
+  Website files. Actionlint1.7.12/ShellCheck0.11.0 and Git whitespace checks
+  passed. No configured app lint suite exists beyond these documented checks.
+
+## 2026-10-22: official Unicode16 consumer adoption without stored-key rewrites
+
+- Archived the preceding current architecture: list matching used host NFC and
+  unicode-case-folding1.1.2 pinned by package manifests, and Website consumer
+  adoption was still pending. Inspection established that v3 stores only exact
+  raw names, not derived keys/profile caches. The approved Shared alternative
+  computes version-identified keys on demand; no database schema bump, invented
+  cache migration, automatic renaming/merging or personal-row rewrite is needed.
+- Website adopts the actual Shared Unicode16 tables in a strict TypeScript scalar
+  NFC/full C/F fold/NFC adapter. All create/import/rename/duplicate checks retain
+  the shared `listNameKey` path and existing transactional revision/confirmation
+  protocol. Existing newly equal names remain independent, while future mutations
+  use the new profile. Removed the obsolete package; no new dependency/toolchain.
+- Build verifies strict owned Unicode settings, manifest/table metadata, exact
+  table/vector sizes/SHA256 and original license SHA256. Production distribution
+  includes the byte-identical complete Unicode License V3 and notice link.
+  Future Vite native-config import warnings introduced during development were
+  corrected with explicit TypeScript extension/JSON import attributes.
+- The preceding real-reader Website8bf3fe8e29b65fb345cc7d6629bba75c3d393dee passed
+  exact preflight39686264004, main/build/Pages39686572031 and managed39686572514.
+  Live HTTPS desktop/mobile verification saw zero owner requests before consent,
+  873 preparation requests for871 lyrics, no read-time request, exact18-row
+  canonical/layout agreement for003cdfdd-bc88-4c61-a120-3a7848aaaab4, unchanged
+  personal stores and no overflow/fixture label.
+- Android independently published207a3ccad6c2f814b1d886b5b7f7f7cd1844a9d2 with the
+  same Unicode16 profile, unchanged Shared pin and no persisted list-name-key
+  migration to invent. Full build/lint,31 core and21 API36 connected tests passed,
+  including official normalization/folding conformance; exact preflight39686343042
+  and main39686945416 passed. Parent verified main SHA and required job steps
+  including all-variant/JVM/lint build, hygiene/YAML/whitespace. Durable native
+  lists remain a separate open slice.
+- Website `npm.cmd install --package-lock-only --ignore-scripts --offline
+  --no-audit --no-fund` updated only the removed dependency. An independent
+  structural comparison proved every other lockfile field unchanged.
+  `npm run build` passed; `npm test -- unicode-names` initially passed38
+  cases before adding the host-normalization prohibition case.
+- Final `npm run check` passed75 unit tests, strict TypeScript/Vite build and
+  all171 desktop/Pixel7/320px browser cases with no failures/skips/cancellations.
+  Adapter coverage executes33 Shared vectors, all comparisons/invalid units,
+ 199650 official normalization equations and1112064-scalar folding. The first
+  full run exposed three stale browser assertions requiring the removed
+  unicode-case-folding license; they now require the new Unicode16 notice and
+  refuse the obsolete package. The repeated full run passed.
+- `node node_modules\@playwright\test\cli.js test lists --grep
+  'official Unicode16|new Unicode16'` passed all6 new browser journeys.
+  Fresh-build tests compared the distributed license bytes exactly, verified
+  newly equal raw-name records remain independent/unchanged at native DB30,
+  and verified old-package collision splitting plus explicit rename/reuse
+  confirmation/cancellation. No resource/table or personal-cache migration was
+  fabricated.
+- Strict YAML parsing passed4 tracked files; Node stdin documentation checks
+  passed20 Markdown files and153 stable requirement IDs; Shared hygiene passed64
+  tracked files. actionlint1.7.12/ShellCheck0.11.0 and both whitespace checks
+  passed. The existing bundle-size advisory remains; no performance or full
+  production-language/persistence/release readiness is claimed.
+
+## 2026-10-22: reviewed canonical publication and separate real readers
+
+- Archived the preceding current-guide statements: this application was described
+  as fixture-only; all source import/migration remained unauthorized; lyric-ID
+  schemas/adapters/readers were described as unimplemented; portable Unicode
+  name-matching resources were a prerequisite still to be selected/completed.
+  Those were the prior state, not standing prohibitions on the subsequently
+  approved owner-text import/publication and official Unicode16 work.
+- Owner reviewed/approved all supplied lyric text, selected complete approved
+  author-editable fields with unknown text/collections empty and Source Latin
+  assessments null, and authorized the strict explicit-credit-footer adapter.
+  Library preserved originals and the earlier imported identities. The adapter
+  recovered642 additional records:871 published,125 exceptions still held
+  (122 ambiguous returning-Kannada, one encoding, one control and one missing
+  initial Kannada section). All996 original names/lengths/SHA256 values remained
+  unchanged; none were tracked or committed.
+- Shared8bd8793afb9f2fd43d52b62bc5436bbd4da1b0ce published complete optional source
+  fields, neutral reviewed prelaunch labels and official Unicode16 personal-name
+  resources/reference conformance. Its25 tests,199650 normalization equations,
+  exhaustive1112064-scalar folding and hygiene/workflow checks passed; exact
+  preflight39679248387 and main39679540067 passed before consumer adoption.
+  Advancing the Website pin does not migrate its legacy derived name keys.
+- Library source PR DaasaVaani/library#5 passed39681512307 and merged normally
+  to c2837ccf383b976a1e2d20928ff018256270551c. Main39681697398 and post-merge
+  publication/deployment39681751052 passed. Live descriptor and all871 encoded/
+  decoded objects validated against schemas/hashes/paths/identities:16406 line
+  IDs and5164 layout rows, manifest
+  `0b48b8b5ce5c1c1546f19746eae73c0a9248c65ff3dba97ff0b57db2ff8c0a7d`.
+  Earlier229 public summaries/item references remained exactly unchanged.
+  Website independently pins that clean fixture-tool producer without relaxing
+  the immutable revision guard.
+- Native real canonical reading published as7258cbc8e537314d56d1c4e4edfa76ab55a469e1;
+  full core/build/lint/connected validation and exact preflight39680994491/
+  main39681394329 passed. Expanded live871-item preparation and newly added
+  lyric reading matched canonical text/layout; personal DB/WAL/shared-memory
+  files remained byte-identical. This is memory-only read-only preview evidence.
+- Website adds separately consented complete-publication preparation, bounded
+  concurrent hash/size/schema/identity validation, literal title filtering/
+  complete paging and canonical UUID reading with cancellation/retry and
+  in-session navigation continuity. Real routes do not write fixture personal
+  data or display fixture-only failure/notice UI. Production on-demand PWA
+  reading, typed personal migration, full language/metadata/offline/publication
+  protocols and release gates remain open.
+- Website final functional `npm run check` passed36 unit tests, strict TypeScript/
+  Vite production build and165 browser cases across desktop/Pixel7/320px, with
+  no failed/skipped/cancelled cases. The existing bundle-size advisory remains.
+  `npm test -- lyric-publication` passed6 loader cases; the initial focused
+  `npm run test:e2e -- lyrics --project=desktop` actually exercised all15 new
+  cases across all three projects because this environment's npm argument
+  forwarding omitted the project flag.
+- `python shared\tools\check_repository.py` passed64 Shared tracked files
+  (not a Website-root hygiene claim). `node --input-type=module` stdin checks
+  passed20 tracked Website Markdown files for UTF8/newlines/whitespace/local
+  links/anchors/fences and all153 distinct requirement IDs; the checker was
+  corrected to include digit-bearing I18N IDs. Strict Node/YAML parsing passed
+  all4 tracked YAML files. actionlint1.7.12 with ShellCheck0.11.0 and both
+  `git diff --check`/`git diff --cached --check` passed.
+- Local production-preview actual hosted-feed reading requested873 objects
+  after consent (descriptor, manifest,871 items), then zero additional objects
+  on Read. The newly recovered003cdfdd-bc88-4c61-a120-3a7848aaaab4 rendered all18
+  canonical/layout rows exactly as its public item, with unchanged personal
+  stores and no desktop overflow. Visual inspection found and removed a redundant
+  fixture-only "canonical test text" eyebrow; regression coverage now rejects it
+  on the real route. An npm preview argument-forwarding failure and an owned
+  port4173 conflict were resolved with the direct Vite CLI/explicit helper stop;
+  neither failed startup was counted as validation. Final full suites passed
+  with the isolated runner's own server and unchanged strict port policy.
+
+## 2026-10-22: confirmed video-independent lyric identity
+
+- Owner confirmed the proposed permanent lyric UUIDv4 model, optional reviewed
+  zero-or-more videos/images, media-independent owner-supplied text eligibility
+  and stable favorites/list/bookmark references. Documented the authoritative
+  Shared contract, target minimal-list v2 with typed lyric/legacy entries,
+  unchanged v1 semantics, compatibility, rollout and acceptance obligations.
+  No runtime/schema/type/codec, Shared pin, source file or personal record changed.
+  Source import/ID assignment/renaming/migration remain separately unauthorized.
+- Archived the preceding product requirements: Item meant one YouTube video
+  identified by video ID; DATA-01/02 required one keyed source/file per video;
+  DATA-04 traced every record to a video; video URL/ID, channel and upload date
+  were mandatory source information. LIB-02 treated each performance as separate
+  video identity; LIB-10 prohibited video-ID deduplication; UX-07 canonical links
+  were video-based; SEARCH-03's final tie-break and publication flow used video
+  identity. Current fixture/v1 implementations still retain their legacy rules,
+  but the approved production target no longer requires media or a Latin slug.
+- Preserved153 requirement IDs while changing the approved identity meaning;
+  existing thumbnail-missing/readability and source-review safeguards remain.
+  The selected IDE fixture text/source was not altered.
+- The preceding strict-settings consumerc778eee9692352576af9d934dc35357c6cccdd15
+  passed full30 unit/150 browser checks, exact preflight39661691970/
+  main39662183657 including Pages and managed39662186525. Those checks do
+  not prove the new lyric-identity target, which remains documentation only.
+- Documentation batch `npm run check` passed30 unit tests, strict TypeScript/
+  Vite build and all150 browser cases against fresh synthetic artifacts.
+  The bundle-size advisory remains. These unchanged fixture suites are not
+  target lyric-ID/optional-media/v2 migration acceptance evidence.
+
+## 2026-10-21: strict publication-settings adoption and native preview evidence
+
+- SET-01/02 audit traced current Website settings to their build/runtime
+  consumers and recorded remaining production/native/Unicode inventory gates.
+  Replaced a hand-written publication guard that admitted missing fields,
+  unknown numeric keys and future versions with the strict Shared schema.
+  No configured value or fixture-publisher pin changed.
+- Sharedb6423e0cb7780312469f0652fcb4cee5e2e6c14d was independently
+  adopted only after15 tests/deterministic generation,42-file hygiene,
+  generated/schema drift, strict5 GitHub YAML files/actionlint/ShellCheck/
+  whitespace and exact preflight39660329233/main39660412788 passed.
+  Timeout ceiling/+1 and unsupported capability declarations have negative
+  fixtures; safe structural bounds are not measured platform capacity.
+- Android published native preview/re-export mainc810c66e21faff7876753e93de5403cc76fda823
+  with independent Sharedadd95cb8f9beadc0f1250d73d710b1f656d4ca37.
+  Agent reported `npm run config` plus complete core/debug+release builds,
+  both lints and connected gate:14 core/16 API36 tests, zero failures/skips;
+  app JVM tests have no sources. Hygiene/actionlint/ShellCheck/YAML/Markdown/
+  whitespace passed and the prepared emulator demo was restored.
+  Exact required preflight39659011076/main39659386990 jobs were directly
+  verified successful for that SHA. Native codec vectors/preview are not
+  durable Save, verified App Links or real provider/recipient delivery.
+- Native durable-list follow-up stopped before edits: no portable versioned
+  full casefold/canonical-normalization data was available in its pinned Shared.
+  No platform-dependent lowercase/ICU fallback or false parity was introduced.
+- First complete consumer check passed30 units and149 of150 browser cases:
+  the duplicate-name journey selected the already-visible first list before the
+  second creation's observer snapshot arrived, correctly receiving a stale fence
+  refusal. Its setup now awaits the newly committed second list's visible row
+  before capturing the first list; no sleep/retry or stale-write bypass was added.
+- The exact repaired journey passed30 stress cases (ten per configured
+  viewport), followed by full `npm run check`:30 units, strict TypeScript/Vite
+  and150 browser cases. Six changed Markdown files' UTF8/whitespace/fences/
+  local links/anchors, all153 requirement identities and actionlint/ShellCheck/
+  Git whitespace passed. Existing bundle-size advisory remains.
+
+## 2026-10-21: persistent Website appearance parity and v3 migration
+
+- UX-11/SET-04/I18N-01/QUAL-06 receive bounded Website evidence for Light/Dark/
+  Warm/Follow device. Initial theme remains configured Light; system changes
+  affect only the explicit `device` mode and do not write personal data.
+- Adopted Shared4a01aea65d884fa8a48861123e4eebc7468ec23f only after14 tests,
+  deterministic generation,41-file hygiene/strict YAML/drift/whitespace and
+  exact preflight39655710221/main39655798431 passed. Used the new defaults
+  schema rather than extending hand-written duplicated setting guards.
+- Archived the preceding current protocol: native IndexedDB20/control and
+  complete logical envelope formatVersion2, Light/Dark-only personal themes,
+  and the v1 native10-to20 upgrade. Current native30 accepts and atomically
+  validates native10/20 migration inputs, preserves all personal/list/occurrence
+  values and refreshes a v2 writer's local epoch/revision before new-mode writes.
+  No full backup or downgrade/reset format was introduced.
+- Archived Light border#d6dcd0 and Dark border#405448. Raised interactive
+  boundary contrast and added the configured Warm palette; numeric text/accent/
+  highlight/boundary checks cover all palettes, not a physical font/device audit.
+- Incremental personal-model validation passed14 tests. Browser build then
+  exposed a test helper's missing unknown-object guard, which was fixed without
+  casts. Initial focused browser validation passed18 of21: a previously future
+  test still opened native30, now the current schema. Advanced that test to40
+  so it actually exercises future-version refusal, not an unchanged current DB.
+  Focused rerun passed17 model/palette unit tests and all21 browser cases.
+- Full `npm run check` passed30 unit tests, strict TypeScript/Vite and all150
+  browser cases across desktop, Pixel7 and320px against a fresh fixture build.
+  The existing bundle-size advisory remains; no production font/performance/
+  accessibility certification or complete offline lifecycle is implied.
+- Replaced stale validation-table statements that native Room favorites/
+  preferences and browser share adapters were absent. Their bounded current
+  evidence is now distinguished from pending native lists/real delivery.
+- Published64e2b145c433c0257bdd628c16c60f9ad0f6dce6 after exact
+  preflight39658385686/main39658946021 including Pages and managed
+  39658947181's two analyses passed. Live public HTTPS desktop/Pixel7 checks
+  confirmed configured Light default under dark media, Follow device changes
+  with every personal table unchanged, Warm persistence and independent
+  Kannada UI/canonical reading; saved both appearance screenshots.
+- Changed Markdown UTF8/whitespace/fences/local links/anchors and all153
+  unique requirement IDs passed; actionlint/ShellCheck and Git whitespace
+  checks passed. A scratch requirement counter initially omitted I18N's
+  digit-bearing prefix; corrected that validator, not the unchanged requirements.
+- Removed six exact-tip, main-contained validation branches with no open PR:
+  Shared search-pagination-ui/native-list-preview-ui/ui-appearance-defaults/
+  native-provider-feedback and Website list-platform-sharing/search-pagination.
+  No unrelated/unmerged branch or worktree data was removed.
+
+## 2026-10-21: reachable complete browser result pages
+
+- SEARCH-01/07/12 and UX-13 receive additional fixture evidence. Found the
+  Browser view sliced matching results to one configured page with no way to
+  reach later hits. Added explicit complete ranked pagination, count feedback,
+  first-new-result keyboard focus, query reset and retained reader-return pages.
+  Reused Publication's exact-ID map instead of a catalog scan per hit.
+- Worker errors now remove stale result cards and do not also claim a successful
+  no-matches search. Complete production profile/filter/excerpt/offline/native
+  search conformance remains open; no full requirement closure is implied.
+- Adopted Shared9bc4c4a14db60681dca2803d536e835f99f35955 after13 local
+  tests/generation/hygiene/strict YAML and exact preflight39652252965/
+  main39652342488 passed. Android retains its independently selected91d3310 pin.
+- A focused run exposed Node ESM's extension requirement for the test-only AJV
+  import; corrected the import and JSON attribute without installing anything.
+  All nine focused cases passed against independently hashed synthetic artifacts
+  using the actual20/40/41-result boundaries, including independent Favorites,
+  keyboard/history focus, query reset and worker-failure recovery.
+- Full `npm run check` passed24 unit tests, strict TypeScript/Vite and all138
+  browser cases. Synthetic line identities are unique across the expanded
+  fixture; the permitted canonical test text is not linguistic/release proof.
+- Parallel Android main0214139e6419c2d2ecd25461de63f713fb99a7e9 independently
+  pinned Shared91d33100fce2f2bb7f1ea98a5ebc566fcf1690b5 after upstream
+  preflight39650044785/main39650129581. The native agent reported
+  `npm run config`, complete core/debug+release builds, both lints and
+  `connectedDebugAndroidTest` passing4 core/15 API36 device tests, with no
+  failures/skips; app JVM tests have no sources. Exact native preflight39651208545
+  and main39652054401 were directly verified successful for that SHA.
+  Native demo was restored. Archived the roadmap's blanket pending "Room personal
+  state": only favorites/preferences are durable, not list/backup/offline parity.
+- Revisionb584ec8359cee2903ce20387004b042971818fa2 passed exact
+  preflight39653541250/main39653864937 including Pages deployment and
+  managed39653865086's two analyses. Real public desktop/Pixel7 journeys
+  confirmed search/reading/Back behavior; public data remains three synthetic
+  items, while complete20/40/41 paging uses independently hashed test artifacts.
+
+## 2026-10-21: explicit browser snapshot sharing and copy
+
+- XFER-01/02/06/08 receive bounded Website adapter evidence, not native parity,
+  OS/receiving-app interoperability or release readiness. Reused the existing
+  immutable minimal snapshot outputs; no upload, personal write or new codec.
+- Adopted additive Shared UI revisionff0b5e0e309f2ebf7764f00f89e623739d9a4e00
+  only after13 local tests/hygiene/generation and hosted preflight39644345080/
+  main39644453635 passed.
+- Added explicit clipboard/link/file actions, capability checks, honest handoff/
+  cancellation/permission/unsupported feedback, unchanged manual fallbacks,
+  pending-confirmation dismissal and stale-completion fencing. Archived the
+  roadmap's preceding blanket pending "platform share adapters" limitation:
+  browser adapters exist; real sharing-surface evidence remains pending.
+- First incremental strict build rejected a DOM function-presence conditional;
+  changed to a runtime `typeof` capability check. A later browser-server startup
+  refusal exposed a test locator's generic element type; added an actual input
+  guard before checking selection. Neither failed check was counted as a pass.
+- Focused adapter validation initially passed12 of15 cases: three tests assumed
+  a previous successful-save link survived the intentional save-confirmation
+  reset. Switched those journeys to the persistent Lists navigation; all three
+  focused cases then passed, followed by full `npm run check`:24 unit tests,
+  strict TypeScript/Vite and all129 browser cases across the three viewports.
+  Actionlint1.7.12/ShellCheck0.11.0, six Markdown files' UTF8/whitespace/local
+  links and Git whitespace checks passed. The bundle-size advisory remains.
+- Revision0ec1127cd4f471754e8b4c911b04ea0304373710 passed exact
+  preflight39650690878 and main39651089339 including Pages deployment.
+  Managed39651089746 passed both required analyses. Live HTTPS desktop and
+  Pixel7 tests used the actual clipboard APIs with isolated granted browser
+  permissions, compared copied bytes with the generated link and confirmed all
+  personal tables unchanged. Captured desktop/mobile screenshots; real OS file/
+  link sharing and recipient delivery remain unverified, not claimed successful.
+
+## 2026-10-21: catalog-aware personal lists and reader integration
+
+- Continued authorized Website slices while the owner separately requested
+  parallel Android implementation. Android's bounded personal foundation is
+  independent; no native completion or pin update is inferred here.
+- Shared catalog-only UI prerequisites53bdb9b9907c3d2711b7118c7dc13484c37f41f1
+  passed13 tests/deterministic generation,40-file hygiene,5-file strict YAML,
+  drift/whitespace, preflight39642082787 and main39642180022 before adoption.
+- Resolved known catalog IDs without fetching lyrics, kept unknown/pending/
+  placeholder states distinct, retained user fallback labels and never copied
+  catalog titles into records or exports. Only explicit saved-entry Read fetches
+  a lyric. Added explicit revision-bound reader-to-list occurrence creation.
+- Preserved list selection, draft name and exact occurrence focus/scroll while
+  visiting a list-origin reader; retained direct/new-tab Library fallback.
+- Initial full validation passed24 unit tests and111 of114 browser cases.
+  Three recovery cases used the nonexistent English button name "Retry";
+  corrected the selector to the generated "Try again" rather than changing UI
+  wording or weakening the no-write recovery assertion. The focused three-
+  viewport recovery check then passed.
+- Final `npm run check` passed24 unit tests, strict TypeScript/Vite build and
+  all114 browser cases across desktop, Pixel7 and320px, including real
+  no-prefetch catalog resolution, retry, repeated reader additions, stale-choice
+  refusal and measured list-reader scroll/focus restoration. Existing workflow
+  lint and Git whitespace checks passed; the main-chunk advisory remains visible.
+- Exact preflight39643821488 and main39644140388 completed required lint/web
+  jobs and Pages deployment forcb0fc7e6dc198259b75b0c040f0b21a8a884d3f6.
+  Managed39644139822 completed both Actions and JavaScript/TypeScript analyses.
+- Real public HTTPS desktop/Pixel7 journeys verified catalog-only known/unknown/
+  placeholder preview, no lyric fetch before explicit Read, saved-list return and
+  independently decompressed exact minimal gzip. The first probe incorrectly
+  omitted the return link's visible arrow from an exact accessible-name selector;
+  corrected the probe, not the product, before both live journeys passed.
+  Integrated-browser tooling timed out; standalone Playwright supplied the
+  actual browser checks instead.
+- Archived the preceding roadmap/coverage limitation "catalog resolution" was
+  pending and "Lists do not yet resolve catalog details". Older architecture
+  "No catalog details/lyrics are fetched" meant the preceding identifier-only
+  slice: current details use already-validated in-memory summaries, not lyric
+  fetches. Native parity, recitation, offline snapshots and full backups remain open.
+
+## 2026-10-21: verified personal-list and first-use publication
+
+- Final behavior revisionc1dbc8361095dad95d7b8dcbd06957d80b376606 passed
+  exact preflight39636526499 and main39636788578: Workflow lint, Fixture web
+  build and tests, and Pages deployment all completed successfully. Managed
+  run39636789555 completed both Actions and JavaScript/TypeScript analyses.
+- Final-tree `npm run check` passed23 unit tests, strict TypeScript/Vite build
+  and all99 browser cases over desktop, Pixel7 and320px. Actionlint1.7.12 with
+  ShellCheck0.11.0, six changed Markdown files' UTF8/whitespace/fences/local
+  links/anchors, all153 unchanged requirement identities and staged whitespace
+  checks passed. The existing main-chunk advisory was not hidden.
+- Standalone Playwright Chromium against public HTTPS passed desktop and Pixel7:
+  explicit list Save, independent placeholder edit/move, preserved focus,
+  actual gzip download compared with Node zlib, and the exact same-document
+  exported-link round trip that previously failed. Public kn-IN first-use and
+  explicit English override/reload also passed. Temporary contexts were closed.
+- Captured current public synthetic-list desktop/mobile screenshots in the
+  session artifacts. They are fixture demonstrations, not reviewed content,
+  full accessibility evidence, native parity or release readiness.
+- Website's committed and checked-out Shared gitlink both matched published
+  `db5c49bd9e2dc830f4364862c3e4464584c0c3af`, with clean checkouts.
+  Library/Android worktrees and their independent Shared pins were unchanged.
+  Removed only known main-contained validation branches after required main
+  checks; unmerged work/open-PR branches were preserved.
+
+## 2026-10-21: browser first-use UI language
+
+- Implemented I18N-02 for the web fixture client: select the first supported
+  primary language in browser preference order, including regional/script tags;
+  use browser language if the preference list is empty and configured English
+  when none is supported. Stored explicit preferences remain authoritative.
+- Used one pure default resolver plus the browser adapter consistently for
+  initial rendering, absent stored preferences and the first personal mutation.
+  No automatic preference write, lyric-script switch or theme reset was added.
+- `npm run check` passed23 unit tests, strict TypeScript/Vite and all96 browser
+  cases, including ordered regional preferences, fallback, empty preference list,
+  explicit override/reload, dark-theme retention and canonical Kannada.
+- Archived the preceding coverage-table limitation "Browser/device first-use
+  selection" was pending. Native first-use and full localization conformance
+  remain open; this does not claim device parity.
+- Saved-list export commit54db66feebad681f08366e5528999102d23787e9 passed
+  preflight39632998514 and main39633308148 including both required jobs and
+  Pages deployment. Explicit approved manual-main recovery acceptance was
+  dispatched separately as39635501893; dispatch alone is not a pass.
+- The actual `workflow_dispatch` run39635501893 passed Workflow lint, full web
+  build/tests and Pages deployment at54db66f, verifying the approved main-only
+  recovery mode without weakening checks. Both managed analyses39633308509 passed.
+- Real public export verification caught a same-document route bug after an
+  edited/moved saved list: valid gzip/link bytes decoded independently, but preview
+  failed until reload. The parent had captured `window.location.hash` outside
+  router updates. A location-aware route now derives the current complete hash,
+  retaining invalid query/hash suffixes for explicit rejection.
+- A first screenshot probe failed before running because an inline JavaScript
+  Windows path needed `String.raw`; the corrected live probe exposed the actual
+  route bug above. The smaller unchanged-list probe was insufficient, so retained
+  the exact edited/moved open-path regression rather than accepting reload as a fix.
+- Final `npm run check` passed23 unit tests, strict TypeScript/Vite and all99
+  browser cases including same-document navigation and no-write invalid suffixes.
+  No full live round-trip success is claimed for the unfixed public revision.
+
+## 2026-10-21: stable-read saved-list export
+
+- Continued after occurrence commit5045c6626b902b814e6d2c59f50cd02604a5b301:
+  preflight39630823613 and main39631092056 passed, including Pages deployment.
+- Extracted the existing worker export UI for both imported previews and saved
+  lists. Stored exports use transactional validated snapshots, exclude IDs and
+  all unrelated personal/control state, ignore unsaved form drafts and recheck
+  epoch/revision after encoding before offering output.
+- Added no-write cancellation/stale handling, preserved explicit privacy warnings
+  and complete file fallback for oversized links. Starting export clears pending
+  save confirmation, preserving mutual exclusion with decoder/Save controls.
+- `npm run check` passed22 unit tests, strict TypeScript/Vite and all84 browser
+  cases across desktop/Pixel7/320px, including actual gzip downloads and local
+  link reopening, post-encode concurrent mutation, worker termination, full-table
+  equality, stored-name selection and high-entropy lossless fallback.
+- Archived the preceding README/roadmap/coverage limitation "saved-list export
+  UI" was incomplete. Native transfer, catalog resolution, share adapters,
+  recitation, production migrations and recoverable full backups remain open.
+
 ## 2026-10-21: independent web list occurrences
 
 - The owner approved an explicit main-only manual deployment recovery mode
