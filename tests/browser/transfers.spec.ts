@@ -2,6 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { readFileSync } from "node:fs";
 import { strictYaml } from "../../shared/tools/generate-catalog.mjs";
+import { replaceWorkerScript } from "../worker-script";
 
 const fixtures = JSON.parse(readFileSync(new URL("../../shared/fixtures/personal/list-transfer.json", import.meta.url), "utf8"));
 const snapshot = fixtures.accepted[1].value;
@@ -68,7 +69,8 @@ test("worker preview preserves ordered plain text, exports a file/link and opens
   const notices = await page.request.get("/third-party-licenses.md");
   expect(notices.status()).toBe(200);
   expect(await notices.text()).toContain("pako");
-  expect(await notices.text()).toContain("unicode-case-folding");
+  expect(await notices.text()).toContain("Unicode 16.0.0 personal-name data");
+  expect(await notices.text()).not.toContain("unicode-case-folding");
   const workerNotice = await page.request.get("/pako-license.txt");
   expect(workerNotice.status()).toBe(200);
   expect(await workerNotice.text()).toContain("Copyright");
@@ -77,7 +79,7 @@ test("malformed, newer and oversized inputs show errors and leave personal data 
   await page.goto("/#/settings");
   await expect(page.getByRole("heading", { name: "List snapshot preview" })).toBeVisible();
   const before = await records(page);
-  for (const buffer of [Buffer.from("not gzip"), gzipSync(JSON.stringify({ ...snapshot, formatVersion: 2 }))]) {
+  for (const buffer of [Buffer.from("not gzip"), gzipSync(JSON.stringify({ ...snapshot, formatVersion: 3 }))]) {
     await page.getByLabel("Choose a list file").setInputFiles(file(buffer));
     await expect(page.getByRole("alert")).toContainText("Invalid or unsupported");
     await expect(page.getByRole("heading", { level: 3 })).toHaveCount(0);
@@ -94,9 +96,7 @@ test("cancelling a pending worker terminates it without saving a preview", async
   await page.goto("/#/settings");
   await expect(page.getByRole("heading", { name: "List snapshot preview" })).toBeVisible();
   const before = await records(page);
-  await page.route("**/*list-transfer.worker*.js", route => route.fulfill({
-    contentType: "text/javascript", body: "self.onmessage = () => {};",
-  }));
+  const restoreWorker = await replaceWorkerScript(page, "list-transfer.worker", "self.onmessage = () => {};");
   const workerCreated = page.waitForEvent("worker");
   await page.getByLabel("Choose a list file").setInputFiles(file(gzipSync(JSON.stringify(snapshot))));
   const worker = await workerCreated;
@@ -106,6 +106,7 @@ test("cancelling a pending worker terminates it without saving a preview", async
   await expect(page.getByRole("status")).toHaveCount(0);
   await expect(page.getByRole("heading", { level: 3 })).toHaveCount(0);
   expect(await records(page)).toEqual(before);
+  await restoreWorker();
 });
 test("list preview remains usable when the library endpoint is unavailable", async ({ page }) => {
   await page.route("**/demo/latest.json", route => route.abort());

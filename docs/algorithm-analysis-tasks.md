@@ -27,6 +27,29 @@ explicitly selected below remain **candidates for analysis**, not approvals. Pre
 directions such as code-point OSA, one global JSON/gzip index, additive ranking,
 Sanscript, ZIP STORE, Room/Dexie and explicit snapshot activation.
 
+The current [bounded canonical online reader](lyric-preview.md#online-loading-and-failure-behavior)
+validates catalog metadata in time linear in its decoded size, then uses expected
+O(1) exact-ID map lookup. An uncached object requires O(E + D + L)
+decoding/text/line validation (encoded bytes E, decoded bytes D, line/layout records L);
+unrequested lyric text is not loaded. Retained memory scales with catalog metadata,
+verified requested content and in-flight decoder work, under the owning logical
+encoded/decoded ceilings. Failed/aborted reservations are released without
+activating content. These logical bounds are not allocator/peak-heap or full
+production/offline proofs. Literal title filtering remains a catalog scan, not
+the reviewed linguistic search algorithm.
+
+Website [current-state backup v1](architecture.md#same-platform-personal-backup-v1)
+uses off-UI bounded gzip/JSON validation in O(E+D+N) time for encoded bytes E,
+decoded bytes D and personal records N, plus object-key canonical sorting.
+Typed-reference/occurrence uniqueness and duplicate-name preview use sets/maps;
+array order and raw user text are not normalized. Logical and prospective
+database accounting both apply. Atomic replacement checks a captured revision
+and allocates a fresh fence; it neither merges nor resolves missing identities.
+Retained decoded candidates, preview text, structured-clone messages and bounded
+compression chunks are additional live allocations: wire ceilings are not
+measured peak-heap guarantees. Native restore and crash/device evidence remain
+separate work.
+
 Priority is a proposed analysis order, not an approved delivery commitment:
 **A** = resolve correctness/feasibility or data-preservation risks early;
 **B** = resolve before the owning implementation slice. Work can proceed
@@ -53,7 +76,7 @@ Past alternatives, review chronology and validation outcomes belong only in
 | S15, S18 B, S19 B, S20-S21, S27 B | Same-platform full backups, native font units, gzip files, explicit personal-data bounds, preview revision checks and fresh local fencing; Android system backup remains best effort | Exact personal schema, bounded staging/accounting and crash/concurrency tests |
 | S16, S22 | Retain published readers within the initial supported release line; UTC millisecond instants, at least 168 hours before recommendation and 72-hour successful-check suppression | Decoder/migration fixtures, capability table and clock-anomaly handling |
 | S38 | All numeric PERF-01 to PERF-04 targets are best-effort goals, not hard implementation/release gates | Report actual latency/LCP/INP/CLS and regressions; no benchmark pass claimed |
-| S43 C-end, S44-S47 | One canonical Kannada fence; reviewed verse UUID/end-line metadata; code-point Source Latin ranges and complete alignment before anchored features; grouped frontmatter; opaque URL-safe video IDs of 1-128 characters | Exact source schemas, authoring diagnostics and language tables |
+| S43 C-end, S44-S47 | One canonical Kannada fence; reviewed verse UUID/end-line metadata; code-point Source Latin ranges and complete alignment before anchored features; grouped frontmatter; permanent lyric UUID with optional reviewed media and distinct legacy references | Exact source schemas, authoring diagnostics, identity adapters and language tables |
 | S42 | Native dependency/toolchain manifests, catalogs, wrappers and lockfiles are an explicit exception to settings-only ownership | Keep one authoritative pin, not a duplicated settings value |
 | S48 B | Generated renderings use target-script decimal digits, Latin ASCII, without changing numeric value/verse identity; canonical source remains unchanged | Complete reviewed digit tables and independent expectations |
 | S49-S51 | Search-only ignore ZWJ/ZWNJ strictly between Kannada virama and a reviewed Kannada consonant; common/compact ASCII branches fold A-Z only; ordinary letter/mark/decimal runs plus reviewed technical grammar | Exact context/category/version tables, staged pipeline, control rejection and cross-client fixtures |
@@ -78,6 +101,9 @@ silent truncation, false success or weaker validation.
   enumerated substring/full-matrix oracle. This is not exhaustive completeness
   proof or reviewed technical/profile/joiner conformance. Native parity coverage
   is limited; there is no capacity/benchmark result.
+  Browser projection reuses the per-publication exact-ID map in O(hits), rather
+  than scanning the catalog for each hit. Explicit policy-sized UI pages expose
+  the complete computed ranking; paging does not truncate the engine's hit set.
 - ALG-07: fixture-only safe-integer canonical JSON, deterministic gzip/hash objects
   and policy binding exist. Tests cover LF/CRLF identity, strict parsing, repeated
   grams and byte/hash reproducibility. The production semantic ledger, receipts,
@@ -88,11 +114,39 @@ silent truncation, false success or weaker validation.
   browser worker/cancellation/preview-no-write cases exist. Explicit web import
   uses transactional new-list-only persistence with repeated independent IDs,
   duplicate-name confirmation and revision/epoch checks. Native codec
-  interoperability and signed-link sharing remain incomplete.
-- ALG-15: fixture web-list writes have deterministic complete-envelope UTF8
-  accounting, atomic collection/identity checks, non-destructive v1 migration and
+  v2 client-generated codec interoperability has actual round-trip evidence;
+  OS delivery and signed-link sharing remain incomplete.
+- ALG-15: typed web-list writes have deterministic complete-envelope UTF8
+  accounting, atomic collection/identity checks, non-destructive v1..v7-to-v8 migration and
   stale revision/epoch refusal. Actual configured byte/collection boundaries have
   executable coverage. Full recoverable backup/replacement is not implemented.
+- ALG-07/08: the separate canonical publication reader preplans descriptor,
+  manifest and every item against aggregate/count limits before bounded worker
+  downloads. All objects must validate before activation; cancellation aborts and
+  settles siblings. Literal title filtering/paging exposes the full prepared
+  catalog, not production linguistic search or a ZIP/persistent-snapshot planner.
+  See the [preview guide](lyric-preview.md).
+- Official Unicode16 personal-name normalization/folding resources and independent
+  conformance fixtures drive the actual web/native adapters. Website checks the
+  official normalization equations/full scalar folding and derives versioned
+  keys on demand; raw-name v8 records have no cached key to migrate. Stable
+  insertion ordering is O(d squared) worst case/O(d) storage for decomposed name
+  length d, bounded by personal-name policy. This is not linguistic search
+  normalization, a performance benchmark or permission to merge/rename lists.
+- Recent history uses an explicit ordered typed window, not wall-clock sorting:
+  promotion/filtering is O(r) time/storage for the configured at-most50 distinct
+  references; schema uniqueness can require O(r squared) bounded comparisons.
+  Disabled/already-first opens produce no write/revision. Complete prospective
+  personal-state validation/accounting remains transactional; rolling-window
+  eviction does not authorize migration truncation or truncating other collections.
+- Learning assignments use an explicit Set for O(l) typed uniqueness validation,
+  not schema `uniqueItems` whole-object comparisons, which cannot reject
+  conflicting labels and can be quadratic at configured10000 assignments.
+  Lookup, change/clear copying, filter and paging scan the bounded ordered array
+  in O(l) time with O(l) temporary references; complete personal accounting is
+  still required in each transaction. Same-label/absent-clear actions are no-op.
+  View rendering resolves summaries only from existing exact-ID maps and issues
+  no content requests. This is not assessed progress, verse Practice or full backup.
 - ALG-05/06/08-13: complete algorithms are not implemented. Basic verified online
   reading and process-local Android preparation are not aligned transliteration,
   a ZIP planner, persistent activation/GC, ingestion or recoverable personal backup.
@@ -199,7 +253,8 @@ evidence is not established.
   tags/form/category 40, context labels 20, context description 10 and lyrics 5.
   Sum the best field weight per distinct query term; repeated occurrences,
   aliases and renderings do not inflate it. After field totals compare worst
-  term edit count, then total term edits, then ASCII video ID. Term quality
+  term edit count, then total term edits, then ASCII canonical lyric ID. Existing
+  fixture indexes retain their versioned legacy identity semantics. Term quality
   comes from the same winning-weight field, without a whole-word/prefix bonus.
 - **Analysis needed:** formalize score/evidence records and safe execution of
   AND evidence spread across fields/lines, and safe filter/top-page execution
@@ -412,10 +467,19 @@ source migration, live ingestion or automatic updates to reviewed items.
 
 ### ALG-14: Bounded list encoding and decoding
 
+Web saved-list export uses the [typed personal protocol](architecture.md#web-typed-personal-storage-v8):
+one validated read transaction, minimal allowlist projection, bounded worker
+encoding, then epoch/revision recheck before exposing the independent snapshot.
+This supplies partial stable-read/no-write/cancellation evidence, not native
+round trips, platform share interoperability or full-backup exportability.
+
 - **Requirements:** LIB-08-11, XFER-01-08, QUAL-05/06.
 - **Already fixed:** versioned JSON, raw deflate and base64url in a hash fragment;
   distinct gzip UTF-8 JSON files ending `.dvlist.json.gz`. The list format marker
-  is `daasavaani-list`, with independent initial version 1. Complete URL ceiling
+  is `daasavaani-list`, with frozen legacy v1 and typed lyric/legacy v2 families.
+  Website re-exports v1 previews unchanged, adapts confirmed v1 imports only by
+  discriminant and exports saved typed records as v2. No guessed mapping or
+  silent downgrade. Complete URL ceiling
   is 2,048 ASCII characters; encoded/decoded file ceilings are 9/8 MiB.
   Oversized links offer lossless file fallback.
   Require one gzip member, valid checksum/length and no trailing bytes; absolute
@@ -435,7 +499,7 @@ source migration, live ingestion or automatic updates to reviewed items.
 
 ### ALG-15: Recoverable backup replacement and capacity accounting
 
-The [web fixture storage protocol](architecture.md#web-fixture-personal-storage-v2)
+The [web typed storage protocol](architecture.md#web-typed-personal-storage-v8)
 supplies partial executable accounting/migration/fencing evidence only. It is not
 the full-backup format and does not establish backup exportability or replacement.
 
@@ -500,7 +564,7 @@ validation must be settled before implementation.
 ### MED-01: Restricted source grammar and diagnostics
 
 - **Requirements:** DATA-02/03/07/08, CI-01/02.
-- **Approved source direction:** root format/video identity with grouped
+- **Approved source direction:** root format/permanent lyric UUID identity with grouped
   `public`, `provenance` and `review` frontmatter; source-only evidence is not
   automatically confidential in a public source repository. Use one canonical
   Kannada fence and `public.verses` records containing persistent verse UUIDs
@@ -508,9 +572,10 @@ validation must be settled before implementation.
   marks. A single pipe can occur inside a line and never implies a new line or
   full verse. Authoring tools may propose boundaries for human review; the
   publisher uses persisted declarations, not newly inferred boundaries.
-  Initial video IDs are opaque case-preserved ASCII letters/digits/underscore/
-  hyphen strings of length 1-128; source URL and ID must agree. Offline imports
-  preserve well-formed unresolved IDs without network existence claims.
+  Follow the [lyric identity contract](https://github.com/DaasaVaani/shared/blob/main/docs/lyric-identity.md)
+  for `<lyricId>.md`, owner-supplied provenance, optional reviewed media and typed
+  legacy references. No fake video IDs, inferred matches or automatic source
+  migration. Offline imports preserve unresolved IDs without existence claims.
 - **Analysis needed:** define a deterministic AST-validation pass over the
   selected Markdown/YAML parsers: allowed nodes, required sections, closed
   fences, UUID uniqueness and reference checks. Separate legitimate incomplete/
@@ -574,6 +639,12 @@ validation must be settled before implementation.
   items/placeholders, moving/removing one occurrence, duplicate/import order and
   cancelled duplicate-name confirmation. Confirmed equal names remain separate
   lists. Cross-platform transfer decoding remains ALG-14.
+- **Current Website REC-03:** array position preserves every independent
+  occurrence; movement is O(1), with no deduplication/skip/wrap. Captured/live list
+  comparison is O(entries), checking exact ordered occurrence IDs/kinds/raw values
+  and name; any change ends the session rather than reanchoring. Typed catalog/
+  cache lookups remain exact. This supplies session navigation, not MED-07
+  persisted-position recovery or durable offline/readiness evidence.
 
 ### MED-06: Bounded recently-opened history
 
@@ -598,6 +669,14 @@ validation must be settled before implementation.
   retain location, ambiguous splits/removals do not guess. Repeated songs resume
   the exact occurrence; switching lists replaces the sole recitation position.
   No similarity reanchoring, per-list resume or exact lyric-scroll restoration.
+- **Executable Website slice:** Shared exact-pair vectors drive strict shape and
+  resolution checks. Current-list lookup is linear in list count, followed by a
+  linear exact occurrence-ID search; equal references are never substitutes.
+  Writes validate current full list contents, epoch and all six personal stores
+  in one transaction, with full prospective-byte admission before cursor change.
+  Browser journeys cover restart/no autoentry, reorder/replacement/deletion,
+  empty-list preservation, rollback/retry and cancellation behind an actual
+  database lock. Full-backup inclusion and reviewed verse positions remain open.
 
 ### MED-08: Session navigation and pending destinations
 
@@ -660,10 +739,16 @@ validation must be settled before implementation.
 ### MED-12: Shell updates and safe activation
 
 - **Requirements:** PLAT-01/06, OFF-03/12/17, CI-03/05.
-- **Analysis needed:** define notification/deduplication states around Workbox's
-  selected normal worker lifecycle, old controlled windows and focus-time
-  rechecks. Specify shell resource coverage and route/fetch exclusions so code
-  updates do not become automatic Library downloads or content replacement.
+- **Current executable boundary:** the [Website shell protocol](architecture.md#web-app-interface-shell-and-normal-updates)
+  defines the settings-owned cache-byte ceiling/visible-focus interval, complete
+  compiled/lazy/legal resource allowlist, narrow navigation fallback, waiting
+  notice and explicit unsupported/error/retry states. The
+  [installation protocol](architecture.md#web-installation-metadata-and-original-icons)
+  defines stable base-owned identity, original maskable/touch artwork and the
+  metadata/image validation boundary. Code updates neither download
+  Library artifacts nor force activation/reload or write personal data.
+- **Remaining analysis:** installation/platform/eviction and full compatible
+  schema/active-content upgrade coordination, including persistent offline readiness.
 - **Evidence/dependencies:** D1 build output, D7 scope/routes and compatible local
   schemas; multiple controlled windows, deferred activation, offline lazy chunks
   and preserved personal/active content. No forced skipWaiting/reload; fetch

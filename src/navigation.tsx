@@ -13,7 +13,8 @@ export function NavigationContinuity() {
     return () => { history.scrollRestoration = previous; };
   }, []);
   useLayoutEffect(() => {
-    const isBrowsing = location.pathname === "/" || location.pathname === "/favorites";
+    const isBrowsing = location.pathname === "/" || location.pathname === "/favorites" || location.pathname === "/lists" ||
+      location.pathname === "/lyrics" || location.pathname === "/recent" || location.pathname === "/learning";
     const position = entries.current.get(location.key) ??
       (isBrowsing ? browsing.current.get(location.pathname) : undefined);
     let restored = false;

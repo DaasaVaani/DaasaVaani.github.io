@@ -6,7 +6,8 @@
   [AI development guide](docs/ai-development.md), [current design](docs/design-decisions.md)
   and [validation policy](docs/testing-and-release.md).
 - This repository owns the Website/PWA and product requirements. The application
-  has a fixture-only initial implementation. Staged implementation is authorized;
+  has isolated fixture features and a real text-only prelaunch reader.
+  Staged implementation is authorized;
   close remaining production gates before their owning slices and never equate
   synthetic demos with full requirement, linguistic or release conformance.
 - Use this root file as the single repository-wide AI instruction entrypoint.
