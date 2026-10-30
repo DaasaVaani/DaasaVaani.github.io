@@ -1,5 +1,55 @@
 # Documentation history
 
+## 2026-10-30: owner-approved main integration and temporary main-only pushes
+
+- The owner requested merging completed implementation work into main across
+  Website, Shared, Library and Android, explicitly including Shared backup
+  captions/privacy and excluding Dependabot and the deferred Library workflow.
+  Existing branch references and independently pinned Shared revisions remain.
+- The owner explicitly authorized existing administrator direct-main permission
+  after full validation until final release, without changing protections.
+  Updated each root AI entrypoint and the authoritative maintenance/validation
+  guidance. This does not authorize production activation, source migration,
+  system-backup activation, force pushes or deletion.
+- Superseded operating guidance used validation-branch pushes to obtain hosted
+  checks before main publication, with optional dispatch if a Website branch
+  push did not schedule. New pushes now target main only, with full local checks
+  before publication and exact-SHA hosted main verification afterward.
+- Live inspection found active no-force/no-delete and PR/check rulesets in all
+  repositories; the existing repository-admin role5 permission was retained.
+  Website's currently configured reviewer discrepancy remains a release gate.
+- The owner subsequently directed leaving other old branches untouched and
+  confirmed publication of the latest completed Library/Android batches only
+  after full validation. Fetch main again before every publication.
+- Website `npm ci` failed at the configured package mirror with404 for locked
+  `serialize-javascript@7.1.4`; `npm view serialize-javascript@7.1.4 dist.tarball`
+  also returned404. Recovery
+  `npm ci --registry=https://registry.npmjs.org --fetch-retries=0 --fetch-timeout=30000`
+  failed TLS negotiation, as did native
+  `curl.exe --head --fail --location --max-time 30 https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-7.1.4.tgz`.
+  No dependency version/integrity or TLS verification was weakened. Local full
+  Website app build/tests did not run; failed installation left local packages
+  incomplete. An attempted `python tools\check_repository.py` also failed because
+  Website has no such configured script; it is not a hygiene pass.
+- The owner explicitly approved a one-time documentation-only validation
+  exception for exactly AGENTS.md, HISTORY.md, docs/maintenance.md and
+  docs/testing-and-release.md: run available local documentation/YAML/lint/
+  whitespace checks, publish main, then require full hosted checks. This is not
+  an exception for implementation, dependency, Library or Android changes.
+- Installed actionlint1.7.12 with ShellCheck0.11.0 and
+  `git --no-pager diff --check` / `git --no-pager diff --cached --check` passed.
+  Final local documentation and strict YAML checks follow this result-record
+  update; hosted checks must verify the exact published SHA, not dispatch alone.
+- The final pre-publication fetch found a new upstream main commit22b3f6e;
+  `git merge --ff-only origin/main` integrated its workflow-only update without
+  altering the four-file local exception scope. Library/Android fetches found
+  no unintegrated main updates.
+- Final `node -e` strict `yaml.parseDocument(...,{uniqueKeys:true})` validation
+  using already installed Shared yaml2.9.1 passed all4 Website workflow/settings
+  YAML files. An inline `python -` check of exactly the four changed documents
+  passed UTF8, final-newline, conflict-marker and local Markdown-link checks.
+  Actionlint/ShellCheck and staged/unstaged whitespace checks passed again.
+
 ## 2026-10-25: owner-requested publication of retained Website evidence
 
 - The owner requested committing and pushing all pending changes and explicitly

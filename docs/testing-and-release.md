@@ -15,6 +15,10 @@
 - Validation is separate from authorization to commit/push and from GitHub rules.
   Record exact commands/results, tested revisions/conditions and limitations only
   in each repository's HISTORY.md. Current guides list commands/policy, not past runs.
+- Until final release, use the owner-approved
+  [temporary main-only workflow](maintenance.md#current-operating-policy) after
+  full validation. Existing administrator permission changes push routing only;
+  it does not waive suites, authorize force pushes or close release/source gates.
 
 ### Documentation-only exception
 

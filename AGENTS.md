@@ -69,6 +69,10 @@
 - Validation does not authorize a push. Obtain authorization, respect current
   branch protections and never bypass checks. A temporary admin direct-main
   exception is not a standing release-policy or publisher-bot exemption.
+- Until final release, publish authorized implementation changes only to `main`
+  using the existing owner-approved administrator permission after full
+  validation. Follow [the temporary workflow](docs/maintenance.md#current-operating-policy);
+  do not change protections, force-push or waive production/source-review gates.
 
 ## Execution and handoff
 
