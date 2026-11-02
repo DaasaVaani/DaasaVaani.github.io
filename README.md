@@ -23,6 +23,13 @@ publisher, with explicit indexed-search consent, canonical Kannada reading,
 transactional favorites and independent interface-language/theme preferences.
 First use follows the first supported browser-language preference, falling back
 to configured English; an explicit saved language overrides browser preferences.
+The [optional first-use panel](docs/architecture.md#non-blocking-first-use-setup)
+offers UI language, theme, reading size and density without blocking direct links.
+Cancel leaves existing choices unchanged; Skip records only the skipped state.
+Setup is editable later in Settings and never implies downloaded lyrics.
+Unavailable script/helper, preview and full offline-download capabilities are
+explained explicitly. Website personal v9 preserves all earlier data and includes
+setup state in web-only full-backup v2; v1 imports remain supported as setup pending.
 Light, Dark, Warm and Follow device appearance choices persist locally. System
 light/dark changes affect only Follow device, without changing personal records,
 UI language or canonical text.
@@ -85,9 +92,11 @@ personal data, including the saved recitation pair. Files are not encrypted and
 contain personal settings, lists and activity; nothing is uploaded. Restore is
 atomic, preserves identities and unresolved records, and refuses stale previews
 without merging. An installed interface can perform this locally offline.
-See the [backup protocol](docs/architecture.md#same-platform-personal-backup-v1).
-Native backups, future bookmarks/Practice and durable offline recitation remain
-incomplete; personal backups contain no lyric content or offline-readiness state.
+See the [backup protocol](docs/architecture.md#same-platform-personal-backup-v2).
+Native has a separate manual personal-backup implementation; Android system-backup
+activation is intentionally deferred. Future bookmarks/Practice and durable offline
+recitation remain incomplete; personal backups contain no lyric content or
+offline-readiness state.
 Shared generates the English/Kannada UI resources; Android has separate real
 text-only preparation/reading and fixture features with typed Room favorites,
 durable lists/independent occurrences, recent history, learning labels, preferences and locale/theme controls.

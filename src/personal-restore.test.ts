@@ -11,7 +11,7 @@ function contents(): PersonalContents {
   const legacy = { kind: "legacyVideo" as const, videoId: lyric.lyricId };
   const list = newList({ format: "daasavaani-list", formatVersion: 2, name: "  Raw replacement  ",
     entries: [lyric, lyric, { kind: "placeholder", text: "  <b>literal</b>  " }] });
-  return { personal: { ...defaultPersonal(), language: "kn", theme: "warm", fontSize: 42, density: "relaxed", favorites: [legacy, lyric] },
+  return { setupStatus: "pending", personal: { ...defaultPersonal(), language: "kn", theme: "warm", fontSize: 42, density: "relaxed", favorites: [legacy, lyric] },
     lists: [list], history: { enabled: false, entries: [lyric, legacy] },
     learning: { entries: [{ ...legacy, label: "practising" }, { ...lyric, label: "wantToLearn" }] },
     recitation: { position: { listId: list.id, entryId: list.entries[1]!.id } } };
@@ -23,8 +23,9 @@ function refuses(action: () => unknown, code: string) {
 test("confirmed replacement copies the complete allowlist without merging or importing writer fences", () => {
   const state = initial(), candidate = contents(), before = structuredClone({ state, candidate });
   const next = replacePersonalContents(state, candidate, state.control);
-  expect(next).toEqual({ ...candidate, control: next.control });
-  expect(next.control).toMatchObject({ formatVersion: 8, revision: 0 });
+  const { setupStatus, ...personalContents } = candidate;
+  expect(next).toEqual({ ...personalContents, control: { ...next.control, setupStatus } });
+  expect(next.control).toMatchObject({ formatVersion: 9, revision: 0 });
   expect(next.control.epoch).not.toBe(state.control.epoch);
   expect(next.lists).not.toBe(candidate.lists); expect(next.personal).not.toBe(candidate.personal);
   candidate.lists[0]!.name = "Mutated after selection";

@@ -417,11 +417,11 @@ for (const mode of ["valid", "extra-field", "extra-index"] as const) test(`v7 pr
   } else {
     await expect(savedPosition(page).getByText(labels.noRecitationPosition, { exact: true })).toBeVisible();
     const after = await personalSnapshot(page);
-    expect(after.version).toBe(80);
+    expect(after.version).toBe(90);
     expect(after.schema).toEqual({ ...before.schema, recitationPosition: { keyPath: "id", autoIncrement: false, indexes: [] } });
     for (const name of ["personal", "lists", "recentHistory", "learningLabels"]) expect(after.tables[name]).toEqual(before.tables[name]);
     expect(after.tables.recitationPosition).toEqual([{ id: "recitation", position: null }]);
-    expect(after.tables.control).toEqual([{ ...before.tables.control[0], formatVersion: 8, revision: 0, epoch: after.tables.control[0].epoch }]);
+    expect(after.tables.control).toEqual([{ ...before.tables.control[0], formatVersion: 9, setupStatus: "pending", revision: 0, epoch: after.tables.control[0].epoch }]);
     expect(after.tables.control[0].epoch).not.toBe(before.tables.control[0].epoch);
     await page.reload(); await expect(savedPosition(page)).toBeVisible();
     expect(await personalSnapshot(page)).toEqual(after);

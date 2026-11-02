@@ -107,6 +107,15 @@ all configured projects and the intended worker count.
 On a resource-constrained local host, the same complete browser command may use
 `--workers=1` instead. This changes scheduling only: keep all projects, tests,
 assertions and existing time limits; incomplete or failed runs remain blockers.
+The complete unit command may likewise use `npm test -- --maxWorkers=2` to avoid
+concurrent large byte-boundary fixtures exhausting local scheduling resources.
+This changes only scheduling; retain every test and its existing timeout.
+`npm test -- first-use personal-backup personal-model` and
+`node node_modules\@playwright\test\cli.js test first-use personal-backup app-shell --workers=2`
+are incremental first-use checks, not finalization substitutes. They cover pending/
+completed/skipped setup, preserving v8 migration, draft cancel/atomic save/skip,
+quota/stale-tab refusal, independent v1/v2 backup adaptation and installed-interface
+offline completion with no lyric requests or false readiness.
 The replacement prerequisite maps to XFER-09 and REC-04:
 `npm test -- personal-restore recitation-position personal-model` checks the
 complete allowlist, copying, fresh fences, exact byte admission and rejection

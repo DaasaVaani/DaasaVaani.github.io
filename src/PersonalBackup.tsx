@@ -92,6 +92,9 @@ export function PersonalBackup({ labels, store }: { labels: Labels; store: Perso
         <dt>{labels.lists}</dt><dd>{data.lists.length}</dd>
         <dt>{labels.recentHistory}</dt><dd>{data.history.entries.length}</dd>
         <dt>{labels.learning}</dt><dd>{data.learning.entries.length}</dd>
+        <dt>{labels.firstUseStatus}</dt><dd>{candidate.value.formatVersion === 1 ? labels.firstUsePending
+          : candidate.value.data.setupStatus === "completed" ? labels.firstUseCompleted
+            : candidate.value.data.setupStatus === "skipped" ? labels.firstUseSkippedStatus : labels.firstUsePending}</dd>
         <dt>{labels.savedRecitationPosition}</dt><dd>{data.recitation.position
           ? `${data.recitation.position.listId} / ${data.recitation.position.entryId}` : labels.noRecitationPosition}</dd>
       </dl>

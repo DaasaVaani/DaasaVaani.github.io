@@ -21,7 +21,8 @@ test("all Shared web vectors round trip losslessly with independent gzip; native
       expect(value).toEqual(sample);
       expect(JSON.parse(gunzipSync(codec.encode(value)).toString("utf8"))).toEqual(sample);
       expect(codec.encode(value)).toEqual(codec.encode(value));
-      expect(makeBackup({ control: newControl(), ...backupContents(value) }, value.exportedAt)).toEqual(value);
+      expect(makeBackup({ control: newControl(), ...backupContents(value) }, value.exportedAt))
+        .toEqual({ ...value, formatVersion: 2, data: { ...value.data, setupStatus: "pending" } });
     } else {
       refuses(() => codec.decode(bytes(sample)));
       refuses(() => codec.encode(sample));
@@ -51,7 +52,7 @@ test("unset preferences remain absent rather than saving rendered defaults or wr
 });
 test("rejects duplicate typed references, globally duplicate occurrences, invalid dates and lone surrogates", () => {
   const sample = codec.decode(bytes(samples[1]));
-  const invalid: WebBackup[] = [
+  const invalid: unknown[] = [
     { ...sample, exportedAt: "2026-02-30T00:00:00.000Z" },
     { ...sample, data: { ...sample.data, favorites: [...sample.data.favorites, sample.data.favorites[0]!] } },
     { ...sample, data: { ...sample.data, history: { enabled: false, entries: [...sample.data.history.entries, ...sample.data.history.entries] } } },

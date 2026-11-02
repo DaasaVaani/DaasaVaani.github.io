@@ -305,13 +305,13 @@ for (const mode of ["valid", "invalid-row", "invalid-schema", "over-capacity"] a
     } else {
       await expect(region(page).getByText(labels.emptyLearning, { exact: true })).toBeVisible();
       const after = await personalSnapshot(page);
-      expect(after.version).toBe(80);
+      expect(after.version).toBe(90);
       expect(after.schema).toEqual({ ...before.schema, learningLabels: { keyPath: "id", autoIncrement: false, indexes: [] },
         recitationPosition: { keyPath: "id", autoIncrement: false, indexes: [] } });
       expect(after.tables.recitationPosition).toEqual([{ id: "recitation", position: null }]);
       for (const name of ["personal", "lists", "recentHistory"]) expect(after.tables[name]).toEqual(before.tables[name]);
       expect(after.tables.learningLabels).toEqual([{ id: "learning", entries: [] }]);
-      expect(after.tables.control).toEqual([{ ...before.tables.control[0], formatVersion: 8,
+      expect(after.tables.control).toEqual([{ ...before.tables.control[0], formatVersion: 9, setupStatus: "pending",
         epoch: after.tables.control[0].epoch, revision: 0 }]);
       expect(after.tables.control[0].epoch).not.toBe(before.tables.control[0].epoch);
       await page.reload(); await expect(region(page)).toBeVisible();

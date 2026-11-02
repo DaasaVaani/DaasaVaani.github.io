@@ -70,7 +70,7 @@ Initial values and exact field bounds belong only in the linked owning files.
 | Owner/source and keys | Current application and validation | Compatibility/open work |
 | --- | --- | --- |
 | [Web settings/schema](../settings/web.schema.json): `base`, `descriptorUrl`, `canonicalBaseUrl`, `listLinkPath`, `listFileName` | Strict build-time settings; fixture artifact entry and minimal-list URL/file projection | Public route/origin changes require old-link/hosting review; distinct real-publication settings below never reinterpret fixture formats |
-| [Web settings/schema](../settings/web.schema.json): `lyricPreview.descriptorUrl`, `pageSize`, `maxItems`, `maxEncodedBytes`, `maxDecodedBytes`, `concurrentRequests` | Credential-free absolute HTTPS endpoint, verified metadata/catalog count, bounded requested-item cache/in-flight byte reservations and complete paging; complete-preparation helper retains whole-plan/concurrent-worker validation | Separate prelaunch `lyric-preview-v1`, on-demand online memory-only lifecycle; no persistent offline or complete production-profile claim; see the [reader lifecycle](lyric-preview.md#online-loading-and-failure-behavior) and independent personal v8 protocol below |
+| [Web settings/schema](../settings/web.schema.json): `lyricPreview.descriptorUrl`, `pageSize`, `maxItems`, `maxEncodedBytes`, `maxDecodedBytes`, `concurrentRequests` | Credential-free absolute HTTPS endpoint, verified metadata/catalog count, bounded requested-item cache/in-flight byte reservations and complete paging; complete-preparation helper retains whole-plan/concurrent-worker validation | Separate prelaunch `lyric-preview-v1`, on-demand online memory-only lifecycle; no persistent offline or complete production-profile claim; see the [reader lifecycle](lyric-preview.md#online-loading-and-failure-behavior) and independent personal v9 protocol below |
 | [Web settings](../settings/web.yml): `transferChunkBytes`, `listCompressionLevel` | Byte allocation/compression controls passed to the dedicated codec worker; schema and actual-ceiling codec tests | Encoding choices do not narrow accepted valid input or change decoded/text limits |
 | [Web settings](../settings/web.yml): `databaseName` | Build-time Dexie/native IndexedDB identity | Changing it is not a migration; it would strand the prior database and requires explicit compatibility handling |
 | [Web settings](../settings/web.yml): `fontFamily`, `readerFontSize`, `readerFontSizeMin`, `readerFontSizeMax`, `readerFontSizeStep`, `readerLineHeights`, `space`, `contentWidth`, `readerWidth`, `themes` | Typed CSS tokens, lyric-only bounded font/density preferences, system fonts, three palettes and measured contrast checks; portable density choices/default come from Shared | Onboarding/helper/script/Recite/Practice/offline integration and physical-device/font conformance remain incomplete |
@@ -250,7 +250,7 @@ snapshot readiness. Chromium manifest parsing/installability diagnostics and
 pixel/geometry tests do not prove OS installation, iOS/Safari/Firefox behavior,
 launcher/update rendering, signed Android association or the full platform matrix.
 
-## Web typed personal storage v8
+## Web typed personal storage v9
 
 This is the executable Website protocol for typed favorites/preferences and
 logical lists, recent history, learning labels and latest recitation position,
@@ -262,17 +262,17 @@ owns list/occurrence fields. All six tables share the configured personal DB:
 | --- | --- |
 | `personal` | Zero or one `{id:"personal", favorites, language, theme, fontSize, density}`; favorites are exact typed lyric/legacy references, unique by kind plus case-sensitive ID; absent row means first supported browser language plus validated configured defaults |
 | `lists` | Independently identified Shared list records; entry array order is authoritative |
-| `control` | Exactly one `{id:"state", formatVersion:8, epoch, revision}`; fresh local UUIDv4 epoch and nonnegative safe-integer revision |
+| `control` | Exactly one `{id:"state", formatVersion:9, epoch, revision, setupStatus}`; fresh local UUIDv4 epoch, nonnegative safe-integer revision and `pending\|completed\|skipped` first-use preference |
 | `recentHistory` | Exactly one `{id:"history", enabled, entries}`; ordered unique typed references following the [Shared logical history record](https://github.com/DaasaVaani/shared/blob/main/docs/recent-history.md) |
 | `learningLabels` | Exactly one `{id:"learning", entries}`; ordered unique typed assignments following the [Shared learning-label contract](https://github.com/DaasaVaani/shared/blob/main/docs/learning-labels.md); absence from `entries` means unassigned |
 | `recitationPosition` | Exactly one `{id:"recitation", position:null\|{listId,entryId}}` following the [Shared position contract](https://github.com/DaasaVaani/shared/blob/main/docs/recitation-position.md); exact local UUIDv4 identities, including structurally valid unresolved pairs |
 
 ### Opening and migration
 
-Native IndexedDB version80 is the typed v8 schema. Supported migration inputs
+Native IndexedDB version90 is the typed v9 schema. Supported migration inputs
 are native version10 (personal-only v1), version20 (three-table v2) and version30
 (three-table v3), version40 (typed three-table v4), version50 (four-table v5)
-and version60 (four-table v6), plus version70 (five-table v7).
+and version60 (four-table v6), version70 (five-table v7), and version80 (six-table v8).
 Open at the exact native version **before** opening Dexie,
 which can otherwise retry a newer version and patch missing schema parts.
 Native upgrade creates only the specified stores/header, validates legacy
@@ -283,7 +283,7 @@ old opaque-string favorites/v1 entries before structural adaptation. Convert
 favorites only to typed legacy references and `item` only to `legacyVideo`,
 retaining every raw ID, list/occurrence UUID, name, fallback, repetition and order.
 UUID-looking old IDs are never lyric aliases. Write converted rows and a fresh
-v8 epoch/revision0 together. Version40 validates its exact typed schema/old
+v9 epoch/revision0 together. Version40 validates its exact typed schema/old
 accounting; version50 additionally validates and preserves its exact history,
 including disabled state and unresolved typed references. Version60 additionally
 preserves exact font/density values. All preserve every existing typed value and
@@ -292,8 +292,10 @@ font/density defaults; absent rows remain absent. Upgrades from versions10..40
 create empty initially-enabled history; no activity is inferred from collections.
 Pre-v7 upgrades initialize only empty learning labels, never inferring
 assignments from favorites, history or lists; version70 preserves its existing
-labels. Every upgrade adds only a null recitation position, never reconstructing
-activity. Future90 and unfamiliar native
+labels. Pre-v8 upgrades add only a null recitation position, never reconstructing
+activity; version80 preserves the exact saved pair. All upgrades add only
+`setupStatus:"pending"` and a fresh writer fence, not fabricated completion or
+download consent. Future100 and unfamiliar native
 schemas are refused. The longer representation can exceed capacity:
 abort rather than truncate/relax limits. New-mode or typed values mislabeled as
 older schemas are invalid. Any failure aborts the entire schema transaction.
@@ -383,7 +385,7 @@ request through movement. Escape/Exit/Back end mode and restore the original
 mounted list/editor drafts and start control. A same-path history token creates
 the explicit Back boundary, but cannot recreate mode through Forward/reload.
 Settings/navigation departure also ends it. Mode ownership is never persisted;
-the separate v8 position record supports only explicit Continue, not automatic entry.
+the separate v9 position record supports only explicit Continue, not automatic entry.
 
 The selected occurrence alone loads content. Canonical entries reuse the
 verified catalog/selected-object cache, lazily loading metadata when necessary;
@@ -441,8 +443,9 @@ explanation and normal explicit list/entry selection, never first/equal-referenc
 fallback. Reload/Forward/foreground never enter mode or acquire wake ownership.
 Original list/editor DOM and the initiating control remain the return context.
 Minimal v1/v2 exports exclude this record and local IDs. Website
-[backup v1](#same-platform-personal-backup-v1) separately includes the exact pair
-and identities; native backup remains open. This position slice alone does not
+[backup v2](#same-platform-personal-backup-v2) separately includes the exact pair
+and identities; native has its separately validated manual backup adapter.
+This position slice alone does not
 complete REC-04/XFER-09 or durable offline readiness.
 
 ### Personal schema refusal
@@ -470,8 +473,9 @@ The [Learning view](lyric-preview.md#local-learning-labels) reads local assignme
 before preparation without requests. Filtering/pagination scan the bounded
 ordered collection; unresolved IDs remain editable. Only an explicit Read may
 load canonical content. Minimal exports exclude labels, as they exclude history.
-No label mutation replays an exposed reader's history. Website backup v1 includes
-the exact assignments; native backups and reviewed verse Practice remain open.
+No label mutation replays an exposed reader's history. Website backup v2 includes
+the exact assignments; native manual backup has an independent adapter.
+System-backup activation and reviewed verse Practice remain open.
 
 ### Transactions, names and exact accounting
 
@@ -496,7 +500,7 @@ locale, trim, lowercase or moving package table participates. Strict build check
 bind the pinned Shared settings/manifest/table/vector/license bytes; complete
 Unicode License V3 is included in the distribution.
 
-The v8 database stores raw names only, not derived keys or profile caches.
+The v9 database stores raw names only, not derived keys or profile caches.
 Compute this explicit profile on demand without rewriting any name, ID, occurrence,
 reference, order, preference or header. Existing names that now compare equal
 remain independent and opening a database does not ask for destructive repair.
@@ -571,7 +575,7 @@ same-document navigation from a saved list must decode the newly selected link,
 not depend on a reload or unrelated personal-state render.
 
 The exact logical accounting envelope, serialized as compact UTF8 JSON without
-BOM, is `{format:"daasavaani-personal-storage",formatVersion:8,control,personal,lists,recentHistory,learningLabels,recitationPosition}`.
+BOM, is `{format:"daasavaani-personal-storage",formatVersion:9,control,personal,lists,recentHistory,learningLabels,recitationPosition}`.
 Key order is the order shown; header keys follow the table above. `personal` is
 an empty array or one row with keys `id,favorites,language,theme,fontSize,density`. `lists` is sorted
 by ASCII UUID; row keys are `id,name,entries`. Favorite keys are `kind,lyricId`
@@ -599,7 +603,8 @@ history and only `id,favorites,language,theme` preferences. Validate that frozen
 old representation before constructing/counting new reading defaults.
 Old v6 uses its exact version6 envelope with font/density and history but no
 learning property. Old v7 includes its exact learning row but no recitation
-property. Every migration then validates the complete prospective v8 envelope,
+property. Old v8 uses its exact six-table envelope without `setupStatus`.
+Every migration then validates the complete prospective v9 envelope,
 including the null position row and preserved or initially empty labels.
 Transport decoding never selects a database
 version. Unmodified v1 previews re-export v1; confirmed v1 imports structurally
@@ -629,18 +634,46 @@ bounds, but apply a returned value only while the observer's current epoch still
 matches the initiating epoch. A late old-command return cannot overwrite restored
 preference rendering.
 
-### Same-platform personal backup v1
+### Non-blocking first-use setup
 
-Settings implements the [Shared v1 wire contract](../shared/docs/full-personal-backup.md)
-for all current Website v8 personal fields. New personal features require a
-versioned backup extension, not fabricated empty bookmarks, Practice or setup
-records. The independently adopted Shared revision also contains provisional
+UX-12/14 and SET-04 are implemented only for currently available UI language,
+theme, lyric font size and density. A pending preference shows a non-modal panel
+without redirecting, blocking content, loading preview lyrics or changing the
+pending item/list URL. Completion and skip are separate stored states and are
+never content availability, an offline receipt or download consent.
+
+Start captures a clone of saved choices (or the configured browser defaults)
+and the exact epoch/revision. Draft changes are local to the panel; cancel writes
+nothing. Save validates the whole prospective database and commits preferences
+and completed status in the same six-store transaction. Skip records only skipped
+status and leaves saved/absent preferences unchanged, even after editing a draft.
+Quota, invalid data and peer writes leave old data intact and show an explicit
+failure. Cancel/reopen captures current choices; stale drafts are never rebased
+or retried over newer values silently.
+
+The panel previews its own interface labels in the draft UI language, without
+changing the application's saved UI language or canonical text until commit.
+Settings retains an explicit setup entry/status after completion/skip; all normal
+preference controls remain available. The installed interface can complete setup
+offline without lyric downloads. Script/Latin/helper choices, lyric previews and
+durable complete-library download/size are explicitly unavailable, not fake
+controls or samples. This is partial UX-12, not full production onboarding.
+
+
+### Same-platform personal backup v2
+
+Settings exports the [Shared web-only v2 wire contract](../shared/docs/full-personal-backup.md#website-first-use-extension-v2)
+for all current Website v9 personal fields, including exact `setupStatus`.
+It also imports unchanged v1 through an explicit adapter that sets setup to
+`pending`, never completion or readiness. Native remains on its independent v1.
+New personal features require a versioned backup extension, not fabricated empty
+bookmarks or Practice records. The independently adopted Shared revision also contains provisional
 transliteration resources; this pin does not activate those converters.
 
 The [backup worker](../src/personal-backup.worker.ts) validates the complete
 strict generated schema and semantic typed uniqueness, globally distinct
 occurrence IDs, aggregate counts, real UTC millisecond timestamps, Unicode
-scalars, logical data bytes and prospective v8 storage overhead. One valid gzip
+scalars, logical data bytes and prospective v9 storage overhead. One valid gzip
 member, fatal UTF8 and duplicate-key rejection use the same
 [bounded byte primitives](../src/transfer-bytes.ts) as minimal lists, with separate
 Shared backup ceilings: 65MiB encoded and64MiB decoded including whitespace/BOM.
@@ -656,6 +689,7 @@ selects the `.dvbackup.json.gz` filename. No writer epoch, revision, row wrapper
 cache, journal, media, content or readiness flag enters the file. Absent saved
 preferences remain null with empty favorites; saved CSS font units and raw user
 text are preserved.
+
 
 Import retains a validated candidate plus the observed local fence. A complete
 read-only JSON preview exposes every value as text, with platform/date,

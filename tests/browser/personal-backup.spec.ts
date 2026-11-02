@@ -56,7 +56,8 @@ test("stable export preserves absence and writes nothing; validated complete pre
   await expect(page.getByRole("button", { name: messages.kn.exitRecite, exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: messages.en.languageName, exact: true }).click();
   const exported = await download(page);
-  expect(exported.data).toEqual({ ...full.data, preferences: { ...full.data.preferences, language: "en" } });
+  expect(exported.formatVersion).toBe(2);
+  expect(exported.data).toEqual({ ...full.data, setupStatus: "pending", preferences: { ...full.data.preferences, language: "en" } });
   expect(JSON.stringify(exported)).not.toMatch(/epoch|revision|"id":"personal"/u);
 });
 test("cancelled preview and native/newer/malformed files preserve every table", async ({ page }) => {

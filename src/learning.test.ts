@@ -61,7 +61,7 @@ test("actual configured label limit, full prospective byte ceiling and revision 
   expect(state).toEqual(before);
 });
 test("v6 upgrade preserves every value and frozen old accounting, starts unlabelled and refuses incompatible or over-capacity inputs", () => {
-  const control = { ...newControl(), formatVersion: 6, revision: 31 };
+  const control = { id: "state", epoch: newControl().epoch, formatVersion: 6, revision: 31 };
   const personal = { ...defaultPersonal(), favorites: [lyric, legacy], theme: "warm" as const, fontSize: 42 };
   const list = newList({ format: "daasavaani-list", formatVersion: 2, name: "  Synthetic raw  ",
     entries: [lyric, { kind: "placeholder", text: "<b>literal</b>" }, lyric] });
@@ -70,7 +70,7 @@ test("v6 upgrade preserves every value and frozen old accounting, starts unlabel
   const migrated = migrateStoreV6([control], [personal], [list], rows);
   expect(migrated.personal).toEqual(personal); expect(migrated.lists).toEqual([list]); expect(migrated.history).toEqual(history);
   expect(migrated.learning).toEqual({ entries: [] });
-  expect(migrated.control).toMatchObject({ formatVersion: 8, revision: 0 });
+  expect(migrated.control).toMatchObject({ formatVersion: 9, revision: 0 });
   expect(migrated.control.epoch).not.toBe(control.epoch);
   const oldBytes = jsonBytes({ format: "daasavaani-personal-storage", formatVersion: 6, control, personal: [personal],
     lists: [{ ...list, entries: list.entries.map(({ id, ...entry }) => ({ id, ...entry })) }], recentHistory: rows });
@@ -93,8 +93,8 @@ test("current learning row is required, strictly allowlisted and counted exactly
   expect(parseStore([state.control], [], [], history, learning, recitation)).toEqual(state);
   for (const rows of [[], [undefined], [...learning, ...learning], [{ ...learning[0], id: "other" }],
     [{ ...learning[0], score: 100 }]]) refuses(() => parseStore([state.control], [], [], history, rows, recitation), "invalid");
-  refuses(() => parseStore([{ ...state.control, formatVersion: 9 }], [], [], history, learning, recitation), "invalid");
-  expect(storageBytes(state)).toBe(jsonBytes({ format: "daasavaani-personal-storage", formatVersion: 8,
+  refuses(() => parseStore([{ ...state.control, formatVersion: 10 }], [], [], history, learning, recitation), "invalid");
+  expect(storageBytes(state)).toBe(jsonBytes({ format: "daasavaani-personal-storage", formatVersion: 9,
     control: state.control, personal: [], lists: [], recentHistory: history, learningLabels: learning, recitationPosition: recitation }));
 });
 test("learning never leaks into minimal list snapshots or mutates any other personal collection", () => {

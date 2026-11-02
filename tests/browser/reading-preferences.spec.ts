@@ -23,7 +23,7 @@ test("default display, repeated density and reload do not fabricate a preference
   await page.goto("/#/settings");
   await expect(density(page)).toHaveValue(readingDefaults.density);
   const before = await personalSnapshot(page);
-  expect(before.version).toBe(80); expect(before.tables.personal).toEqual([]);
+  expect(before.version).toBe(90); expect(before.tables.personal).toEqual([]);
   await density(page).selectOption(readingDefaults.density);
   await expect(density(page)).toBeEnabled();
   expect(await personalSnapshot(page)).toEqual(before);
@@ -149,7 +149,7 @@ for (const mode of ["valid", "invalid-row", "invalid-schema"] as const) {
     } else {
       await expect(page.getByRole("combobox", { name: messages.kn.readingDensity, exact: true })).toHaveValue(readingDefaults.density);
       const after = await personalSnapshot(page);
-      expect(after.version).toBe(80);
+      expect(after.version).toBe(90);
       expect(after.schema).toEqual({ ...before.schema, learningLabels: { keyPath: "id", autoIncrement: false, indexes: [] },
         recitationPosition: { keyPath: "id", autoIncrement: false, indexes: [] } });
       expect(after.tables.recitationPosition).toEqual([{ id: "recitation", position: null }]);
@@ -158,7 +158,7 @@ for (const mode of ["valid", "invalid-row", "invalid-schema"] as const) {
         favorites: [{ kind: "lyric", lyricId: lyricId(1) }, { kind: "legacyVideo", videoId: lyricId(1) }] }]);
       expect(after.tables.lists).toEqual(before.tables.lists);
       expect(after.tables.recentHistory).toEqual(before.tables.recentHistory);
-      expect(after.tables.control).toMatchObject([{ id: "state", formatVersion: 8, revision: 0 }]);
+      expect(after.tables.control).toMatchObject([{ id: "state", formatVersion: 9, revision: 0 }]);
       expect(after.tables.control[0].epoch).not.toBe(before.tables.control[0].epoch);
       await page.reload();
       await expect(page.getByRole("combobox", { name: messages.kn.readingDensity, exact: true })).toHaveValue(readingDefaults.density);

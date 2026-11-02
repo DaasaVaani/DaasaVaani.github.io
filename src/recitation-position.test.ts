@@ -70,7 +70,7 @@ test("strict singleton row and complete current envelope include exact position 
   for (const bad of [[], [undefined], [...rows, ...rows], [{ ...rows[0], id: "other" }], [{ ...rows[0], index: 1 }]]) {
     refuses(() => parseStore([saved.control], [], saved.lists, historyRows(saved), learningRows(saved), bad), "invalid");
   }
-  const expected = { format: "daasavaani-personal-storage", formatVersion: 8, control: saved.control,
+  const expected = { format: "daasavaani-personal-storage", formatVersion: 9, control: saved.control,
     personal: [], lists: saved.lists.map(record => ({ ...record, entries: record.entries.map(({ id, ...entry }) => ({ id, ...entry })) })),
     recentHistory: historyRows(saved), learningLabels: learningRows(saved), recitationPosition: rows };
   expect(storageBytes(saved)).toBe(new TextEncoder().encode(JSON.stringify(expected)).length);
@@ -87,12 +87,12 @@ test("v7 migration freezes old accounting and preserves every old value, adding 
   const state = { ...empty(), personal: { ...defaultPersonal(), favorites: [lyric], fontSize: 42 },
     lists: [record], history: { enabled: false, entries: [lyric] },
     learning: { entries: [{ ...lyric, label: "practising" as const }] } };
-  const control = { ...state.control, formatVersion: 7, revision: 31 };
+  const control = { id: "state", epoch: state.control.epoch, formatVersion: 7, revision: 31 };
   const history = historyRows(state), learning = learningRows(state);
   const inputs = { control, personal: state.personal, lists: state.lists, history, learning }, before = structuredClone(inputs);
   const migrated = migrateStoreV7([control], [state.personal], state.lists, history, learning);
   expect(migrated).toEqual({ ...state, control: migrated.control });
-  expect(migrated.control).toMatchObject({ formatVersion: 8, revision: 0 });
+  expect(migrated.control).toMatchObject({ formatVersion: 9, revision: 0 });
   expect(migrated.control.epoch).not.toBe(control.epoch);
   const oldBytes = jsonBytes({ format: "daasavaani-personal-storage", formatVersion: 7, control, personal: [state.personal],
     lists: state.lists.map(record => ({ ...record, entries: record.entries.map(({ id, ...entry }) => ({ id, ...entry })) })),

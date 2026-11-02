@@ -38,7 +38,7 @@ activating content. These logical bounds are not allocator/peak-heap or full
 production/offline proofs. Literal title filtering remains a catalog scan, not
 the reviewed linguistic search algorithm.
 
-Website [current-state backup v1](architecture.md#same-platform-personal-backup-v1)
+Website [current-state backup v2](architecture.md#same-platform-personal-backup-v2)
 uses off-UI bounded gzip/JSON validation in O(E+D+N) time for encoded bytes E,
 decoded bytes D and personal records N, plus object-key canonical sorting.
 Typed-reference/occurrence uniqueness and duplicate-name preview use sets/maps;
@@ -117,9 +117,10 @@ silent truncation, false success or weaker validation.
   v2 client-generated codec interoperability has actual round-trip evidence;
   OS delivery and signed-link sharing remain incomplete.
 - ALG-15: typed web-list writes have deterministic complete-envelope UTF8
-  accounting, atomic collection/identity checks, non-destructive v1..v7-to-v8 migration and
+  accounting, atomic collection/identity checks, non-destructive v1..v8-to-v9 migration and
   stale revision/epoch refusal. Actual configured byte/collection boundaries have
-  executable coverage. Full recoverable backup/replacement is not implemented.
+  executable coverage. Current-state same-platform backup/replacement is
+  implemented; future personal features require versioned extensions.
 - ALG-07/08: the separate canonical publication reader preplans descriptor,
   manifest and every item against aggregate/count limits before bounded worker
   downloads. All objects must validate before activation; cancellation aborts and
@@ -129,7 +130,7 @@ silent truncation, false success or weaker validation.
 - Official Unicode16 personal-name normalization/folding resources and independent
   conformance fixtures drive the actual web/native adapters. Website checks the
   official normalization equations/full scalar folding and derives versioned
-  keys on demand; raw-name v8 records have no cached key to migrate. Stable
+  keys on demand; raw-name v9 records have no cached key to migrate. Stable
   insertion ordering is O(d squared) worst case/O(d) storage for decomposed name
   length d, bounded by personal-name policy. This is not linguistic search
   normalization, a performance benchmark or permission to merge/rename lists.
@@ -467,7 +468,7 @@ source migration, live ingestion or automatic updates to reviewed items.
 
 ### ALG-14: Bounded list encoding and decoding
 
-Web saved-list export uses the [typed personal protocol](architecture.md#web-typed-personal-storage-v8):
+Web saved-list export uses the [typed personal protocol](architecture.md#web-typed-personal-storage-v9):
 one validated read transaction, minimal allowlist projection, bounded worker
 encoding, then epoch/revision recheck before exposing the independent snapshot.
 This supplies partial stable-read/no-write/cancellation evidence, not native
@@ -499,7 +500,7 @@ round trips, platform share interoperability or full-backup exportability.
 
 ### ALG-15: Recoverable backup replacement and capacity accounting
 
-The [web typed storage protocol](architecture.md#web-typed-personal-storage-v8)
+The [web typed storage protocol](architecture.md#web-typed-personal-storage-v9)
 supplies partial executable accounting/migration/fencing evidence only. It is not
 the full-backup format and does not establish backup exportability or replacement.
 

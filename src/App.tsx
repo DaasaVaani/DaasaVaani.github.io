@@ -16,6 +16,7 @@ import { Recite } from "./Recite";
 import { LyricText } from "./LyricText";
 import { ReadingPreferences, type ReadingPreferencesProps } from "./ReadingPreferences";
 import { PersonalBackup } from "./PersonalBackup";
+import { FirstUse } from "./FirstUse";
 import { useAppShell } from "./app-shell";
 import type { LyricLibrary } from "./lyric-publication";
 import type { PersonalReference } from "./list-transfer-types";
@@ -321,6 +322,7 @@ export default function App() {
     </nav></header>
     <main id="content" tabIndex={-1} className={styles.main}>
       <ShellNotices labels={labels} shell={shell} />
+      {store && <FirstUse store={store} labels={labels} />}
       <FixtureOnly><aside className={styles.notice}>{labels.fixtureNotice}</aside></FixtureOnly>
       {error && <section className={styles.error} role="alert"><h2>{labels.error}</h2><p>{error}</p>
         <button onClick={() => setAttempt(value => value + 1)}>{labels.retry}</button></section>}

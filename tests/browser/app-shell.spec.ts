@@ -104,6 +104,7 @@ test("installed interface reloads offline with its lazy list worker but no downl
       if (!response.ok) throw new Error("Offline manifest unavailable");
       return response.json();
     });
+
     expect(manifest).toMatchObject({ id: config.base, start_url: config.base, scope: config.base });
     await expect(page.getByRole("button", { name: labels.warm, exact: true })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByText(labels.appShellNotice, { exact: true })).toBeVisible();
@@ -122,6 +123,30 @@ test("installed interface reloads offline with its lazy list worker but no downl
       try { await expect(excluded.goto(host.url + path)).rejects.toThrow("ERR_INTERNET_DISCONNECTED"); }
       finally { await excluded.close(); }
     }
+  } finally { await context.setOffline(false); await page.close(); await host.close(); }
+});
+
+test("first-use choices can complete offline in an installed interface without claiming lyric readiness", async ({ page, context }) => {
+  const host = await shellHost();
+  const libraryRequests: string[] = [];
+  page.on("request", request => { if (request.url().includes("/library/")) libraryRequests.push(request.url()); });
+  try {
+    await activateControl(page, host.url);
+    await context.setOffline(true);
+    await page.reload();
+    const setup = page.getByRole("region", { name: labels.firstUseTitle, exact: true });
+    await setup.getByRole("button", { name: labels.firstUseStart, exact: true }).click();
+    await setup.getByRole("combobox", { name: labels.readingDensity, exact: true }).selectOption("relaxed");
+    await setup.getByRole("button", { name: labels.firstUseSave, exact: true }).click();
+    await expect(setup).toContainText(labels.firstUseCompleted);
+    await expect(setup).toContainText(labels.firstUseOffline);
+    const saved = await personalSnapshot(page);
+    expect(saved.tables.control[0].setupStatus).toBe("completed");
+    expect(saved.tables.personal[0].density).toBe("relaxed");
+    await page.reload();
+    await expect(setup).toContainText(labels.firstUseCompleted);
+    expect(await personalSnapshot(page)).toEqual(saved);
+    expect(libraryRequests).toEqual([]);
   } finally { await context.setOffline(false); await page.close(); await host.close(); }
 });
 

@@ -256,13 +256,13 @@ for (const invalid of [false, true]) {
     } else {
       await expect(page.getByRole("checkbox", { name: labels.recentHistoryEnabled, exact: true })).toBeChecked();
       const after = await personalSnapshot(page);
-      expect(after.version).toBe(80);
+      expect(after.version).toBe(90);
       expect(after.tables.personal).toEqual(before.tables.personal.map((row: unknown) => {
         if (!row || typeof row !== "object") throw new Error("Invalid seeded personal row");
         return { ...row, ...readingDefaults };
       }));
       expect(after.tables.lists).toEqual(before.tables.lists);
-      expect(after.tables.control).toMatchObject([{ id: "state", formatVersion: 8, revision: 0 }]);
+      expect(after.tables.control).toMatchObject([{ id: "state", formatVersion: 9, revision: 0 }]);
       expect(after.tables.recitationPosition).toEqual([{ id: "recitation", position: null }]);
       expect(after.tables.control).not.toEqual(before.tables.control);
       await expectHistory(page, []);

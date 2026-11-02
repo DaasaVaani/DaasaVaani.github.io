@@ -1,21 +1,23 @@
 import Ajv2020 from "ajv/dist/2020";
 import schema from "../shared/schemas/full-personal-backup.schema.json";
-import type { FullPersonalBackupV1 } from "../shared/types/personal";
+import schemaV2 from "../shared/schemas/full-personal-backup-v2.schema.json";
+import type { FullPersonalBackupV1, FullPersonalBackupV2 } from "../shared/types/personal";
 import {
   newControl, PersonalError, referenceKey, validateStore, type PersonalContents, type PersonalStore,
 } from "./personal-model";
 import { TransferError } from "./list-transfer-types";
 import { encodeTransferJson, parseTransferJson, transformTransferBytes } from "./transfer-bytes";
 
-export type WebBackup = Extract<FullPersonalBackupV1, { platform: "web" }>;
-const valid = new Ajv2020({ strict: true }).compile<FullPersonalBackupV1>(schema);
+export type WebBackup = Extract<FullPersonalBackupV1, { platform: "web" }> | FullPersonalBackupV2;
+const valid = new Ajv2020({ strict: true }).compile<WebBackup>({ oneOf: [schema, schemaV2] });
 
 export function backupContents(value: WebBackup): PersonalContents {
   const data = value.data, preferences = data.preferences;
   return { personal: preferences === null ? undefined : {
     id: "personal", language: preferences.language, theme: preferences.theme, fontSize: preferences.fontSizePx,
     density: preferences.density, favorites: data.favorites,
-  }, lists: data.lists, history: data.history, learning: data.learning, recitation: data.recitation };
+  }, lists: data.lists, history: data.history, learning: data.learning, recitation: data.recitation,
+    setupStatus: value.formatVersion === 2 ? value.data.setupStatus : "pending" };
 }
 function canonical(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(canonical);
@@ -23,12 +25,13 @@ function canonical(value: unknown): unknown {
     a < b ? -1 : a > b ? 1 : 0).map(([key, item]) => [key, canonical(item)]));
   return value;
 }
-export function makeBackup(state: PersonalStore, exportedAt: string): WebBackup {
+export function makeBackup(state: PersonalStore, exportedAt: string): FullPersonalBackupV2 {
   validateStore(state);
   const saved = state.personal;
-  return { format: "daasavaani-personal-backup", formatVersion: 1, platform: "web", exportedAt, data: {
+  return { format: "daasavaani-personal-backup", formatVersion: 2, platform: "web", exportedAt, data: {
     preferences: saved ? { language: saved.language, theme: saved.theme, fontSizePx: saved.fontSize, density: saved.density } : null,
     favorites: saved?.favorites ?? [], lists: state.lists, history: state.history, learning: state.learning, recitation: state.recitation,
+    setupStatus: state.control.setupStatus,
   } };
 }
 export class PersonalBackupCodec {
@@ -48,7 +51,8 @@ export class PersonalBackupCodec {
     for (const entries of [data.favorites, data.history.entries, data.learning.entries]) {
       if (new Set(entries.map(referenceKey)).size !== entries.length) throw new TransferError("invalid");
     }
-    try { validateStore({ control: newControl(), ...backupContents(value) }); }
+    const { setupStatus, ...contents } = backupContents(value);
+    try { validateStore({ control: newControl(setupStatus), ...contents }); }
     catch (reason) {
       if (reason instanceof PersonalError) throw new TransferError(reason.code === "capacity" ? "decodedLimit" : "invalid");
       throw reason;

@@ -1,5 +1,94 @@
 # Documentation history
 
+## 2026-10-31: owner-approved Website-first bounded preference setup
+
+- Owner selected first-use setup, Website first, and explicitly approved a
+  preserving database/backup upgrade and a non-blocking setup panel. The bounded
+  slice covers UI language, theme, font size and density. Script/Latin/helper,
+  lyric preview and complete durable offline download/size are explicitly
+  unavailable, not invented controls or samples. Attribution review remains
+  delegated; no original-source, Library registry or Android runtime edits.
+- Archived superseded current protocol: Website personal v8/native IndexedDB80
+  had six tables and control `{id,formatVersion,epoch,revision}`, no setup state,
+  and exported only same-platform full-backup v1. V9/native90 retains every table
+  and adds control `setupStatus` pending/completed/skipped to exact accounting.
+  V1..v8 upgrades preserve prior values/identities and establish pending setup
+  with a fresh fence; only pre-v8 inputs gain null recitation. Future100 remains
+  refused. Full-backup v2 adds exact setup state; v1 imports explicitly adapt to
+  pending. Frozen v1 fields, native backup and personal/content separation remain.
+- Draft setup does not mutate saved preferences; cancel writes nothing, skip
+  changes only setup status, and save commits the whole validated preference
+  choice plus completion atomically. Exact revision/epoch capture rejects peer
+  changes; quota/final-write failures preserve all previous state. No redirects,
+  pending-destination loss, automatic lyric preview, download or readiness flag.
+  Settings permits revisiting setup; installed-interface setup works offline.
+- Superseded roadmap statements described native exact-position continuation
+  and manual backup inclusion as unimplemented. Current native README/history
+  document those completed slices. Corrected the Website status without changing
+  native code/pins; system backup remains intentionally disabled and production
+  device/transport, Practice and durable offline gates stay open.
+- Archived related guide statements: Website typed storage/reading/learning
+  remained described as v8, manual full-backup as v1, and native/manual backup
+  plus ALG-15 replacement as absent. Synchronized those cross-references with the
+  already implemented manual backup/resume and the approved v9/v2 setup extension;
+  no new native implementation or system-backup activation is implied.
+- Shared local commit2729fdb introduces the approved web-only v2 schema and
+  bilingual generated UI resources. Full `npm run check` passed369/369 with no
+  failures/skips/cancellations; repository hygiene286, strict YAML and whitespace
+  passed. Website independently adopts that commit; Android/Library pins unchanged.
+  Shared's newer search/transliteration resources are not activated by this slice.
+- Shared subsequently synchronized its README/specification/checklist in local
+  commitc1c3086; repeated full `npm run check` passed369/369 without failures/skips/
+  cancellations and repository hygiene286 passed. Website independently adopted
+  this documentation-only follow-up; no remote publication is claimed.
+- Initial Website build found missing `tsc`; restored only the existing locked
+  dependencies with `npm ci`. Reported dependency audit remains9 advisories
+  (7 moderate/2 low), not investigated or fixed by this slice. No lockfile change.
+  Initial units exposed outdated historical test-control fixtures and two
+  existing large-fixture5000ms timeouts under resource contention. Historical
+  fixtures now explicitly retain their old shape; full bounded-concurrency units
+  passed without changing timeouts, assertions or suite selection.
+- `npm test -- --maxWorkers=2` passed140/140 tests, zero failures/skips;
+  strict TypeScript/production build passed. The first targeted browser launch
+  refused the advanced Library checkout as designed; used the existing clean
+  configured c2837cc fixture worktree without repinning or bypassing the guard.
+  `node node_modules\@playwright\test\cli.js test first-use personal-backup personal-restore reading-preferences --workers=2`
+  passed78/78 across all three configured layouts. Added stronger v8 full-state
+  migration and installed-interface offline completion assertions afterward.
+- Full final Website units/build/browser and ancillary checks follow this
+  result-record update. Prior targeted results are not final-tree completion,
+  publication, full UX-12 conformance or release readiness evidence.
+- The first complete browser run passed465 and failed6 (the same two cases
+  across three layouts): an old Unicode16 test opened native80 against current90,
+  and the added offline setup case had been nested inside another test.
+  Corrected test registration and the explicit current-version fixture without
+  removing cases/assertions or extending timeouts. Final full rerun follows.
+- Targeted repaired offline/Unicode16 cases passed12/12. The next complete
+  run passed474 and failed3: the newly discovered shared-list destination
+  case used gzip instead of the existing raw-DEFLATE link encoding in every
+  layout. Corrected the synthetic link encoding, not the production decoder,
+  schema or failure behavior. Full rerun follows.
+- Markdown validation passed9 changed files plus all153 unique unchanged
+  requirement IDs; the initial validator's149 count incorrectly excluded the
+  four I18N IDs. Strict YAML used existing locked Node `yaml` for4 files after
+  Python reported missing PyYAML; no new dependency was installed. Workflow
+  actionlint1.7.12/ShellCheck and staged/unstaged whitespace checks passed.
+- Final frozen implementation validation: `npm test -- --maxWorkers=2`
+  passed140/140 tests in17 files; then
+  `node node_modules\@playwright\test\cli.js test --workers=2` passed477/477
+  across desktop/mobile/narrow, with zero failures/skips/cancellations. The
+  browser runner completed fixture publication and fresh strict TypeScript/
+  production build using `DAASAVAANI_FIXTURE_PUBLISHER_ROOT` pointing to the
+  existing clean c2837ccf383b976a1e2d20928ff018256270551c fixture worktree.
+  Final focused first-use checks had also passed18/18. Existing Vite chunk-size
+  warning remains; no assertion, timeout, project or validation guard was weakened.
+- Coverage is bounded UX-12 preference setup, LANG-05 independent controls,
+  SET-04 personal persistence and XFER-09 preserving backup state, not complete
+  script/helper/preview/offline preparation, native onboarding or release proof.
+  Website edits remain uncommitted; Shared2729fdb/c1c3086 are local-only commits.
+  No new feature push/deployment was authorized or performed; attribution review
+  remains handed off without additional decisions.
+
 ## 2026-10-30: owner-approved main integration and temporary main-only pushes
 
 - The owner requested merging completed implementation work into main across

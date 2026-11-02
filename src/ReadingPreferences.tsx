@@ -30,13 +30,13 @@ export function ReadingPreferences({ labels, personal, change }: ReadingPreferen
   return <fieldset ref={fieldset} aria-label={labels.readingPreferences} aria-busy={busy}>
     <legend>{labels.readingPreferences}</legend>
     <div role="group" aria-label={labels.lyricFontSize}>
-      <button className={styles.secondary} aria-label={labels.decreaseLyricFontSize} aria-describedby={id}
+      <button type="button" className={styles.secondary} aria-label={labels.decreaseLyricFontSize} aria-describedby={id}
         disabled={busy || personal.fontSize <= __WEB_CONFIG__.readerFontSizeMin}
         onClick={() => void update(value => adjustFontSize(value, -1))}>A-</button>
       <span id={id} aria-live="polite" aria-atomic="true">
         {labels.fontSizeValue.replace("{size}", String(personal.fontSize)).replace("{unit}", "px")}
       </span>
-      <button className={styles.secondary} aria-label={labels.increaseLyricFontSize} aria-describedby={id}
+      <button type="button" className={styles.secondary} aria-label={labels.increaseLyricFontSize} aria-describedby={id}
         disabled={busy || personal.fontSize >= __WEB_CONFIG__.readerFontSizeMax}
         onClick={() => void update(value => adjustFontSize(value, 1))}>A+</button>
     </div>

@@ -36,6 +36,7 @@ async function prepare(page: Page) {
     const state = await window.personalRestoreApi.readStore();
     const listId = crypto.randomUUID(), first = crypto.randomUUID(), second = crypto.randomUUID(), lyricId = crypto.randomUUID();
     const candidate: PersonalContents = {
+      setupStatus: "pending",
       personal: { id: "personal", favorites: [{ kind: "lyric", lyricId }, { kind: "legacyVideo", videoId: lyricId }],
         language: "en", theme: "warm", fontSize: 42, density: "relaxed" },
       lists: [{ id: listId, name: "  Exact raw name  ", entries: [
@@ -61,7 +62,7 @@ test("the actual six-store replacement preserves identities and raw data, remove
   const revision = await page.evaluate(async ({ candidate, old }) =>
     window.personalRestoreApi.restorePersonalContents(candidate, old.revision, new AbortController().signal), { candidate, old });
   expect(revision.epoch).not.toBe(expected.epoch);
-  expect(revision).toMatchObject({ id: "state", formatVersion: 8, revision: 0 });
+  expect(revision).toMatchObject({ id: "state", formatVersion: 9, revision: 0 });
   expect(await personalSnapshot(page)).toEqual({ ...before, tables: {
     control: [revision], personal: [candidate.personal], lists: candidate.lists,
     recentHistory: [{ id: "history", ...candidate.history }], learningLabels: [{ id: "learning", ...candidate.learning }],
