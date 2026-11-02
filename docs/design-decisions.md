@@ -47,6 +47,12 @@ Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.
 
+The clients' [public lyric links](lyric-preview.md#public-lyric-links) share only
+the configured stable canonical URL, retaining manual selection and explicit
+platform cancellation/failure. They do not copy lyrics/personal state or establish
+delivery, content readiness or verified native App Links. Native independently
+implements URL-only chooser/copy controls under its existing preparation gate.
+
 The clients' explicit [Show another lyric](lyric-preview.md#show-another-lyric)
 uses the entire same verified canonical catalog independently of title filtering,
 excludes the current/session-last-opened UUID, and preserves normal reader/history

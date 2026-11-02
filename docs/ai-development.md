@@ -59,6 +59,12 @@ independently implemented/pinned, retaining v1 imports as setup pending and the
 complete explicit preparation gate. Neither proves future personal-feature coverage,
 system-backup activation or offline lyric readiness.
 
+Both clients' [public canonical lyric links](lyric-preview.md#public-lyric-links)
+use the configured Website base and exact lyric identity, never copied lyrics or
+personal state. Explicit copy/system sharing retains manual selection and truthful
+failure/cancellation feedback; handoff does not establish delivery, verified
+native App Links or content readiness. Focused Recite hides secondary sharing.
+
 Website/native personal-name matching uses the official Shared Unicode16 profile.
 Website v9 stores only raw names and computes explicit-profile keys on demand:
 there is no stored cache to rewrite or schema migration to invent. Keep existing

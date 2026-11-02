@@ -45,6 +45,15 @@ this is not complete recitation.
 
 ## Current implementation coverage
 
+Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
+explicit copy/system sharing with an always-selectable URL, exact canonical
+identity, no copied lyrics/personal state, and no inferred delivery/readiness.
+Canonical saved-list occurrences reuse the surface outside focused Recite;
+legacy references and placeholders do not acquire canonical URLs. Native
+independently implements URL-only chooser/copy and manual selection under its
+unchanged preparation gate; verified App Links and real
+receiving-app interoperability remain open.
+
 Website P5a now includes [backup v2](architecture.md#same-platform-personal-backup-v2):
 all currently implemented personal state, stable export, strict local preview and
 explicit atomic replacement with fresh fencing. It is not a backup of future

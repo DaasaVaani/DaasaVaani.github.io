@@ -116,6 +116,20 @@ are incremental first-use checks, not finalization substitutes. They cover pendi
 completed/skipped setup, preserving v8 migration, draft cancel/atomic save/skip,
 quota/stale-tab refusal, independent v1/v2 backup adaptation and installed-interface
 offline completion with no lyric requests or false readiness.
+Public canonical lyric-link coverage maps to UX-01/07:
+`npm test -- lyric-share` checks configured root/subdirectory URLs and strict
+identity/base refusal; `node node_modules\@playwright\test\cli.js test lyric-sharing list-recite --workers=2`
+checks exact URL-only payloads, manual selection, absent/denied/unsupported
+platform APIs, cancellation/retry, pending/late results, no extra requests or
+personal writes, focused reading and canonical-only list occurrences.
+These are incremental commands; finalization retains the complete suites.
+Adapter tests do not establish OS/receiving-app delivery or verified App Links.
+Native URL construction, chooser/copy/manual controls, canonical-only list
+occurrences and focused reading use the
+[native validation guide](https://github.com/DaasaVaani/AndroidApp#validation)
+and complete configured core/build/lint/device suites; no personal schema or
+backup upgrade is needed for either consumer's public links.
+
 Native incremental setup coverage uses
 `.\gradlew.bat :core:test :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=in.daasavaani.app.FirstUseStoreTest,in.daasavaani.app.FirstUseUiTest --no-daemon --max-workers=1`
 from Android with its documented JDK/SDK/device and fixture HTTP host. It checks

@@ -91,6 +91,32 @@ test("ordered mixed occurrences never deduplicate skip wrap or change unrelated 
   expectPositionOnly(before, await personalSnapshot(page), 0, 15);
   await context.setOffline(false);
 });
+test("public lyric links follow the exact canonical occurrence and stay absent for placeholders and legacy content", async ({ page }) => {
+  const requests = await prepare(page, [
+    { kind: "lyric", lyricId: lyricId(1) }, { kind: "lyric", lyricId: lyricId(1) },
+    { kind: "placeholder", text: "Synthetic placeholder" }, { kind: "legacyVideo", videoId: "fixture-one" },
+  ]);
+  await start(page).click();
+  await expect(body(page).locator("div[lang=kn] > p")).toHaveCount(4);
+  const field = page.getByRole("textbox", { name: labels.lyricLink, exact: true });
+  await expect(field).not.toBeVisible();
+  await page.getByRole("button", { name: labels.showReadingControls, exact: true }).click();
+  await expect(field).toHaveValue(`${config.canonicalBaseUrl}#/lyrics/${lyricId(1)}`);
+  const before = await personalSnapshot(page);
+  await field.focus();
+  expect(await field.evaluate((input: HTMLInputElement) => input.readOnly)).toBe(true);
+  expect(await personalSnapshot(page)).toEqual(before);
+  expect(requests).toHaveLength(3);
+  await next(page).click(); await position(page, 2, 4);
+  await expect(body(page).locator("div[lang=kn] > p")).toHaveCount(4);
+  await expect(field).toHaveValue(`${config.canonicalBaseUrl}#/lyrics/${lyricId(1)}`);
+  expect(requests).toHaveLength(3);
+  await next(page).click(); await position(page, 3, 4);
+  await expect(field).toHaveCount(0);
+  await next(page).click(); await position(page, 4, 4);
+  await expect(body(page).locator("div[lang=kn] > p")).toHaveCount(2);
+  await expect(field).toHaveCount(0);
+});
 test("an empty saved list has no invented position or reading request and both boundaries are disabled", async ({ page }) => {
   const requests = await prepare(page, []), before = await personalSnapshot(page);
   await start(page).click();

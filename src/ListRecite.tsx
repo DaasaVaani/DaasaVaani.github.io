@@ -8,6 +8,7 @@ import { type ListRecord, type PersonalStore, referenceKey } from "./personal-mo
 import type { PersonalReference } from "./list-transfer-types";
 import { ListEntryView } from "./ListEntryView";
 import { LyricText } from "./LyricText";
+import { LyricShare } from "./LyricShare";
 import { ReadingPreferences, type ReadingPreferencesProps } from "./ReadingPreferences";
 import { Recite } from "./Recite";
 import { browserDefaultPersonal } from "./personal";
@@ -106,7 +107,8 @@ export function ListRecite({ record, initialIndex, remember, labels, personal, p
         {entry && index === record.entries.length - 1 && <p role="status">{labels.recitationEnd}</p>}
       </section> }}
       controls={<ReadingPreferences labels={labels} personal={personal.personal ?? browserDefaultPersonal()} change={change} />}
-      secondary={null}>
+      secondary={entry?.kind === "lyric" && current?.status === "ready"
+        ? <LyricShare key={entry.id} lyricId={entry.lyricId} labels={labels} /> : null}>
       {entry && <section aria-label={labels.recite} aria-busy={entry.kind !== "placeholder" && (!current || current.status === "loading")}>
         <ListEntryView entry={entry} labels={labels} publication={publication} lyrics={library.current} />
         {entry.kind !== "placeholder" && <>

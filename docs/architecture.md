@@ -634,6 +634,17 @@ bounds, but apply a returned value only while the observer's current epoch still
 matches the initiating epoch. A late old-command return cannot overwrite restored
 preference rendering.
 
+### Public canonical lyric links
+
+The [public link surface](lyric-preview.md#public-lyric-links) uses the configured
+canonical Website base and exact lower-case UUIDv4, never the current origin or
+fixture/video identifiers. The URL carries no lyric copy, personal fields,
+snapshot/verse/occurrence state or readiness. Secondary reader UI always retains
+manual selection, gates platform calls on explicit actions and reports failure/
+cancellation without claiming delivery. Reader departure invalidates late
+completion notices; focused Recite hides sharing. No database or backup format
+changes accompany this surface.
+
 ### Non-blocking first-use setup
 
 UX-12/14 and SET-04 are implemented only for currently available UI language,

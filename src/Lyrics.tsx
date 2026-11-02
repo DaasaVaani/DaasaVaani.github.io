@@ -12,6 +12,7 @@ import { ReadingPreferences, type ReadingPreferencesProps } from "./ReadingPrefe
 import { LearningControl } from "./Learning";
 import { Recite } from "./Recite";
 import { LyricText } from "./LyricText";
+import { LyricShare } from "./LyricShare";
 import { LyricPagination, useLyricPaging } from "./LyricPaging";
 import styles from "./App.module.css";
 
@@ -109,7 +110,8 @@ function LyricReader({ publication, labels, personal, preferences, change, toggl
       </>}
       secondary={<><p className={styles.muted}>{labels.lyricNoMedia}</p>
         {personal && reference ? <AddToList key={item.lyricId} labels={labels} personal={personal} reference={reference} />
-          : <p role="status">{labels.personalUnavailable}</p>}</>}>
+          : <p role="status">{labels.personalUnavailable}</p>}
+        <LyricShare key={item.lyricId} lyricId={item.lyricId} labels={labels} /></>}>
       <LyricText item={item} />
     </Recite>}
   </section>;

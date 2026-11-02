@@ -18,6 +18,13 @@ preserve lyric/legacy identities and user text; v1 imports remain supported.
 Existing identifiers are never guessed or remapped. Persistent offline Library state,
 production metadata adapters and the complete production lifecycle remain open.
 
+Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
+explicit copy/system sharing of the configured stable Website URL, with an
+always-selectable manual fallback. The payload includes no lyric text or personal
+data, and handoff does not confirm delivery or content readiness. Focused Recite
+hides sharing; canonical list occurrences expose the same URL when controls are
+shown. Fixture/legacy records and placeholders never acquire invented lyric URLs.
+
 The responsive React Website reads hash-verified artifacts from the Library fixture
 publisher, with explicit indexed-search consent, canonical Kannada reading,
 transactional favorites and independent interface-language/theme preferences.

@@ -1,5 +1,49 @@
 # Documentation history
 
+## 2026-11-02: approved public canonical lyric-link sharing
+
+- Website/native bounded setup publication completed: Websitea721078 exact
+  hosted41488638918 passed lint/full suites/deployment, CodeQL41488639047 passed,
+  live root/entry HTTP200 and setup marker verified. Nativee3ea0c8 exact
+  hosted41487746877 passed after the full67-JVM/165-device local run.
+- Owner selected lyric-link sharing next and explicitly approved bilingual Shared
+  labels and independent consumer-pin updates. Shared0b884d8 passed370/370,
+  hygiene287, strict YAML22, workflow/whitespace and exact hosted41494512730.
+  Website independently adopts that published prerequisite; Library is unchanged.
+- Added canonical configured-base URL construction, always-selectable manual
+  fallback and explicit URL-only copy/system handoff. No lyric copies, personal
+  writes, media/Library requests or delivery/App Links claims. Preserved ordinary
+  reader control positions and hid secondary sharing during focused Recite.
+  Canonical saved-list occurrences reuse the same surface, with no URL for
+  placeholders, legacy/fixture or unavailable entries. No schema/backup change.
+- Added strict root/subdirectory/invalid-ID/base units and browser adapter,
+  manual-selection, no-write/request, failure/cancellation, pending/late-result
+  and list-occurrence coverage. Full units passed143/143; final complete browser/
+  build and native independent implementation/validation follow.
+- Native independently adopted Shared0b884d8, implemented URL-only sharing in
+  canonical readers/list controls, and published2b4f4a68460e859c0d38f7f47b32dd6431498f52.
+  Complete native config/build/both lints passed; actual XML totals69 core and
+  171 device tests, zero failures/errors/skips, with app JVM remaining NO-SOURCE.
+  Hygiene/YAML/workflow/whitespace and exact hosted41500948162 passed.
+  Native owned emulator/HTTP helpers were stopped before Website browser builds.
+- Initial `node node_modules\@playwright\test\cli.js test lyric-sharing list-recite --workers=2`
+  passed60 and failed9: the new helper used Playwright's immediate `uncheck`
+  state assertion against an intentionally transaction-backed checkbox. Reused
+  the existing explicit checked/click/committed-unchecked sequence, without
+  changing application behavior, assertions or timeouts. Repaired
+  `node node_modules\@playwright\test\cli.js test lyric-sharing --workers=2`
+  passed12/12 across desktop/mobile/narrow. The first combined run already
+  passed every list-Recite case, including the new canonical-only surface.
+- Final `npm test -- --maxWorkers=2` passed143/143 in18 files;
+  `node node_modules\@playwright\test\cli.js test --workers=2`, using the clean
+  configured c2837cc fixture publisher, passed492/492 across desktop/mobile/narrow
+  in5.9m with fresh production build/strict typecheck. No tests were skipped.
+  Changed-Markdown checks passed all9 current/history files and all153 unique
+  unchanged requirement IDs; strict locked Node YAML parsing passed4 files,
+  installed actionlint1.7.12/ShellCheck0.11.0 and whitespace checks passed.
+  Real receiving-app/provider/platform coverage, delivery, verified App Links,
+  persistent offline content, reviewed Practice and release readiness remain open.
+
 ## 2026-11-02: committed/published Website setup and approved native continuation
 
 - The owner requested committing all current changes, including manual edits.

@@ -76,6 +76,41 @@ The catalog/query/expanded page and available focus/scroll survive in-session
 reader return and Back/Forward. Reload resets this context and performs a fresh
 online metadata/selected-item load, without a complete-download gate.
 
+## Public lyric links
+
+UX-01/07's canonical reader exposes a public URL built from the owning
+`canonicalBaseUrl` in [web settings](../settings/web.yml) and the exact validated
+lyric UUID: `#/lyrics/<lyricId>`. It never uses the current browser host,
+publication object URL, title, personal collection, occurrence or lyric text.
+The link identifies the lyric, not a frozen content version or verse.
+Unknown or later-unavailable identities retain normal unavailable handling.
+
+The complete readonly URL is always manually selectable, including when clipboard
+or system sharing is absent. Copy/share require explicit user actions. Available
+platform APIs receive only the URL; clipboard denial, unsupported sharing and
+other failures retain the fallback with an explicit error. Cancellation is not
+success. A completed handoff does not confirm delivery. Pending actions prevent
+duplicate share/copy operations; late results after reader departure cannot label
+the replacement lyric.
+
+Sharing performs no personal write, extra successful-open event, content request,
+download or readiness change. Normal reads keep their existing optional history.
+Sharing appears after ordinary reader content/controls, and remains hidden during
+focused Recite. Saved-list Recite exposes the same fallback only for its currently
+loaded canonical occurrence when controls are shown; placeholders, unavailable
+entries and legacy/fixture identities never acquire a fabricated canonical URL.
+Repeated occurrences share the same lyric URL, without exporting occurrence IDs.
+Recipient access still follows actual online/content availability and native
+preparation; no verified Android App Links or receiving-app interoperability is
+established by browser adapter tests.
+
+Android independently implements the same URL-only contract with its configured
+canonical Website base, chooser/copy actions and selectable fallback after
+complete canonical preparation. Its
+[owning guide](https://github.com/DaasaVaani/AndroidApp/blob/main/README.md)
+documents native lifecycle, OS handoff and independent validation. A chooser
+opening is not evidence that the recipient received or opened the link.
+
 ## Show another lyric
 
 EXP-02's explicit action is available on the verified canonical catalog and a

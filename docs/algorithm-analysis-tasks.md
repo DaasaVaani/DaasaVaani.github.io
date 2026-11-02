@@ -38,6 +38,12 @@ activating content. These logical bounds are not allocator/peak-heap or full
 production/offline proofs. Literal title filtering remains a catalog scan, not
 the reviewed linguistic search algorithm.
 
+The [public lyric-link builder](lyric-preview.md#public-lyric-links) validates
+the exact bounded UUID and configured canonical base, then constructs one hash
+route in O(base URL length) time/space. It does not scan catalog/lyric/personal
+records, request artifacts or encode a list snapshot. Platform handoff latency
+and actual delivery are outside that local construction guarantee.
+
 Website [current-state backup v2](architecture.md#same-platform-personal-backup-v2)
 uses off-UI bounded gzip/JSON validation in O(E+D+N) time for encoded bytes E,
 decoded bytes D and personal records N, plus object-key canonical sorting.
