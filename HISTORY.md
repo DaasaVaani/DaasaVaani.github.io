@@ -1,5 +1,49 @@
 # Documentation history
 
+## 2026-11-02: committed/published Website setup and approved native continuation
+
+- The owner requested committing all current changes, including manual edits.
+  Committed all32 Website implementation/test/documentation/gitlink files as
+  22718e0f24747302ece3c8c20326ac33bbfdc1b9, with clean status afterward. Other owning
+  repositories had no uncommitted reviewed files; no ignored raw originals or
+  attribution decisions were added.
+- The owner approved native bounded setup parity, its preserving contract/Room
+  upgrade, Android-only backupv3 and independent Shared-pin update. Subsequently
+  explicitly authorized continued validated pushes and next work.
+- Published prior fully validated Sharedc1c3086 first; exact hosted hygiene
+  41479066425 passed. Then published Website22718e0 under existing owner-approved
+  admin/main policy without changing protections. Exact hosted Repository checks
+  41479336245 passed lint,140 units,477 browsers and Pages deployment; CodeQL
+  41479335647 also passed. Live HTTPS root and entry returned200 with setup
+  captions and persisted-status markers.
+- Native contract Shared422f282 plus documentation2860694 passed370/370 checks
+  and hygiene; exact published2860694 hosted hygiene41481351655 passed. Native
+  independently adopts2860694; Website retains its already testedc1c3086 pin.
+- Archived roadmap/design wording that native setup was entirely absent and
+  native new exports remained v1. Current native Room9/manual-v3 implements only
+  the bounded preference flow; full onboarding/scripts/helpers/preview/durable
+  offline and system-backup activation remain separate gates. Native owning
+  history records its device validation and publication, not this guide.
+- Native e3ea0c8ff6cb1946d9c7405f28a5560694733f89 was fully validated and
+  published on main using the existing administrator exception, without rule
+  changes. Final native config/build/both lints passed; actual XML confirms67 JVM
+  and165 device tests, zero failures/errors/skips. Exact hosted native hygiene
+  41487746877 passed including build/core/lint. Native retains its independent
+  Shared2860694 pin; Website remains onc1c3086. Full supported-device evidence
+  and system-backup activation remain open.
+- Final Website documentation-tree validation:
+  `npm test -- --maxWorkers=2` passed140/140;
+  `node node_modules\@playwright\test\cli.js test --workers=2`, using the clean
+  configured c2837cc fixture publisher, passed477/477 across desktop/mobile/narrow
+  in7.3m with fresh production build/strict typecheck. No tests were skipped.
+  Changed-Markdown checks passed all6 files and all153 unique unchanged
+  requirement IDs; strict locked Node YAML parsing passed4 files, installed
+  actionlint1.7.12/ShellCheck0.11.0 and whitespace checks passed.
+- Corrected the transfer-validation table's superseded statement that native
+  full backups were absent: manual current-state backup is covered by XFER-09;
+  actual receiving-app/provider/device interoperability, signed App Links,
+  direct native file sharing and system-backup activation remain open.
+
 ## 2026-10-31: owner-approved Website-first bounded preference setup
 
 - Owner selected first-use setup, Website first, and explicitly approved a

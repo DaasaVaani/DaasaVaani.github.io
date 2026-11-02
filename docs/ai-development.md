@@ -45,7 +45,7 @@ demonstrations do not close remaining production contracts or prove full readine
 | Website | Verified real text-only online catalog/on-demand UUID reading and explicit entire-catalog canonical discovery with bounded in-memory content, typed favorites/lists, device-only recent history and optional learning labels/local filtered view; separate fixture reader/search, browsing/list-reader continuity, independent persisted lyric font/density, preserving personal v9 upgrade and explicit latest-occurrence Continue, worker v1/v2 transfer/export, production-only interface cache/normal code-update notice and declarative installation metadata/original icons (not offline lyrics or complete OS installation evidence) |
 | Shared | Lyric/source/publication and fixture/minimal-list/logical-list contracts, official Unicode16 name-matching resources, portable settings and generated web/Android UI catalogs |
 | Library | Reviewed owner-text import with stable identities/held exceptions, complete empty authoring fields, canonical text-only post-merge publication; separate synthetic indexed fixture publisher |
-| Android | Separate real canonical preparation/reading and whole-prepared-catalog discovery, session-local Library and independent Favorites literal filtering/paging/reader/Back return context; original collection/unsaved-preview/Learning context through successive reader choices and Settings; typed Room6 favorites, durable lists/occurrences/recent history/learning labels with offline local filtered view, preserving upgrades, independent font/density/locale/theme, bounded v1/v2 preview/new-list save/re-export, explicit complete-link Sharesheet handoff with copy/file fallbacks and reader/list navigation; production lifecycle/full personal parity remain incomplete |
+| Android | Separate real canonical preparation/reading and whole-prepared-catalog discovery, session-local Library and independent Favorites literal filtering/paging/reader/Back return context; original collection/unsaved-preview/Learning context through successive reader choices and Settings; typed Room9 favorites, durable lists/occurrences/recent history/learning labels with offline local filtered view, preserving upgrades, independent font/density/locale/theme and bounded skippable setup, bounded v1/v2 preview/new-list save/re-export, explicit complete-link Sharesheet handoff with copy/file fallbacks and reader/list navigation; manual backup v3 preserves setup and accepts v1 as pending; production lifecycle/full personal parity remain incomplete |
 | Website library/ | Absent; reviewed sources belong only to Library |
 | Website settings/ | Web schema/settings; portable defaults and bounds consumed from Shared |
 | Tooling | Exact npm lockfiles and Gradle wrapper/version catalog; use the current command registry |
@@ -54,8 +54,9 @@ demonstrations do not close remaining production contracts or prove full readine
 Website Settings additionally implements the current-state same-platform
 [personal-backup v2 protocol](architecture.md#same-platform-personal-backup-v2):
 stable worker export, complete preview, explicit fenced atomic replacement and
-offline installed-interface use. Native manual backup v1 remains independently
-implemented/pinned; neither proves future personal-feature coverage, native setup,
+offline installed-interface use. Native bounded setup and manual backup v3 remain
+independently implemented/pinned, retaining v1 imports as setup pending and the
+complete explicit preparation gate. Neither proves future personal-feature coverage,
 system-backup activation or offline lyric readiness.
 
 Website/native personal-name matching uses the official Shared Unicode16 profile.
@@ -96,7 +97,8 @@ See [the storage/name protocol](architecture.md#transactions-names-and-exact-acc
   authoritative; no full offline-shell/device/font coverage is inferred.
   Independent lyric font/density controls in Settings and both readers affect
   body text only and preserve canonical layout/history. Website setup exposes only
-  current language/theme/font/density controls; script/helper/preview, native setup,
+  current language/theme/font/density controls; native independently exposes the
+  same bounded controls without changing preparation. Script/helper/preview,
   Practice and offline-content preference coverage remain incomplete.
 - Learning labels follow the [Shared contract](https://github.com/DaasaVaani/shared/blob/main/docs/learning-labels.md):
   exact typed identity, stable assignment order, explicit linear duplicate check,

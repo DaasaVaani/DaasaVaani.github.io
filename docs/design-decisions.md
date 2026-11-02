@@ -38,12 +38,12 @@ The [approved lyric identity contract](https://github.com/DaasaVaani/shared/blob
 owns typed lyric/legacy references, target minimal-list v2, text-only publication
 eligibility and staged compatibility. Real source/publication schemas and separate
 canonical readers implement the initial text-only slice. Website typed personal
-v9/v2 transfers and native Room7 typed collections preserve old identities through structural legacy adapters;
+v9/v2 transfers and native Room9 typed collections preserve old identities through structural legacy adapters;
 fixture/v1 formats remain legacy-only. Future personal collections and
 production adapters remain open. Website current-state backup v2 separately
 implements the [same-platform protocol](architecture.md#same-platform-personal-backup-v2);
-native independently retains manual backup v1. Future personal collections,
-native setup and system-backup activation remain open.
+native independently exports manual backup v3 and imports v1 with setup pending.
+Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.
 
@@ -60,7 +60,7 @@ Recently opened recording is initially enabled, device-only and bounded to the
 latest50 distinct successful opens, with separate clear/disable controls.
 The [Shared recent-history contract](https://github.com/DaasaVaani/shared/blob/main/docs/recent-history.md)
 owns the exact ordered typed record and portable default. Website v9 implements
-the successful-open/controls/preserving-upgrade slice; native Room6 independently
+the successful-open/controls/preserving-upgrade slice; native Room9 independently
 implements the same bounded device-only history. This is not permission to record search queries or send history.
 
 Website/native later reading/Settings controls independently persist native
@@ -70,7 +70,9 @@ UI/theme independence and mounted-reader history. The
 defines exact defaults, preserving older inputs and platform-owned spacing.
 The [non-blocking first-use panel](architecture.md#non-blocking-first-use-setup)
 offers UI language, theme, font size and density with atomic completion or skip.
-Script/helper/preview/offline preparation, native setup, Practice and complete
+Native independently offers the same bounded setup with preserving Room9 migration
+and Android-only backup v3; it retains the explicit complete preparation gate.
+Script/helper/preview/durable offline preparation, Practice and complete
 font/device evidence remain open.
 
 The Website's [individual Recite lifecycle](architecture.md#focused-individual-recite-and-screen-awake)
@@ -87,7 +89,7 @@ REC-04 slice persists one exact list/occurrence pair with commit-gated movement
 and explicit Continue, preserving current contents and explaining deletion
 without substitution. Its [Shared contract](https://github.com/DaasaVaani/shared/blob/main/docs/recitation-position.md)
 keeps mode/wake ownership session-only. Website backup v2 and native manual
-backup v1 include the exact pair without mode/wake state. Reviewed verse
+backup v3 include the exact pair without mode/wake state. Reviewed verse
 Practice, system-backup activation and durable offline content remain
 open; no automatic entry or fabricated linguistic review is authorized.
 
@@ -102,7 +104,7 @@ typed history and original list/Back context; management preview is not readines
 
 The [Shared learning-label contract](https://github.com/DaasaVaani/shared/blob/main/docs/learning-labels.md)
 defines only optional Want to learn, Practising and Comfortable reciting
-assignments per exact typed reference. Website v9 and native Room7 independently
+assignments per exact typed reference. Website v9 and native Room9 independently
 add an initially empty local collection with preserving migrations, fenced atomic
 writes and a filtered, paged Learning view usable before preparation and offline
 (Website requires its installed interface).

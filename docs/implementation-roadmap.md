@@ -58,6 +58,14 @@ v1 imports explicitly as pending. Direct routes stay usable; no preview/content
 transfer or download consent is inferred. Script/Latin/helper choices, approved
 preview integration and complete offline download/size remain open UX-12 gates.
 
+Native independently implements the same bounded skippable setup, preserving
+Room8-to-Room9 migration and Android-only backup v3 with v1 imports explicitly
+pending. Settings and pending list previews remain available. No setup action
+prepares lyrics or changes the explicit complete-library preparation gate.
+The [native implementation and validation guide](https://github.com/DaasaVaani/AndroidApp#non-blocking-first-use-setup)
+owns its independent Shared pin, storage accounting and device checks; system
+backup remains intentionally inactive.
+
 | Surface | Available | Still incomplete |
 | --- | --- | --- |
 | P0 | npm manifests/locks, React/Vite checks, native Gradle wrapper/catalog and JVM/SDK integration | Complete selected dependency integration and production command/release matrix |
@@ -65,9 +73,9 @@ preview integration and complete offline download/size remain open UX-12 gates.
 | P2 | Two-locale UI generation with committed web/Android resources | Reviewed five-Latin/nine-non-Latin tables, transliteration, technical grammar, plurals/escaping conformance |
 | P4 | Real canonical text-only hash-addressed publication; separate fixture index producer and sampled OSA/candidate parity | Public populated-metadata/Latin/media adapters, durable ledger/receipts, semantic dates, ZIP/planner and complete language/profile index evidence |
 | P5 | Verified real online metadata/catalog and on-demand UUID reading with bounded in-memory cache, literal title filter, complete paging, explicit entire-catalog Show another lyric and reader continuity; existing fixture search/preferences/themes | Complete production-profile reading, full filters/reviewed Explore groups/first-publication discovery/script/helper/video/accessibility/platform journeys |
-| P5a | Transactional typed lyric/legacy web favorites/lists/preferences/recent history/learning labels with filtered local view, independent lyric font/density and skippable setup, preserving v1..v8-to-v9 upgrade, worker v1/v2 preview and saved-v2 export, optional share/copy/fallbacks, independent occurrence editing/import/management, exact verified catalog lookup and reader-to-list addition; native Room7 typed collections; both clients' individual/ordered-list Recite, explicit exact-occurrence Continue and manual full backups; Website backup v2 includes setup | Bookmarks/verse Practice, real sharing-surface interoperability, native system-backup activation/transport evidence, future personal backup fields and remaining production migrations |
+| P5a | Transactional typed lyric/legacy web favorites/lists/preferences/recent history/learning labels with filtered local view, independent lyric font/density and skippable setup, preserving v1..v8-to-v9 upgrade, worker v1/v2 preview and saved-v2 export, optional share/copy/fallbacks, independent occurrence editing/import/management, exact verified catalog lookup and reader-to-list addition; native Room9 typed collections and bounded setup; both clients' individual/ordered-list Recite, explicit exact-occurrence Continue and manual full backups; Website v2/native v3 backups include setup | Bookmarks/verse Practice, real sharing-surface interoperability, native system-backup activation/transport evidence, future personal backup fields and remaining production migrations |
 | P6 | Production-only shell precache with offline lazy-worker/manifest coverage, narrow root/open fallback, explicit support/error/retry states, normal deferred code-update notice and stable declarative installation metadata/original maskable/touch icons | Actual OS installation/supported-platform matrix, persistent snapshots/journals/atomic activation/resume/repair/reader-safe GC, eviction/readiness and complete lifecycle compatibility |
-| P7 | Separate native real canonical full preparation/reading and whole-prepared-catalog discovery in memory; session-local Library and independent Favorites literal filtering/complete paging/reader/Back return context, original collection/unsaved-preview/Learning context through successive choices and Settings, fixture search, Room6 typed favorites/durable lists/occurrences/preferences/recent history/learning labels and offline filtered Learning view before preparation, preserving upgrades, independent font/density/locale/theme, bounded v1/v2 preview/save/re-export, explicit complete-link Sharesheet handoff with copy/file fallbacks and reader/list navigation, core and connected tests | Full personal backups/bookmarks/verse Practice/recitation, signed App Links/receiving-app matrix, direct file sharing, durable preparation/recovery and full parity/device matrix |
+| P7 | Separate native real canonical full preparation/reading and whole-prepared-catalog discovery in memory; session-local Library and independent Favorites literal filtering/complete paging/reader/Back return context, original collection/unsaved-preview/Learning context through successive choices and Settings, fixture search, Room9 typed favorites/durable lists/occurrences/preferences/recent history/learning labels and offline filtered Learning view before preparation, preserving upgrades, independent font/density/locale/theme and skippable setup, bounded v1/v2 preview/save/re-export, explicit complete-link Sharesheet handoff with copy/file fallbacks and reader/list navigation, individual/ordered Recite with exact Continue, manual backup v3, core and connected tests | Bookmarks/verse Practice, complete recitation/device evidence, system-backup activation, signed App Links/receiving-app matrix, direct file sharing, durable preparation/recovery and full parity/device matrix |
 | P3/P8/P9 | Dependency-ordered Shared/fixture-publisher pins; full web fixture CI/Pages and native build/core/lint CI | Initial release: production publication/signing, device CI and release readiness. Later release: YouTube ingestion automation and its provider clarification |
 
 The fixture capability is deliberately named `fixture-catalog-v1`; all UIs label
@@ -121,7 +129,7 @@ the XFER-08 platform matrix and signed App Links remain open.
 Android's bounded native codec has independent Node/zlib vectors and strict
 actual-ceiling rejection, plus connected preview/new-list save/re-export evidence.
 It displays catalog known/pending/unavailable states without guessing matches.
-Typed favorites and independently identified list occurrences persist in Room6;
+Typed favorites and independently identified list occurrences persist in Room9;
 v1 imports structurally become legacy references and saved lists export v2.
 Actual client-generated v2 gzip/link round trips cover both codec directions,
 not OS delivery. Failed/cancelled provider writes can leave an incomplete selected
@@ -138,7 +146,7 @@ Durable lists do not complete full personal-state parity.
 LEARN-04 receives partial Website/native evidence for self-assigned Want to
 learn, Practising and Comfortable reciting labels, exact typed change/clear and
 offline persisted local Learning filters/paging before content preparation.
-Website pre-v7-to-v9/native Room6 migrations initialize only empty labels while preserving
+Website pre-v7-to-v9/native pre-Room6-to-Room9 migrations initialize only empty labels while preserving
 all old values and identities; complete accounting, collection limits, no-op
 revisions and stale-write fences remain mandatory. Unresolved records are
 retained/editable and no catalog is implicitly fetched. Reader/discovery return
@@ -188,9 +196,9 @@ readers and Settings. Default platform rendering (Website28px/native28sp,
 Normal density) and literal line/layout
 identities are preserved. Latest-state transactions, no-op choices, peer updates,
 restart, old-history preservation and actual byte-capacity checks belong to the
-v9/native Room7 slices, with independent native font units and spacing.
-Website bounded preference setup and native manual backup are implemented;
-native onboarding, helper/script coverage, reviewed verse Practice, persistent offline
+v9/native Room9 slices, with independent native font units and spacing.
+Both clients' bounded preference setup and manual backups are implemented;
+complete onboarding/helper/script coverage, reviewed verse Practice, persistent offline
 use and the complete accessibility/font/device matrix remain unimplemented or
 unverified; this is not full UX-14 completion.
 

@@ -234,7 +234,7 @@ restart. This does not establish lyric readiness or durable offline snapshots.
 Practice remains explicitly unavailable until reviewed verse-based Practice is
 implemented. No verse divisions, Practice action, automatic assessment or reminder
 is fabricated; LEARN-04 remains partial until that separate entrypoint exists.
-Native Room6 independently preserves earlier collections/preferences/history,
+Native Room9 independently preserves earlier collections/preferences/history,
 initializing only empty labels. Its offline Learning view is available before
 preparation and retains filters/pages/origin through readers, Settings, Back and
 consecutive discovery. Explicit canonical Read still requires complete
@@ -260,7 +260,7 @@ never record. Clear/disable preserve favorites/lists/preferences; unknown
 references remain visible. See the [history lifecycle](architecture.md#recently-opened-lifecycle).
 
 Still open: complete production-profile reading, bookmarks/verse Practice,
-native first-use setup/system-backup activation, full linguistic search/
+native system-backup activation, full linguistic search/
 profiles/helpers, populated classification/context/verse/media/eligible-Latin
 public adapters, rights/registry closure, persistent offline activation/repair,
 publication ledger/date/ZIP protocols and release/platform acceptance.
