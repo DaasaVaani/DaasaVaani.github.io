@@ -1,5 +1,62 @@
 # Documentation history
 
+## 2026-11-03: approved isolated durable-content protocol and Website backend
+
+- Following completed setup/sharing, the owner selected a dedicated Website
+  Dexie/IndexedDB content database rather than OPFS, protocol-first implementation
+  rather than live download activation, and a whole-operation nonblocking exclusive
+  Web Lock rather than lease timeout stealing. Approved the complete isolated
+  protocol bundle, Shared implementation and independent Website pin update.
+  Production limit/name values were not selected; Android/Library were unchanged.
+- Shared published9b34aa59a8d71bfa2c073a21c5a88a011dbf1212 with strict schema,
+  strong types/declarations, browser-safe pure transitions and40 new tests.
+  `npm run check` passed410/410; hygiene293, strict YAML22, generated consistency,
+  actionlint/ShellCheck and whitespace passed. Exact
+  [hosted validation41586524256](https://github.com/DaasaVaani/shared/actions/runs/41586524256)
+  passed before Website independently adopted the published prerequisite.
+- Added the isolated physical adapter and actual-browser tests without app imports,
+  production defaults, network/cache/UI hooks or fabricated readiness. It preserves
+  existing personal/in-memory reading behavior and requires future complete decoded/
+  capability proof. Scope completion drains unawaited writer operations under the
+  native lock; failures remain explicit. Reader departure releases its pin and
+  invalidates retained reads without a timeout or cancellation claim for arbitrary UI code.
+- Initial strict typecheck exposed the required Shared error-message constructor
+  and unchecked fixture-array access; fixed with explicit diagnostic messages,
+  guards and typed actual-object fixtures, without casts/defaults. A subsequent
+  strict check exposed DOM Web Locks' nested generic Promise annotation; used a
+  real awaited wrapper rather than a cast. Initial focused storage/build run passed
+  24/24 across desktop/mobile/narrow, including actual terminal activation failure,
+  stale validation and unawaited-scope refusal. Added explicit reader departure and
+  actual writer-page closure for the final complete suite.
+- Archived P6's prior blanket statement that persistent journals/atomic candidates/
+  reader-safe GC were entirely unimplemented: they now exist only as isolated
+  prerequisites. Live publication, transport, decoded/capability validation,
+  production settings, active-version reading/search, repair/readiness and device
+  conformance remain open; no complete OFF requirement or release gate was closed.
+- Final `npm test -- --maxWorkers=2` passed143/143 in18 files.
+  `node node_modules\@playwright\test\cli.js test --workers=2`, using the configured
+  clean c2837cc fixture publisher, passed522/522 across desktop/mobile/narrow in7.0m
+  with fresh production build/strict typecheck and no skipped tests. The30 new
+  physical-storage cases include explicit departure and actual writer-page closure.
+  Session `validate-first-use-docs.py` passed all10 changed/new Markdown files and
+  all153 unique unchanged requirement IDs. Locked Node `yaml.parseDocument` with
+  strict/unique-key parsing passed all4 tracked YAML files; installed
+  actionlint1.7.12/ShellCheck0.11.0 and both Git whitespace checks passed.
+  Verified exact published Shared SHA/hosted success, fresh main ancestry and live
+  existing admin-only PR/check permission with no force/delete bypass.
+
+## Public sharing exact hosted/live publication verification
+
+- Websiteaa90caaf90402e00ae21595576f94c64b1ec0dcb was published after the complete
+  143-unit/492-browser run. Exact hosted Repository checks/deployment41503089010
+  and CodeQL41503089017 passed; both consumer pins were independently0b884d8.
+- Live asset names differed from the local build. Downloaded the exact successful
+  Pages artifact13168898934 and verified live HTML/JS byte-for-byte against that
+  artifact, with HTTP200 and sharing markers. JS SHA256 was
+  ce7ac1e1388799582ab8a013411c82c387aa36f5a484b61dd9689ac2f5fd6edc.
+  No cross-platform deterministic-build claim was made. Removed only the exact
+  temporary downloaded tar and empty extraction subdirectory.
+
 ## 2026-11-02: approved public canonical lyric-link sharing
 
 - Website/native bounded setup publication completed: Websitea721078 exact

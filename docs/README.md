@@ -23,6 +23,9 @@ The [real lyric preview](lyric-preview.md) reads the reviewed text-only publicat
 separately from fixture content, with typed local favorites/lists and preserving
 legacy adapters. Its limited in-memory content lifecycle does not establish
 production offline/full-personal conformance.
+The [isolated durable-content guide](durable-content.md) owns Website's physical
+IndexedDB/Web Locks prerequisite and its actual-browser test boundary; it links
+the authoritative Shared protocol and leaves live offline integration open.
 
 ## Owners
 

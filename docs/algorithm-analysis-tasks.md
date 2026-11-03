@@ -383,9 +383,14 @@ evidence is not established.
   Retry only selected transient failures, not permanent/schema/capability/
   integrity errors; reconcile missing/mixed publications without changing targets
   silently. Fetched policy cannot raise consumer safety ceilings.
-- **Analysis needed:** define state transitions, idempotent journal operations,
-  fencing/transaction boundaries and recovery order across database/filesystem/
-  network effects. Compare bounded retry/backoff and resume reconciliation
+- **Implemented prerequisite:** the [Shared durable-content protocol](https://github.com/DaasaVaani/shared/blob/main/docs/durable-content.md)
+  defines strict metadata transitions, exact prospective logical accounting and
+  fences. The [isolated Website adapter](durable-content.md) supplies actual
+  IndexedDB checkpoint/activation rollback, whole-operation locks, explicit resume
+  and browser page-death recovery. It has no transport or complete production validator.
+- **Analysis needed:** integrate those transitions and recovery order across
+  production database/filesystem/network effects and the native adapter.
+  Compare bounded retry/backoff and resume reconciliation
   policies without silently changing the target publication.
 - **Evidence:** fault injection at each durable transition; crash, cancel,
   storage/quota exhaustion, competing tabs/jobs, stale writers and mixed/stale
@@ -400,8 +405,13 @@ evidence is not established.
 - **Already fixed:** GC protects active/staged/live-reader/recovery references;
   verify on use plus bounded opportunistic audit. Isolated later damage can leave
   independently verified capabilities usable; it is not partial first activation.
-- **Analysis needed:** compare reachability/lease and reclamation strategies
-  across tabs/jobs, including crashed readers and fencing races. Define audit
+- **Implemented prerequisite:** Website's isolated adapter uses actual shared
+  manifest pins and exclusive nonblocking retired-pin collection, including
+  delayed-acquisition rechecks, explicit departure and retained-reader refusal.
+  No timeout steals a live pin. It verifies encoded bytes but supplies no degraded
+  readiness/audit or complete decoded capability adapter.
+- **Analysis needed:** integrate the approved reachability rules across production
+  consumers/jobs, including native reader lifetime and fencing races. Define audit
   scheduling, verification-cache validity and capability/readiness dependency
   evaluation for items, index, shell and required reading resources.
 - **Evidence:** open-reader/update/GC races, orphan cleanup, item/index eviction,

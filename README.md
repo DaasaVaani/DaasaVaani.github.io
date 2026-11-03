@@ -18,6 +18,12 @@ preserve lyric/legacy identities and user text; v1 imports remain supported.
 Existing identifiers are never guessed or remapped. Persistent offline Library state,
 production metadata adapters and the complete production lifecycle remain open.
 
+The [isolated durable-content backend](docs/durable-content.md) provides a dedicated
+IndexedDB protocol adapter, whole-operation Web Locks, actual encoded-byte checks,
+fenced atomic activation candidates and pinned-reader-safe collection. It is not
+imported by the application and has no production name/limit defaults, downloader,
+readiness UI or live publisher activation. It does not change current reader behavior.
+
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an
 always-selectable manual fallback. The payload includes no lyric text or personal

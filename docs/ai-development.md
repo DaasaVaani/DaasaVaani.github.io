@@ -59,6 +59,13 @@ independently implemented/pinned, retaining v1 imports as setup pending and the
 complete explicit preparation gate. Neither proves future personal-feature coverage,
 system-backup activation or offline lyric readiness.
 
+Website additionally has an [isolated durable-content backend](durable-content.md)
+and independently pinned Shared protocol: dedicated IndexedDB, fenced whole-operation
+Web Locks, actual encoded-object verification, atomic activation candidates and
+reader-safe collection. It is deliberately not imported by the app and has no
+production defaults, transport, complete validator or readiness integration.
+Existing content lifecycles stay in memory; Android and Library are unchanged.
+
 Both clients' [public canonical lyric links](lyric-preview.md#public-lyric-links)
 use the configured Website base and exact lyric identity, never copied lyrics or
 personal state. Explicit copy/system sharing retains manual selection and truthful

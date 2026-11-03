@@ -124,6 +124,16 @@ platform APIs, cancellation/retry, pending/late results, no extra requests or
 personal writes, focused reading and canonical-only list occurrences.
 These are incremental commands; finalization retains the complete suites.
 Adapter tests do not establish OS/receiving-app delivery or verified App Links.
+The [isolated content-store suite](../tests/browser/content-store.spec.ts) maps
+to OFF-06/07/11/15/16 and QUAL-06 storage prerequisites. It uses real IndexedDB/
+Web Locks, actual gzip fixture bytes, terminal checkpoint/activation failure,
+exact complete logical ceiling/+1, stale/busy/unawaited writers, actual writer-page
+closure, pinned-reader removal/GC and explicit departure/delayed selection.
+`node node_modules\@playwright\test\cli.js test content-store --workers=2`
+is incremental only. Its test-only in-memory Vite bundle is not an app entrypoint;
+synthetic validation is not complete production decoded/capability/readiness proof.
+See the [owning backend guide](durable-content.md) for boundaries and open gates.
+
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the
 [native validation guide](https://github.com/DaasaVaani/AndroidApp#validation)

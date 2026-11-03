@@ -21,6 +21,19 @@ Shared is pinned independently by Website, Android and Library. Shared does not
 depend on consumers. Website root Pages and Library generated /library/ publication
 are independent; clients consume artifacts, never source Git.
 
+## Isolated durable-content prerequisite
+
+The [Website content adapter](durable-content.md) implements the approved
+[Shared durable-content protocol](https://github.com/DaasaVaani/shared/blob/main/docs/durable-content.md)
+in a separate Dexie/IndexedDB database with explicit caller limits. A whole-operation
+exclusive Web Lock fences transactional checkpoints and atomic activation
+candidates; shared manifest pins protect readers through removal and deferred GC.
+Actual Blob length/digest verification and captured-fence rechecks are mandatory.
+This module is not imported by the app, does not select its active reading version
+and has no network/production configuration/readiness integration. Logical bytes
+are not physical quota. Live publication and complete decoded/capability/device
+validation remain D5/P6 gates; the owning guide defines exact physical behavior.
+
 ## Data flow
 
 The approved [lyric identity contract](https://github.com/DaasaVaani/shared/blob/main/docs/lyric-identity.md)

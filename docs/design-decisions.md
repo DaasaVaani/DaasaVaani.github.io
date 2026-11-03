@@ -24,7 +24,7 @@ archive of questionnaires, alternatives, changes and dated observations.
 | Formats | RFC8785 JSON/safe integers; independent version families, encoded SHA256 object map, manifest snapshot hash plus increasing feed sequence, exact size/capability validation |
 | Publication | Durable Library state branch/pending-confirmed receipts; trusted post-merge job writer, no main bot bypass; semantic changedAt/no-op stability |
 | Transfer | Original gzip members in ZIP STORE100/32MiB; bounded byte/request planner; images online only, no offline video/images |
-| Offline | Explicit full validation/atomic pointer, active+one target, verified-artifact resume, safe reader pins/GC/fences, same-version repair/degradation, current-only hosting |
+| Offline | Explicit full validation/atomic pointer, active+one target, verified-artifact resume, safe reader pins/GC/fences, same-version repair/degradation, current-only hosting; Website dedicated Dexie/IndexedDB content database with whole-operation exclusive Web Lock and explicit limits, no hidden defaults |
 | Personal | One transactional Room/Dexie personal DB, typed identities, repeated occurrences, exact byte/collection bounds, forward non-destructive migration |
 | Personal name matching | Official Unicode16 NFC/full default C/F folding/NFC with preserving derived-key migration; no automatic list renaming or merging |
 | Lists/backups | Portable new-list-only minimal transfers; same-platform logical gzip full backups/confirmed replacement covering all currently implemented personal fields, versioned extension when new fields arrive, preview revision/fencing, truthful locale postcommit |
@@ -43,6 +43,10 @@ fixture/v1 formats remain legacy-only. Future personal collections and
 production adapters remain open. Website current-state backup v2 separately
 implements the [same-platform protocol](architecture.md#same-platform-personal-backup-v2);
 native independently exports manual backup v3 and imports v1 with setup pending.
+The [isolated Website durable-content adapter](durable-content.md) implements the
+approved portable metadata protocol and physical storage/pinning prerequisite.
+It is not live offline preparation, decoded/capability proof or publisher activation;
+production database names/limits and remaining D5 integration stay open.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.
