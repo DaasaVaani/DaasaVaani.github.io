@@ -92,9 +92,10 @@ retired-root replacement. A changed revision or terminal storage failure preserv
 the prior active pointer and committed target progress.
 
 Reading every object is a necessary guard, not proof of the future production
-validator. Current tests use permitted gzip storage fixtures and synthetic
-validation callbacks. They do not validate a real multilingual manifest, policy,
-index, complete lyric collection or app-shell compatibility.
+validator. Coordinator tests use permitted gzip storage fixtures and synthetic
+callbacks. Additional [staged snapshot validation](snapshot-validation.md) verifies
+actual descriptor/manifest/policy/item bytes for the narrow prelaunch family.
+Neither establishes a real multilingual/index/complete-library or app-shell proof.
 
 ## Readers, removal and collection
 
@@ -120,7 +121,8 @@ them. Temporary retired data still counts toward logical bounds.
 ## Validation and remaining integration gates
 
 [Actual browser tests](../tests/browser/content-store.spec.ts) compile only the
-real backend into an in-memory test bundle with the existing Vite API. This adds
+real backend and staged validator through a test-only entry into an in-memory
+bundle with the existing Vite API. This adds
 no production entrypoint, app test hook, cache or offline UI. All configured
 Chromium desktop/mobile/narrow projects use real IndexedDB and Web Locks:
 
@@ -133,6 +135,8 @@ Chromium desktop/mobile/narrow projects use real IndexedDB and Web Locks:
 - exact prospective complete logical-byte ceiling versus one byte less;
 - future/schema/missing-control refusal and unsupported-lock no-creation;
 - complete personal-database preservation for covered preparation/removal/closure.
+- actual staged decoding during partial-store reopen and activation; rehashed
+  invalid JSON/gzip cannot replace the prior active snapshot through valid receipts.
 
 Incremental command:
 
@@ -149,7 +153,8 @@ protocol; Website supplies physical-storage evidence, not native/device parity.
 Remaining gates include Library's live sequenced publication/ledger/receipts and
 activation, genuine descriptor admission, bounded transport/ZIP planning, complete
 decoded-schema/capability proof, explicit consent/progress/cancel/retry/removal UI,
-production settings and storage/quota/eviction handling, active-version reader/
+production settings, durable descriptor retention/reconstruction and storage/quota/
+eviction handling, active-version reader/
 search integration, same-version repair/degraded readiness, and the supported
 browser/device matrix. OFF-01/02/03/04/08/09/10/12/13/14/17 and full OFF-06/07/
 11/15/16 remain unclosed. There is no real offline save or release-readiness claim.

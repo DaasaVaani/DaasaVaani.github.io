@@ -33,6 +33,11 @@ This module is not imported by the app, does not select its active reading versi
 and has no network/production configuration/readiness integration. Logical bytes
 are not physical quota. Live publication and complete decoded/capability/device
 validation remain D5/P6 gates; the owning guide defines exact physical behavior.
+The [isolated staged validator](snapshot-validation.md) now supplies actual
+descriptor/manifest/policy/item byte proof for the supported prelaunch envelope,
+with early capability refusal and complete target/global-identity binding.
+It remains outside the app; production multilingual proof, publisher provenance
+and durable descriptor retention/reconstruction remain integration gates.
 
 ## Data flow
 

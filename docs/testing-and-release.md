@@ -133,6 +133,15 @@ closure, pinned-reader removal/GC and explicit departure/delayed selection.
 is incremental only. Its test-only in-memory Vite bundle is not an app entrypoint;
 synthetic validation is not complete production decoded/capability/readiness proof.
 See the [owning backend guide](durable-content.md) for boundaries and open gates.
+`npm test -- snapshot-validation --maxWorkers=2` additionally checks actual staged
+descriptor/manifest/policy/item bytes, copied candidates/trusted limits, exact
+aggregate ceilings/-1, unsupported capability refusal before lookups, compatible
+gzip profiles, malformed/rehashed gzip/JSON, item/global identity and cancellation.
+The same real content-store browser suite now exercises actual staged decoding/
+activation and preservation on rehashed invalid replacements. Its test-only entry
+is compiled in memory, never imported by the app. Neither suite establishes durable
+descriptor reconstruction, authenticated publication or complete multilingual/
+offline readiness. See [the byte-validation guide](snapshot-validation.md).
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

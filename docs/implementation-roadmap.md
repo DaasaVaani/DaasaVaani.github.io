@@ -52,6 +52,11 @@ activation candidates and reader-safe collection. Actual browser failures/reopen
 page-closure tests do not establish live download, complete decoded validation,
 offline reader precedence, eviction/readiness or native parity. Production names/
 limits and Library sequenced publication activation remain open D5/P6 work.
+The [staged snapshot validator](snapshot-validation.md) additionally closes the
+isolated prelaunch byte/schema admission prerequisite: tolerant metadata,
+actual canonical/gzip/length/hash checks, original-object target binding and
+global item/line identity checks. Live support and complete production proof
+remain open, including durable admitted-descriptor retention/reconstruction.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

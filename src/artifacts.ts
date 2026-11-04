@@ -2,6 +2,7 @@ import Ajv2020 from "ajv/dist/2020";
 import itemSchema from "../shared/schemas/fixture-item.schema.json";
 import policySchema from "../shared/schemas/search-policy.schema.json";
 import type { Descriptor, Manifest, FixtureItem, ObjectRecord, SearchIndex, SearchPolicy } from "../shared/types/publication";
+import { encodedSha256 } from "./encoded-bytes";
 
 export const record = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === "object" && !Array.isArray(value);
@@ -66,8 +67,7 @@ export async function verified(base: URL, expected: { path: string; sha256: stri
   validateReference(expected, encodedLimit, decodedLimit);
   const bytes = await fetchBytes(new URL(expected.path, base), expected.encodedBytes, signal, cache);
   if (bytes.length !== expected.encodedBytes) throw new Error("Artifact encoded size mismatch");
-  const actual = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new Uint8Array(bytes)))]
-    .map(value => value.toString(16).padStart(2, "0")).join("");
+  const actual = await encodedSha256(bytes);
   if (actual !== expected.sha256) throw new Error("Artifact SHA256 mismatch");
   const stream = new Blob([new Uint8Array(bytes)]).stream().pipeThrough(new DecompressionStream("gzip"));
   const decoded = await bounded(stream, expected.decodedBytes);

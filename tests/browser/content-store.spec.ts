@@ -9,6 +9,7 @@ import {
 } from "../../shared/tools/content-state.mjs";
 import type { ContentStoreConfig } from "../../src/content-store";
 import { personalSnapshot } from "../lyric-browser";
+import { snapshotFixture, snapshotLimits, snapshotPacket } from "../snapshot-fixture";
 import messages from "../../shared/generated/web/ui.json" with { type: "json" };
 
 type FixtureObject = { sha256: string; encodedBytes: number; bytes: number[] };
@@ -22,7 +23,7 @@ let compiled: Promise<string> | undefined;
 async function bundle() {
   return compiled ??= (async () => {
     const result = await build({ configFile: false, logLevel: "silent", build: {
-      write: false, minify: false, lib: { entry: resolve("src", "content-store.ts"), formats: ["es"], fileName: "content-store" },
+      write: false, minify: false, lib: { entry: resolve("tests", "isolated-content.ts"), formats: ["es"], fileName: "content-store" },
     } });
     const outputs = Array.isArray(result) ? result : [result];
     const chunks = outputs.flatMap(output => "output" in output ? output.output : []).filter(output => output.type === "chunk");
@@ -587,6 +588,7 @@ test("future or changed database schemas and missing controls are refused withou
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
       });
+
       created.close();
       let failure = "";
       try { await backend.ContentStore.open({ ...config, databaseName: name }); }
@@ -617,3 +619,103 @@ test("future or changed database schemas and missing controls are refused withou
     { mode: "missing", failure: "invalid", version: 10, count: 1 },
   ]);
 });
+
+test("the actual tolerant snapshot validator resumes real stored canonical bytes and activates without app or personal changes",async ({ page }) => {
+  await setup(page);
+  const personal=await personalSnapshot(page),fixture=snapshotFixture({
+    manifest: value => ({ ...value,optional: { "2": true,"10": false } }),
+  });
+  const result=await page.evaluate(async ({ config,packet,limits }) => {
+    const path="/isolated-content-store.js";
+    const backend: typeof import("../isolated-content")=await import(path);
+    const lookup=async (sha256: string) => {
+      const bytes=packet.objects[sha256];
+      if(!bytes) throw new Error("Missing synthetic snapshot bytes");
+      return new Uint8Array(bytes);
+    };
+    const candidate=await backend.inspectSnapshot(new Uint8Array(packet.descriptor),lookup,limits);
+    let store=await backend.ContentStore.open(config);
+    await store.withWriter((await store.snapshot()).control,async writer => {
+      await writer.begin(candidate.plan());
+      for(const object of candidate.metadataObjects()) await writer.putObject(object.sha256,object.bytes);
+      await writer.phase("paused");
+    });
+    store.close();
+    store=await backend.ContentStore.open(config);
+    let incomplete="";
+    try {
+      await store.withWriter((await store.snapshot()).control,writer =>
+        writer.activate((plan,read) => candidate.validate(plan,read)));
+    } catch(reason) {
+      if(!(reason instanceof backend.ContentError)) throw reason;
+      incomplete=reason.code;
+    }
+    const interrupted=await store.snapshot();
+    await store.withWriter(interrupted.control,async writer => {
+      await writer.phase("downloading");
+      for(const [hash,bytes] of Object.entries(packet.objects)) await writer.putObject(hash,new Uint8Array(bytes));
+      await writer.activate((plan,read) => candidate.validate(plan,read));
+    });
+    store.close();
+    store=await backend.ContentStore.open(config);
+    const active=await store.snapshot();
+    store.close();
+    return { interrupted,incomplete,active };
+  },{ config: config(),packet: snapshotPacket(fixture),limits: snapshotLimits() });
+  expect(result.incomplete).toBe("integrity");
+  expect(result.interrupted.control.active).toBeNull();
+  expect(result.interrupted.objects).toHaveLength(2);
+  expect(result.active.control.active).toEqual({ sequence: 1,manifestSha256: fixture.descriptor.manifest.sha256 });
+  expect(result.active.control.target).toBeNull();
+  expect(result.active.objects).toHaveLength(Object.keys(fixture.objects).length);
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
+
+for(const fault of ["json","gzip"] as const) {
+  test(`actual encoded receipts cannot activate a rehashed invalid ${fault} replacement or destroy the previous snapshot`,async ({ page }) => {
+    await setup(page);
+    const personal=await personalSnapshot(page),a=snapshotFixture(),b=snapshotFixture({
+      sequence: 2,
+      ...(fault==="json"? {
+        jsonBytes: (role: string,bytes: Uint8Array) =>
+          role==="item"? new Uint8Array([...bytes,32]):bytes
+      }:{
+        gzipBytes: (role: string,bytes: Uint8Array) => role==="item"? new Uint8Array([...bytes,0]):bytes,
+      }),
+    });
+    const result=await page.evaluate(async ({ config,a,b,limits }) => {
+      const path="/isolated-content-store.js";
+      const backend: typeof import("../isolated-content")=await import(path);
+      const store=await backend.ContentStore.open(config);
+      const prepare=async (packet: typeof a) => {
+        const candidate=await backend.inspectSnapshot(new Uint8Array(packet.descriptor),async sha256 => {
+          const bytes=packet.objects[sha256];
+          if(!bytes) throw new Error("Missing synthetic snapshot object");
+          return new Uint8Array(bytes);
+        },limits);
+        return store.withWriter((await store.snapshot()).control,async writer => {
+          await writer.begin(candidate.plan());
+          for(const [hash,bytes] of Object.entries(packet.objects)) await writer.putObject(hash,new Uint8Array(bytes));
+          await writer.activate((plan,read) => candidate.validate(plan,read));
+        });
+      };
+      await prepare(a);
+      const previous=await store.snapshot();
+      let failure="";
+      try { await prepare(b); }
+      catch(reason) {
+        if(!(reason instanceof backend.ContentError)) throw reason;
+        failure=reason.code;
+      }
+      const rejected=await store.snapshot();
+      store.close();
+      return { failure,previous,rejected };
+    },{ config: config(),a: snapshotPacket(a),b: snapshotPacket(b),limits: snapshotLimits() });
+    expect(result.failure).toBe("integrity");
+    expect(result.rejected.control.active).toEqual(result.previous.control.active);
+    expect(result.rejected.control.target?.reference).toEqual({ sequence: 2,manifestSha256: b.descriptor.manifest.sha256 });
+    expect(result.rejected.control.target?.phase).toBe("paused");
+    expect(result.rejected.objects).toHaveLength(new Set([...Object.keys(a.objects),...Object.keys(b.objects)]).size);
+    expect(await personalSnapshot(page)).toEqual(personal);
+  });
+}

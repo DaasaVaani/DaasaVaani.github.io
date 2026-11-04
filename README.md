@@ -23,6 +23,10 @@ IndexedDB protocol adapter, whole-operation Web Locks, actual encoded-byte check
 fenced atomic activation candidates and pinned-reader-safe collection. It is not
 imported by the application and has no production name/limit defaults, downloader,
 readiness UI or live publisher activation. It does not change current reader behavior.
+An [isolated staged snapshot validator](docs/snapshot-validation.md) additionally
+checks actual canonical descriptor/manifest/policy/item bytes and binds complete
+stored-object validation to a target. It tolerates optional fields without
+accepting unsupported required capabilities; it is not live or full offline support.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import { encodedSha256 as hash } from "./encoded-bytes";
 import {
   ContentError, assertContent, initialContent, contentKey, claimContentWriter, beginContentTarget,
   setContentTargetPhase, recordContentObject, planContentActivation, removeContentRoots,
@@ -83,10 +84,6 @@ function schema(database: ContentDatabase) {
   }
 }
 
-async function hash(bytes: Uint8Array): Promise<string> {
-  return [...new Uint8Array(await crypto.subtle.digest("SHA-256", new Uint8Array(bytes)))]
-    .map(value => value.toString(16).padStart(2, "0")).join("");
-}
 function untilDeparture<T>(work: Promise<T>, signal?: AbortSignal): Promise<T> {
   if (!signal) return work;
   return new Promise<T>((resolve, reject) => {

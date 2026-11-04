@@ -1,5 +1,64 @@
 # Documentation history
 
+## 2026-11-04: approved isolated tolerant staged snapshot validator
+
+- The owner selected the recommended Shared/Website snapshot-validator slice
+  rather than native storage parity or live Library activation. Approved actual
+  sequenced descriptor and decoded manifest/policy/item validation, tolerant
+  optional fields, required-capability refusal and independent Website pin
+  adoption. Android/Library/source-attribution handoff remained untouched.
+- Shared publishedcc39b39b29fdb7b1ed92591943e98fe72e62b2e5 with browser-safe
+  consumer assertions/declarations and extracted producer/consumer semantics.
+  Producer strictness remains unchanged. Full `npm run check` passed429/429,
+  hygiene/YAML/workflow/whitespace/generated consistency passed and exact
+  [hosted41836403106](https://github.com/DaasaVaani/shared/actions/runs/41836403106)
+  succeeded before Website adopted the prerequisite.
+- Website adds actual whole-member gzip, fatal UTF8/unique-key/canonical JSON,
+  exact SHA/length, trusted role/count/aggregate admission and complete
+  target/catalog/global-line binding. Extracted the existing encoded SHA helper
+  for reuse without changing the existing online reader's verification behavior.
+  No new dependency, app support-list entry, production defaults, live downloader
+  or readiness UI was enabled.
+- First strict check found new browser cases inserted inside a native-IDB test
+  callback; moved them to top level and formatted only that new range with the
+  installed TypeScript language-service formatter. Initial decoder units passed16
+  and failed3 because identical malformed test bodies reused one hash across two
+  catalog identities, correctly failing metadata admission before the intended
+  JSON boundary. Used one-item fixtures for those faults without weakening their
+  expected rejection or changing production code. Focused final22/22 decoder
+  units and39/39 real browser storage/decoder cases passed with fresh build/types.
+- Identified the process-local admitted-descriptor candidate boundary. Current
+  connection-reopen tests retain that candidate; they do not prove full byte-
+  validator reconstruction after browser death. Durable original-descriptor
+  retention or an approved reconstruction protocol remains a live-resume gate.
+  Full multilingual/schema/index proof and authenticated publication also stay open.
+- Complete final units `npm test -- --maxWorkers=2` passed165/165 in19 files.
+  The first full `node node_modules\@playwright\test\cli.js test --workers=2`
+  passed526, failed2 and left3 unrun: the existing mobile personal-restore
+  in-memory build `beforeAll` exceeded its unchanged30s hook deadline. This was
+  not a pass. Re-ran the entire suite using the already documented `--workers=1`
+  scheduling alternative, retaining every project/case/assertion/timeout, rather
+  than changing the unrelated restore test or narrowing the final suite.
+- Final `node node_modules\@playwright\test\cli.js test --workers=1`, with the
+  configured clean c2837cc fixture publisher, passed531/531 across desktop/mobile/
+  narrow in10.5m, with fresh production build/strict typecheck and zero skipped
+  cases. This includes every previously failed/unrun restore case unchanged.
+  Final changed-Markdown checks passed all11 current/history files and all153
+  unique unchanged requirement IDs; strict locked Node YAML parsing passed4 files,
+  installed actionlint1.7.12/ShellCheck0.11.0 and Git whitespace checks passed.
+
+## 2026-11-03: exact durable-content publication verification
+
+- Websitef2e91ff5e2111b0e82fb3eea22488d3d437c0402 was published after all local
+  143 units/522 browsers and documentation/workflow checks. Exact hosted full
+  build/tests/deployment41588491488 and CodeQL41588491006 passed.
+- Live root/open HTML and JS returned HTTP200 and matched the exact run's Pages
+  artifact byte-for-byte. Root/open HTML SHA256:
+  d9009e415c85a28da092d3433aaef5b9382b3d4fb383c9b71a51e885e0b4cd2d;
+  JS SHA256: ce7ac1e1388799582ab8a013411c82c387aa36f5a484b61dd9689ac2f5fd6edc.
+  Source isolation intentionally left the shipped app unchanged. Removed the exact
+  downloaded tar/empty directory, verified remote SHA and clean Website status.
+
 ## 2026-11-03: approved isolated durable-content protocol and Website backend
 
 - Following completed setup/sharing, the owner selected a dedicated Website

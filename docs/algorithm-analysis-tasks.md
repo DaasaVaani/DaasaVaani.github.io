@@ -388,6 +388,9 @@ evidence is not established.
   fences. The [isolated Website adapter](durable-content.md) supplies actual
   IndexedDB checkpoint/activation rollback, whole-operation locks, explicit resume
   and browser page-death recovery. It has no transport or complete production validator.
+  The [staged byte validator](snapshot-validation.md) additionally binds real
+  canonical/gzip/hash/length proof for the narrow prelaunch family; its descriptor
+  candidate remains process-local, not a durable recovery or full capability proof.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

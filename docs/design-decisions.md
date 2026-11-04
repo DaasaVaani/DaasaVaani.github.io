@@ -47,6 +47,11 @@ The [isolated Website durable-content adapter](durable-content.md) implements th
 approved portable metadata protocol and physical storage/pinning prerequisite.
 It is not live offline preparation, decoded/capability proof or publisher activation;
 production database names/limits and remaining D5 integration stay open.
+The [isolated staged snapshot validator](snapshot-validation.md) uses tolerant
+Shared consumer assertions with strict actual canonical/gzip/hash/length checks.
+Optional fields do not change known semantics; required capability/major refusal
+precedes affected lookups. Its process-local descriptor candidate does not solve
+durable descriptor retention or enable complete offline preparation.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.
