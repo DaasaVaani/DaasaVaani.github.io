@@ -5,6 +5,8 @@ import {
 import { ContentError, assertContentPlan } from "../shared/tools/content-state.mjs";
 import { createDownloadPlanner } from "../shared/tools/download-planner-reference.mjs";
 import type { DownloadPlan, TransferPlanningPolicy } from "../shared/tools/download-planner-reference.mjs";
+import { admitSnapshotZipStore } from "../shared/tools/snapshot-zip-consumer.mjs";
+import type { AdmittedSnapshotZipStoreMember } from "../shared/tools/snapshot-zip-consumer.mjs";
 import type { ContentPlan, ContentObjectReceipt } from "../shared/types/content";
 import type { LyricObjectReference } from "../shared/types/lyrics";
 import type { SnapshotManifest } from "../shared/types/snapshot";
@@ -14,6 +16,7 @@ import { TransferError } from "./list-transfer-types";
 import { parseTransferJson, transformTransferBytes } from "./transfer-bytes";
 
 export { ContentError, SnapshotConsumerError };
+export { SnapshotZipConsumerError } from "../shared/tools/snapshot-zip-consumer.mjs";
 export interface SnapshotValidationLimits {
   maxDescriptorBytes: number;
   maxManifestEncodedBytes: number;
@@ -32,11 +35,15 @@ export interface SnapshotCandidate {
   plan(): ContentPlan;
   metadataObjects(): { sha256: string; bytes: Uint8Array }[];
   transferPlan(verified: readonly string[], limits: SnapshotTransferLimits): SnapshotTransferPlan;
+  admitBundle(sha256: string, bytes: Uint8Array, limits: SnapshotBundleLimits,
+    signal?: AbortSignal): Promise<AdmittedSnapshotZipStoreMember[]>;
   validate(plan: ContentPlan, read: ContentReader, signal?: AbortSignal): Promise<void>;
 }
-export interface SnapshotTransferLimits {
+export interface SnapshotBundleLimits {
   maxBundleMembers: number;
   maxBundleEncodedBytes: number;
+}
+export interface SnapshotTransferLimits extends SnapshotBundleLimits {
   maxExtraBytes: number;
   maxExtraPercent: number;
   maxTransferEncodedBytes: number;
@@ -266,6 +273,34 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
     metadataObjects: () => metadata.map(object => ({ sha256: object.sha256, bytes: new Uint8Array(object.bytes) })),
     transferPlan: (verified: readonly string[], transferLimits: SnapshotTransferLimits) =>
       transferPlan(manifest, policy.transferPlanning, original.required, verified, transferLimits),
+    admitBundle: async (sha256: string, bytes: Uint8Array, bounds: SnapshotBundleLimits, currentSignal?: AbortSignal) => {
+      currentSignal?.throwIfAborted();
+      if (!bounds || Object.keys(bounds).sort().join(",") !== "maxBundleEncodedBytes,maxBundleMembers" ||
+          !Number.isSafeInteger(bounds.maxBundleMembers) || bounds.maxBundleMembers <= 0 ||
+          !Number.isSafeInteger(bounds.maxBundleEncodedBytes) || bounds.maxBundleEncodedBytes <= 0) {
+        throw new ContentError("invalid", "Explicit bundle count and encoded byte limits are required");
+      }
+      const bundle = typeof sha256 === "string" && /^[0-9a-f]{64}$/.test(sha256) && Object.hasOwn(manifest.bundles, sha256)
+        ? manifest.bundles[sha256] : undefined;
+      if (!bundle) throw new ContentError("invalid", "Bundle is absent from the admitted snapshot");
+      if (bundle.members.length > Math.min(bounds.maxBundleMembers, policy.transferPlanning.maxBundleMembers) ||
+          bundle.encodedBytes > Math.min(bounds.maxBundleEncodedBytes, policy.transferPlanning.maxBundleEncodedBytes)) {
+        throw new ContentError("capacity", "Bundle exceeds trusted or published transfer bounds");
+      }
+      const members = bundle.members.map(hash => {
+        const object = manifest.objects[hash];
+        if (!object) throw new ContentError("invalid", "Bundle member is absent from the admitted originals");
+        return { sha256: hash, path: object.path, encodedBytes: object.encodedBytes };
+      });
+      const admitted = await admitSnapshotZipStore(bytes, { sha256, path: bundle.path,
+        encodedBytes: bundle.encodedBytes, members }, {
+        maxArchiveBytes: bundle.encodedBytes, maxMembers: members.length,
+        maxMemberBytes: members.reduce((maximum, member) => Math.max(maximum, member.encodedBytes), 0),
+        maxAggregateMemberBytes: limits.maxTotalEncodedBytes,
+      });
+      currentSignal?.throwIfAborted();
+      return admitted;
+    },
     validate: async (target: ContentPlan, currentRead: ContentReader, currentSignal?: AbortSignal) => {
       const captured = structuredClone(target);
       assertContentPlan(captured);

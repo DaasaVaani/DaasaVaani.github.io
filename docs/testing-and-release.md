@@ -162,6 +162,17 @@ suite compiles the actual portable Shared module, verifies retained metadata
 bytes and checks planning without artifact requests, activation, revision changes
 or personal writes. Synthetic bundle metadata is not actual ZIP/CRC validation.
 These selectors remain incremental, never full-finalization substitutes.
+`npm test -- snapshot-bundle snapshot-transfer snapshot-validation --maxWorkers=2`
+adds actual exact-profile ZIP/member byte proof: independently constructed archives,
+inclusive member/count ceilings, otherwise-valid whole/member hash failures,
+matching wrong CRC fields, strict metadata/framing refusal, captured bytes/results,
+recovery and pre/post cancellation. The content-store browser suite selects actual
+ZIPs, checkpoints only originals and activates only after the real decoder passes.
+Rehashed bad CRC and valid-container/invalid-original cases preserve previous active/
+personal data; ZIP hashes never become stored required objects. Shared's full
+portable conformance is independently pinned; browser build/types are Website-owned.
+These tests do not establish live downloading, worker interruption, authentication
+or complete offline readiness.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

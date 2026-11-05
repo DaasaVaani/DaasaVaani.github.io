@@ -9,7 +9,7 @@ import {
 } from "../../shared/tools/content-state.mjs";
 import type { ContentStoreConfig } from "../../src/content-store";
 import { personalSnapshot } from "../lyric-browser";
-import { bundledSnapshotFixture, snapshotFixture, snapshotLimits, snapshotPacket } from "../snapshot-fixture";
+import { actualBundledSnapshotFixture, bundledSnapshotFixture, snapshotFixture, snapshotLimits, snapshotPacket } from "../snapshot-fixture";
 import messages from "../../shared/generated/web/ui.json" with { type: "json" };
 
 type FixtureObject = { sha256: string; encodedBytes: number; bytes: number[] };
@@ -954,6 +954,126 @@ test("browser-admitted transfer planning uses actual verified metadata, reports 
   expect(network).toEqual([]);
   expect(await personalSnapshot(page)).toEqual(personal);
 });
+
+test("actual selected strict ZIP archives checkpoint only their verified originals and complete full decoder activation", async ({ page }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), fixture = actualBundledSnapshotFixture();
+  const result = await page.evaluate(async ({ config, packet, archives, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    const candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async hash => {
+      const bytes = packet.objects[hash];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    const requests = await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(candidate.plan());
+      const verified: string[] = [];
+      for (const object of candidate.metadataObjects()) {
+        await writer.putObject(object.sha256, object.bytes);
+        await writer.readObject(object.sha256);
+        verified.push(object.sha256);
+      }
+      const plan = candidate.transferPlan(verified, { maxBundleMembers: 100, maxBundleEncodedBytes: 32 * 1024 * 1024,
+        maxExtraBytes: 8 * 1024 * 1024, maxExtraPercent: 25, maxTransferEncodedBytes: 131072 });
+      for (const request of plan.plan.requests) {
+        if (request.kind !== "bundle") throw new Error("Synthetic fixture must select its actual archives");
+        const bytes = archives[request.sha256];
+        if (!bytes) throw new Error("Missing selected synthetic archive");
+        const members = await candidate.admitBundle(request.sha256, new Uint8Array(bytes),
+          { maxBundleMembers: 100, maxBundleEncodedBytes: 32 * 1024 * 1024 });
+        for (const member of members) await writer.putObject(member.sha256, member.bytes);
+      }
+      await writer.activate((plan, read) => candidate.validate(plan, read));
+      return plan.plan.requests;
+    });
+    const active = await store.snapshot();
+    const original = await store.withActiveReader(async (plan, read) => {
+      const bytes: Record<string, number[]> = {};
+      for (const object of plan.required) bytes[object.sha256] = [...await read(object.sha256)];
+      return bytes;
+    });
+    store.close();
+    return { requests, active, original };
+  }, { config: config(), packet: snapshotPacket(fixture), limits: snapshotLimits(),
+    archives: Object.fromEntries(Object.entries(fixture.archives).map(([hash, bytes]) => [hash, [...bytes]])) });
+  expect(result.requests).toHaveLength(2);
+  expect(result.requests.every(request => request.kind === "bundle")).toBe(true);
+  expect(result.active.control.active).toEqual({ sequence: 1, manifestSha256: fixture.descriptor.manifest.sha256 });
+  expect(result.active.control.target).toBeNull();
+  expect(result.original).toEqual(snapshotPacket(fixture).objects);
+  expect(result.active.objects.some(object => Object.hasOwn(fixture.archives, object.sha256))).toBe(false);
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
+
+for (const fault of ["zip-crc", "item-json"] as const) {
+  test(`a rehashed ${fault} bundle attempt preserves the previous active snapshot and never implies readiness`, async ({ page }) => {
+    await setup(page);
+    const personal = await personalSnapshot(page), a = snapshotFixture();
+    const b = actualBundledSnapshotFixture({ sequence: 2, ...(fault === "zip-crc" ? {
+      zipBytes: (bytes: Uint8Array) => {
+        const changed = new Uint8Array(bytes), view = new DataView(changed.buffer);
+        const central = view.getUint32(changed.length - 6, true);
+        changed[14] = (changed[14] ?? 0) ^ 1;
+        changed[central + 16] = (changed[central + 16] ?? 0) ^ 1;
+        return changed;
+      },
+    } : { jsonBytes: (role, bytes) => role === "item" ? new Uint8Array([...bytes, 32]) : bytes }) });
+    const result = await page.evaluate(async ({ config, a, b, archives, limits }) => {
+      const path = "/isolated-content-store.js";
+      const backend: typeof import("../isolated-content") = await import(path);
+      const store = await backend.ContentStore.open(config);
+      const inspect = (packet: typeof a) => backend.inspectSnapshot(new Uint8Array(packet.descriptor), async hash => {
+        const bytes = packet.objects[hash];
+        if (!bytes) throw new Error("Missing synthetic metadata");
+        return new Uint8Array(bytes);
+      }, limits);
+      const previous = await inspect(a), candidate = await inspect(b);
+      await store.withWriter((await store.snapshot()).control, async writer => {
+        await writer.begin(previous.plan());
+        for (const [hash, bytes] of Object.entries(a.objects)) await writer.putObject(hash, new Uint8Array(bytes));
+        await writer.activate((plan, read) => previous.validate(plan, read));
+        await writer.begin(candidate.plan());
+        for (const object of candidate.metadataObjects()) await writer.putObject(object.sha256, object.bytes);
+      });
+      const before = await store.snapshot();
+      let failure = "", kind = "";
+      try {
+        await store.withWriter(before.control, async writer => {
+          for (const [hash, bytes] of Object.entries(archives)) {
+            const members = await candidate.admitBundle(hash, new Uint8Array(bytes),
+              { maxBundleMembers: 100, maxBundleEncodedBytes: 32 * 1024 * 1024 });
+            for (const member of members) await writer.putObject(member.sha256, member.bytes);
+          }
+          await writer.activate((plan, read) => candidate.validate(plan, read));
+        });
+      } catch (reason) {
+        if (reason instanceof backend.SnapshotZipConsumerError) { kind = "zip"; failure = reason.code; }
+        else if (reason instanceof backend.ContentError) { kind = "decoded"; failure = reason.code; }
+        else throw reason;
+      }
+      const after = await store.snapshot();
+      const readable = await store.withActiveReader(async (plan, read) => {
+        for (const object of plan.required) await read(object.sha256);
+        return plan.reference;
+      });
+      store.close();
+      return { before, after, failure, kind, readable };
+    }, { config: config(), a: snapshotPacket(a), b: snapshotPacket(b), limits: snapshotLimits(),
+      archives: Object.fromEntries(Object.entries(b.archives).map(([hash, bytes]) => [hash, [...bytes]])) });
+    expect(result.failure).toBe("integrity");
+    expect(result.kind).toBe(fault === "zip-crc" ? "zip" : "decoded");
+    expect(result.after.control.active).toEqual(result.before.control.active);
+    expect(result.readable).toEqual(result.before.control.active);
+    expect(result.after.control.target?.phase).toBe("paused");
+    expect(result.after.snapshots).toEqual(result.before.snapshots);
+    if (fault === "zip-crc") expect(result.after.objects).toEqual(result.before.objects);
+    else expect(result.after.objects.length).toBeGreaterThan(result.before.objects.length);
+    expect(result.after.objects.some(object => Object.hasOwn(b.archives, object.sha256))).toBe(false);
+    expect(await personalSnapshot(page)).toEqual(personal);
+  });
+}
 
 for(const fault of ["json","gzip"] as const) {
   test(`actual encoded receipts cannot activate a rehashed invalid ${fault} replacement or destroy the previous snapshot`,async ({ page }) => {

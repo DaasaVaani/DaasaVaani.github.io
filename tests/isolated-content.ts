@@ -1,2 +1,2 @@
 export { ContentStore } from "../src/content-store";
-export { inspectSnapshot, resumeSnapshot, ContentError, SnapshotConsumerError } from "../src/snapshot-validation";
+export { inspectSnapshot, resumeSnapshot, ContentError, SnapshotConsumerError, SnapshotZipConsumerError } from "../src/snapshot-validation";

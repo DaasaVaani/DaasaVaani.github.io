@@ -45,6 +45,11 @@ projects known admitted fields into the portable Shared implementation. It exclu
 local descriptor evidence from remote requirements, reports unsafe optional ZIP
 exclusions and narrowed allowances, and caps extra bytes to remaining transfer
 headroom. This pure plan has no request/storage/UI or readiness side effects.
+Separate [bundle admission](snapshot-validation.md#actual-zip-bundle-admission)
+binds declared members to the exact producer ZIP STORE profile through Shared's
+private-snapshot framing/CRC/SHA checks. It returns encoded originals, never
+extracts paths or persists ZIPs, and requires complete decoded validation before
+activation. Pre/post cancellation is not interruptible parsing or a worker claim.
 
 ## Data flow
 

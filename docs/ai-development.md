@@ -68,7 +68,9 @@ Existing content lifecycles stay in memory; Android and Library are unchanged.
 The [staged snapshot validator](snapshot-validation.md) provides the narrow
 prelaunch descriptor/manifest/policy/item byte and target-binding layer, with
 durably rooted original descriptor evidence for new-page recovery and pure bounded
-ZIP/object transfer planning. Do not confuse planning with network/ZIP validation or
+ZIP/object transfer planning. Its separate actual bundle admission verifies the
+exact producer ZIP container profile/member bytes before full decoded validation.
+Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.
 

@@ -158,6 +158,54 @@ Invalid local limits and insufficient remaining-transfer capacity use
 `DownloadPlanningError` (`invalid`/`overflow`). They are explicit refusals, not
 an empty-plan fallback.
 
+## Actual ZIP bundle admission
+
+`candidate.admitBundle(sha256, bytes, bundleLimits, signal?)` binds actual archive
+bytes to a bundle in this candidate's admitted manifest. Every call supplies
+exactly the two positive safe bounds in `SnapshotBundleLimits`:
+`maxBundleMembers` and `maxBundleEncodedBytes`. Project these two fields rather
+than passing the complete transfer-planning object. The effective count/archive
+bounds cannot exceed either caller or published policy; no defaults exist.
+
+The approved consumer policy is the
+[exact producer ZIP STORE container profile](https://github.com/DaasaVaani/shared/blob/main/docs/snapshot-zip-admission.md),
+not a general ZIP adapter. Alternate timestamps, entry order, flags, extras,
+comments, compressed members, ZIP64 or trailing data are not accepted as harmless
+variations. The independently pinned Shared parser owns those exact binary rules;
+Website does not duplicate them or reimplement CRC/SHA.
+
+1. Refuse malformed/unknown bundle hashes and excessive declared count/encoded
+   size before byte work. Derive complete original member paths, hashes and
+   encoded lengths from the private admitted manifest, never caller replacements.
+2. Derive narrower Shared limits from the admitted archive length/member count,
+   largest already role-bounded member and captured complete-original encoded
+   ceiling. ZIP framing overhead is not stored as an original content object.
+3. Shared preflights references/limits, takes a bounded fixed-length private byte
+   snapshot and performs **all** exact framing, local/central agreement, CRC,
+   whole-archive SHA and each original encoded length/SHA proof against that same
+   snapshot. Shared/growable/resizable inputs are refused; caller mutation after
+   asynchronous hashing begins cannot change the validated bytes.
+4. Return independent `{ sha256, path, bytes }` encoded-original members only
+   after complete archive validation. No filesystem extraction, ZIP persistence,
+   checkpoint, decoded-item success or activation occurs inside this method.
+
+Check cancellation before starting and after Shared finishes, before exposing any
+members. Shared's synchronous framing/CRC and WebCrypto calls have no AbortSignal
+or interruptible guarantee; this wrapper does not claim mid-operation interruption,
+worker/off-main execution or bounded peak heap. Native crypto failures propagate.
+Local shape/capacity refusals use `ContentError`; binary/reference failures use
+`SnapshotZipConsumerError` (`invalid`/`limit`/`integrity`).
+
+Future transport must fetch only its selected plan and account for cumulative
+network bytes/retries separately. Admission proves this archive, not that it was
+selected or that an entire transfer budget/consent/authentication requirement was
+met. Checkpoint each returned original through `writer.putObject`; do not store the
+ZIP digest as a required object. Finally use complete `candidate.validate` during
+activation. A valid container can still contain a correctly hashed original that
+fails gzip/canonical JSON/lyric semantics; preserve previous active content.
+The existing compatible-gzip consumer rules remain unchanged inside the exact ZIP
+container policy. Newly admitted and recovered candidates share this API.
+
 ## Durable evidence and recovery order
 
 Persist `plan()` and all `metadataObjects()` through the scoped writer before
@@ -200,8 +248,8 @@ incomplete; this API reports the missing bytes rather than guessing them.
 Byte/schema validity also does not authenticate a publisher's protected ledger,
 deployment provenance, source approval or legal permissions. The future caller
 must establish the genuine publication/descriptor origin. Live sequenced
-publication, production settings, live transport/
-ZIP byte validation/integration, consent/progress/cancel/retry/removal UI, active-version reader/search
+publication, production settings, live bounded transport/integration,
+consent/progress/cancel/retry/removal UI, active-version reader/search
 integration, repair/degraded readiness, full multilingual capability proof and
 supported browser/device evidence remain gates. No Library or Android pin is
 changed by this isolated Website slice.
@@ -226,6 +274,14 @@ optional fields, copied results, recovered candidates and explicit invalid input
 Their bundle lengths/hashes are synthetic planning metadata, not actual ZIP
 framing/CRC/byte validation.
 
+[Actual bundle units](../src/snapshot-bundle.test.ts) instead use independently
+hashed Node-built archives, with CRCs independently obtained from Node zlib.
+They cover full original/decoded validation, inclusive count/archive bounds,
+unknown/prototype identities, otherwise-valid whole-hash mismatch, rehashed
+matching-but-wrong local/central CRC, strict timestamp/flag/trailing refusal,
+member SHA after valid framing/CRC, declared membership substitution, result/input/
+limit capture, recovered candidates and pre/post cancellation.
+
 [Actual browser storage tests](../tests/browser/content-store.spec.ts) compile
 the [test-only entry](../tests/isolated-content.ts) into an in-memory Vite module;
 it is not a production app entrypoint. They close an actual writer page, confirm
@@ -240,6 +296,12 @@ The same browser module also imports the actual portable Shared planner and
 plans from genuinely read/verified metadata, compares recovered results and
 checks explicit capacity/exclusion reporting without any artifact requests,
 activation, revision or personal writes.
+Actual ZIP browser cases go further: select genuine archives, admit/checkpoint
+only encoded originals and complete actual decoder activation. Rehashed invalid
+CRC yields no member progress; a valid archive with a noncanonical original fails
+full activation. Both preserve prior active/personal data and keep ZIP digests
+out of the content store. These remain permitted synthetic fixtures, not linguistic,
+origin/ledger or release evidence.
 These synthetic inputs are permitted storage fixtures, not invented lyric truth.
 
 Incremental checks:
@@ -247,6 +309,7 @@ Incremental checks:
 ```powershell
 npm test -- snapshot-validation --maxWorkers=2
 npm test -- snapshot-transfer snapshot-validation --maxWorkers=2
+npm test -- snapshot-bundle snapshot-transfer snapshot-validation --maxWorkers=2
 node node_modules\@playwright\test\cli.js test content-store --workers=2
 ```
 

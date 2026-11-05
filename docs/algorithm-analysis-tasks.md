@@ -355,7 +355,12 @@ evidence is not established.
   deterministic hash sorting and the planner's existing candidate sort/BigInt
   comparisons retain their separate costs. Copies scale with admitted originals
   and bounded manifest bundle metadata; this is not measured peak-heap or
-  transport/ZIP byte proof. No optimality claim is added.
+  transport proof. Separate [bundle admission](snapshot-validation.md#actual-zip-bundle-admission)
+  supplies actual strict container/member byte proof through Shared, with linear
+  framing/CRC/SHA work in admitted encoded bytes plus ordered membership metadata.
+  One bounded private archive snapshot and independent returned members are
+  additional live allocations; no peak-heap or streaming/interruption guarantee is
+  inferred. Gzip/lyric validation remains separate. No optimality claim is added.
 - **Already fixed:** deterministic changed-at/path grouping; ZIP STORE containing
   original gzip objects; up to 100 members and 32 MiB per bundle. Individual
   objects remain fetchable; no thumbnail/video bytes enter reading transfers.

@@ -88,12 +88,13 @@ export function snapshotPacket(fixture: ReturnType<typeof snapshotFixture>) {
   return { descriptor: [...fixture.descriptorBytes],
     objects: Object.fromEntries(Object.entries(fixture.objects).map(([hash, bytes]) => [hash, [...bytes]])) };
 }
-export function bundledSnapshotFixture(options: Pick<SnapshotFixtureOptions, "manifest" | "policy"> = {}) {
+type BundleFixtureOptions = Pick<SnapshotFixtureOptions, "manifest" | "policy" | "gzipBytes" | "jsonBytes">;
+export function bundledSnapshotFixture(options: BundleFixtureOptions = {}) {
   const template = snapshotFixture().items[0];
   if (!template) throw new Error("Missing synthetic template");
   const items = [1, 2, 3, 4].map(value => {
     let seed = value;
-    const text = Array.from({ length: 3072 }, () => {
+    const text = "\u0c85 " + Array.from({ length: 3072 }, () => {
       seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
       return String.fromCharCode(32 + seed % 95);
     }).join("");
@@ -117,4 +118,50 @@ export function bundledSnapshotFixture(options: Pick<SnapshotFixtureOptions, "ma
     return options.manifest ? options.manifest(bundled) : bundled;
   } });
   return { ...fixture, bundles };
+}
+function zipFixture(objects: { path: string; bytes: Uint8Array }[]) {
+  const local: Buffer[] = [], central: Buffer[] = [];
+  let offset = 0;
+  for (const object of [...objects].sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0)) {
+    const name = Buffer.from(object.path, "ascii"), bytes = Buffer.from(object.bytes);
+    // Node's gzip trailer supplies an independent CRC32 of these encoded bytes.
+    const checksum = gzipSync(bytes);
+    const crc = checksum.readUInt32LE(checksum.length - 8);
+    const header = Buffer.alloc(30), directory = Buffer.alloc(46);
+    header.writeUInt32LE(0x04034b50, 0); header.writeUInt16LE(20, 4); header.writeUInt16LE(0x21, 12);
+    header.writeUInt32LE(crc, 14); header.writeUInt32LE(bytes.length, 18); header.writeUInt32LE(bytes.length, 22);
+    header.writeUInt16LE(name.length, 26);
+    directory.writeUInt32LE(0x02014b50, 0); directory.writeUInt16LE(20, 4); directory.writeUInt16LE(20, 6);
+    directory.writeUInt16LE(0x21, 14); directory.writeUInt32LE(crc, 16);
+    directory.writeUInt32LE(bytes.length, 20); directory.writeUInt32LE(bytes.length, 24);
+    directory.writeUInt16LE(name.length, 28); directory.writeUInt32LE(offset, 42);
+    local.push(header, name, bytes); central.push(directory, name);
+    offset += header.length + name.length + bytes.length;
+  }
+  const directory = Buffer.concat(central), end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0); end.writeUInt16LE(objects.length, 8); end.writeUInt16LE(objects.length, 10);
+  end.writeUInt32LE(directory.length, 12); end.writeUInt32LE(offset, 16);
+  return new Uint8Array(Buffer.concat([...local, directory, end]));
+}
+export function actualBundledSnapshotFixture(options: BundleFixtureOptions & {
+  sequence?: number; zipBytes?: (bytes: Uint8Array) => Uint8Array;
+} = {}) {
+  const template = bundledSnapshotFixture(options);
+  const archives: Record<string, Uint8Array> = {}, bundles: Record<string, SnapshotBundle> = {};
+  for (const bundle of Object.values(template.bundles)) {
+    let bytes = zipFixture(bundle.members.map(sha256 => {
+      const member = template.objects[sha256], reference = template.manifest.objects[sha256];
+      if (!member || !reference) throw new Error("Missing synthetic ZIP member");
+      return { path: reference.path, bytes: member };
+    }));
+    if (options.zipBytes) bytes = new Uint8Array(options.zipBytes(bytes));
+    const sha256 = createHash("sha256").update(bytes).digest("hex");
+    archives[sha256] = bytes;
+    bundles[sha256] = { ...bundle, path: `bundles/${sha256}.zip`, encodedBytes: bytes.length };
+  }
+  const fixture = snapshotFixture({ ...options, items: template.items, manifest: manifest => {
+    const bundled = { ...manifest, bundles };
+    return options.manifest ? options.manifest(bundled) : bundled;
+  } });
+  return { ...fixture, bundles, archives };
 }

@@ -1,5 +1,61 @@
 # Documentation history
 
+## 2026-11-05: approved exact-profile ZIP admission prerequisite
+
+- The owner explicitly chose the exact deterministic producer ZIP container
+  profile over a compatible STORE profile or deferring ZIP consumption. This is
+  smaller/stricter and matches the current publisher, but harmless future container
+  metadata/order changes can require a client update. Compatible gzip decoding
+  inside original members was not changed by this container decision.
+- Shared first publishedf398616cd71fd2e07d39a9cf768cbea94c5704a9 with450
+  checks and exact hosted42043180507. Consumer handoff identified a byte-identity
+  gap: framing/CRC were reported before the private copy, hashes after it.
+  Before any Website adoption, the same agent corrected the boundary: metadata
+  limits first, fixed-length private copy next, every byte proof against that
+  copy; shared/growable/resizable stores are explicitly refused.
+- Corrected Shared73d69642c87efe732b2d8be9368e9e5496fdcb00 passed452/452,
+  including13 ZIP cases with copy-boundary/private-hash-view regressions. Hygiene303,
+  YAML22, links/anchors, generated consistency, workflow/ShellCheck and whitespace
+  passed; exact [hosted42044989364](https://github.com/DaasaVaani/shared/actions/runs/42044989364)
+  succeeded before independent Website adoption. No Library/Android pin changed.
+- Website adds candidate-bound actual bundle admission with explicit two-field
+  safety bounds, source-owned expected member references, derived role/aggregate
+  limits and pre/post cancellation. Shared has no interruptible Signal API;
+  neither wrapper nor parser claims worker execution or physical heap guarantees.
+  Returned encoded originals still require normal checkpoints/full decoder activation.
+- Independent Node test ZIP construction uses the agreed exact header profile,
+  SHA from Node crypto and CRC from a nested Node-zlib gzip trailer; it is not
+  production publishing or a second consumer parser. First focused browser run
+  passed60/63 and failed the three positive activation cases: planning-only noisy
+  ASCII fixtures correctly lacked a canonical Kannada line. Added the same
+  permitted synthetic Kannada character used by existing fixtures and a full
+  Node decoder assertion; no semantic validator or assertion was weakened.
+  Final focused71/71 byte/planner/decoder units and63/63 browser storage cases
+  passed with fresh build/strict typecheck.
+- Final complete `npm test -- --maxWorkers=1` passed214/214 in21 files.
+  Complete `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed555/555 across desktop/mobile/narrow in10.1m with fresh production build/
+  strict typecheck, zero skipped cases and the configured clean c2837cc fixture
+  publisher. This full run had no personal-restore setup failure. Changed-Markdown
+  checks passed11 files and all153 unique unchanged requirement IDs; strict YAML4,
+  installed actionlint1.7.12/ShellCheck0.11.0 and Git whitespace checks passed.
+  No new dependencies/toolchains, production settings, app transport/readiness,
+  source-attribution changes or Library/Android pin changes accompany this slice.
+
+## 2026-11-05: exact transfer-planner hosted/live verification
+
+- Website292aa161b410240783c5edfec5d8510de755fd0a was published after all
+  final local193 units/546 browsers and ancillary checks. Exact hosted Repository
+  checks/deployment42044042349 and CodeQL42044041152 succeeded. Actual hosted
+  logs confirmed193 units and546 browsers (6.5m browser scheduling).
+- Live root/open HTML and JS returned HTTP200 and matched exact Pages artifact
+  13423404203 byte-for-byte. Root/open HTML SHA256:
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  JS `/assets/index-Ca_7nR8A.js` SHA256:
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the exact downloaded tar/empty directory. Shipped app behavior
+  remains unchanged; no live offline readiness or release claim was made.
+
 ## 2026-11-05: approved isolated bounded snapshot transfer planning
 
 - After recovery publication, the owner chose eligible ZIPs plus individual

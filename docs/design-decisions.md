@@ -56,7 +56,11 @@ logical accounting and no new schema. This does not enable complete offline prep
 Admitted metadata also feeds Shared's existing deterministic transfer planner.
 Caller ceilings narrow policy allowances and remaining transfer headroom;
 oversized optional ZIPs are explicitly excluded while eligible ZIPs/individual
-originals remain available. No network, ZIP decoding or readiness flag is enabled.
+originals remain available. Actual ZIP-byte admission separately uses Shared's
+exact producer container profile, not compatible metadata/order variations; all
+framing/CRC/hash checks use one bounded private snapshot before originals return.
+Compatible gzip decoding remains a separate unchanged step. No network or
+readiness flag is enabled.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

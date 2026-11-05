@@ -109,6 +109,10 @@ validator. Coordinator tests use permitted gzip storage fixtures and synthetic
 callbacks. Additional [staged snapshot validation](snapshot-validation.md) verifies
 actual descriptor/manifest/policy/item bytes for the narrow prelaunch family.
 Neither establishes a real multilingual/index/complete-library or app-shell proof.
+Its [bundle admission](snapshot-validation.md#actual-zip-bundle-admission) can
+return verified encoded originals from an actual strict ZIP. Checkpoint those
+originals through the same writer API, never the ZIP digest. Complete decoded
+validation remains mandatory even when archive/member hashes and CRCs pass.
 
 ## Readers, removal and collection
 
@@ -168,7 +172,7 @@ workflow checks, not this selector alone. Shared independently validates the pur
 protocol; Website supplies physical-storage evidence, not native/device parity.
 
 Remaining gates include Library's live sequenced publication/ledger/receipts and
-activation, genuine descriptor admission, live bounded transport/ZIP validation, complete
+activation, genuine descriptor admission, live bounded transport/integration, complete
 decoded-schema/capability proof, explicit consent/progress/cancel/retry/removal UI,
 production settings and storage/quota/
 eviction handling, active-version reader/

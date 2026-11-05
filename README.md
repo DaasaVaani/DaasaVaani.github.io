@@ -33,6 +33,10 @@ Its isolated transfer planner binds admitted originals to Shared's deterministic
 ZIP/object planning, explicitly excludes oversized optional bundles and caps
 extra bytes to trusted limits/headroom. Planning does not fetch/decode ZIPs or
 prove readiness.
+Actual bundle admission separately verifies the exact producer ZIP STORE profile
+and every original member's encoded bytes through Shared, then returns originals
+for checkpointing and full decoded validation. It still adds no live transport
+or offline UI.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

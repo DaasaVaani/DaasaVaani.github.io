@@ -62,8 +62,10 @@ Live support and complete production proof remain open.
 GEN-03/OFF-02/04/06/15 additionally have an isolated admitted-metadata transfer
 planner: independently pinned portable Shared selection, original-only requirements,
 explicit unsafe-ZIP exclusions, trusted allowance/headroom caps and deterministic
-individual coverage. It does not validate ZIP bytes, fetch artifacts or activate
-offline content; caller-verified hashes remain an explicit precondition.
+individual coverage. Separate strict bundle admission now verifies actual ZIP/
+member bytes against admitted references before returning independent originals.
+These APIs do not fetch artifacts or activate offline content themselves;
+caller-verified hashes and full decoded validation remain explicit preconditions.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical
