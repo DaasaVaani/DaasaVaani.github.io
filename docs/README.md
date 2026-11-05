@@ -29,6 +29,8 @@ the authoritative Shared protocol and leaves live offline integration open.
 The [staged snapshot validator](snapshot-validation.md) owns actual Website byte/
 schema admission, consumer tolerance, rooted original descriptor recovery and its
 narrower prelaunch/persistence boundary.
+It also owns the [isolated transfer-planning API](snapshot-validation.md#isolated-transfer-planning),
+including explicit trusted bounds/exclusion reporting, not live transport.
 
 ## Owners
 

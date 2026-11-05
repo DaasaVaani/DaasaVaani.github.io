@@ -53,6 +53,10 @@ Optional fields do not change known semantics; required capability/major refusal
 precedes affected lookups. Its plan roots one additional original plain descriptor
 object for fresh-page reconstruction and exact revalidation, with normal object/
 logical accounting and no new schema. This does not enable complete offline preparation.
+Admitted metadata also feeds Shared's existing deterministic transfer planner.
+Caller ceilings narrow policy allowances and remaining transfer headroom;
+oversized optional ZIPs are explicitly excluded while eligible ZIPs/individual
+originals remain available. No network, ZIP decoding or readiness flag is enabled.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

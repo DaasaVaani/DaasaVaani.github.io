@@ -98,6 +98,66 @@ all-object-read guard alone does not establish decoded/capability proof.
 Errors propagate as explicit typed Shared metadata errors, content integrity/
 capacity errors or native cancellation; there is no success-shaped fallback.
 
+## Isolated transfer planning
+
+`candidate.transferPlan(verifiedHashes, transferLimits)` binds the admitted
+original manifest/policy to the independently pinned
+[Shared deterministic planner](https://github.com/DaasaVaani/shared/blob/main/docs/download-planning.md).
+It is a synchronous metadata-only operation, not a downloader, ZIP decoder,
+checkpoint, activation or readiness test. It makes no requests or personal/content
+writes. Both newly admitted and recovered candidates offer the same operation.
+
+Every call explicitly supplies `SnapshotTransferLimits`:
+
+- positive safe `maxBundleMembers`, `maxBundleEncodedBytes` and
+  `maxTransferEncodedBytes`;
+- nonnegative safe `maxExtraBytes` and integer `maxExtraPercent` in 0..100.
+
+Extra/missing/invalid fields fail; no production defaults are hidden here.
+`maxTransferEncodedBytes` bounds the selected **remaining artifact plan**, not
+descriptor/metadata bytes already acquired, retries, HTTP framing, heap or total
+physical storage. Admission and store accounting remain separate obligations.
+
+The approved behavior is eligible ZIPs plus individual originals, never raising
+local safety limits to match fetched policy:
+
+1. Project exactly the five known published policy fields into the strict planner;
+   inert optional fields are not forwarded or made behavioral. Preserve its
+   published request-cost weight; narrow bundle/extra bounds to trusted ceilings.
+2. Derive remote objects/requirements only from the admitted manifest, policy and
+   original items. The locally hashed plain descriptor is not a remote object,
+   bundle member or request; no remote descriptor-object path is fabricated.
+3. Use the same planner without bundles to establish exact missing original bytes.
+   Refuse if even individual originals exceed the remaining-transfer ceiling.
+   Further cap extra-byte allowance to the exact remaining network headroom.
+4. Exclude optional bundles above the effective member/encoded bounds. Return
+   each excluded hash and every exceeded bound explicitly, in hash order.
+   Plan eligible bundles plus remaining originals with Shared's unchanged
+   deterministic weighted/disjoint selection and exact arithmetic.
+5. Return `{ plan, effectivePolicy, adjustments, excludedBundles }`. `plan` is
+   Shared's unmodified `DownloadPlan`; adjustments identify each narrowed field's
+   published/effective value. Every result is independent mutable data, not a
+   reference into captured candidate evidence.
+
+An unselected bundle that merely loses the normal savings/budget competition is
+not an excluded/invalid artifact. Its originals remain covered by the planner.
+The plan's encoded totals include selected ZIP overhead and any already-verified
+members retransferred inside that ZIP; cached objects do not gain zero-cost
+network bytes. Equality at the transfer ceiling is allowed; insufficient extra
+headroom chooses fewer ZIPs rather than exceeding the ceiling.
+
+`verifiedHashes` is a caller assertion of **actual encoded-byte verification**,
+not proof supplied by metadata receipts or this pure planner. Malformed/duplicate
+hashes fail. Valid unrelated cached hashes, including local descriptor evidence,
+do not create remote requirements. An empty plan never proves complete decoded
+validation or offline readiness. Future storage/transport integration must
+establish that verified set from actual current bytes and still run complete
+candidate validation before activation.
+Invalid local limits and insufficient remaining-transfer capacity use
+`ContentError`; strict planner input/overflow failures propagate Shared's
+`DownloadPlanningError` (`invalid`/`overflow`). They are explicit refusals, not
+an empty-plan fallback.
+
 ## Durable evidence and recovery order
 
 Persist `plan()` and all `metadataObjects()` through the scoped writer before
@@ -140,8 +200,8 @@ incomplete; this API reports the missing bytes rather than guessing them.
 Byte/schema validity also does not authenticate a publisher's protected ledger,
 deployment provenance, source approval or legal permissions. The future caller
 must establish the genuine publication/descriptor origin. Live sequenced
-publication, production settings, transport/
-ZIP planning, consent/progress/cancel/retry/removal UI, active-version reader/search
+publication, production settings, live transport/
+ZIP byte validation/integration, consent/progress/cancel/retry/removal UI, active-version reader/search
 integration, repair/degraded readiness, full multilingual capability proof and
 supported browser/device evidence remain gates. No Library or Android pin is
 changed by this isolated Website slice.
@@ -159,6 +219,13 @@ old generic plans, extra/missing/wrong-length receipts, sequence binding, exact
 aggregate thresholds, preliminary inflation/count/descriptor bounds and mandatory
 original declared-length revalidation.
 
+[Transfer-planning units](../src/snapshot-transfer.test.ts) exercise original-only
+coverage, deterministic eligible/excluded ZIPs, exact member/encoded/remaining
+transfer thresholds, reduced allowance/headroom, verified-member reuse, inert
+optional fields, copied results, recovered candidates and explicit invalid input.
+Their bundle lengths/hashes are synthetic planning metadata, not actual ZIP
+framing/CRC/byte validation.
+
 [Actual browser storage tests](../tests/browser/content-store.spec.ts) compile
 the [test-only entry](../tests/isolated-content.ts) into an in-memory Vite module;
 it is not a production app entrypoint. They close an actual writer page, confirm
@@ -169,12 +236,17 @@ validation/activation. Scoped reads check copied bytes, unchanged revision,
 late/abort/corrupt/mid-read-fence refusal. Missing/corrupt evidence and rehashed
 invalid JSON/gzip preserve previous active content and progress; personal data
 stays unchanged.
+The same browser module also imports the actual portable Shared planner and
+plans from genuinely read/verified metadata, compares recovered results and
+checks explicit capacity/exclusion reporting without any artifact requests,
+activation, revision or personal writes.
 These synthetic inputs are permitted storage fixtures, not invented lyric truth.
 
 Incremental checks:
 
 ```powershell
 npm test -- snapshot-validation --maxWorkers=2
+npm test -- snapshot-transfer snapshot-validation --maxWorkers=2
 node node_modules\@playwright\test\cli.js test content-store --workers=2
 ```
 

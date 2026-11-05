@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 import vector from "../shared/fixtures/snapshot.json" with { type: "json" };
 import type { LyricItem, LyricObjectReference } from "../shared/types/lyrics";
-import type { SnapshotDescriptor, SnapshotManifest, SnapshotPolicy } from "../shared/types/snapshot";
+import type { SnapshotBundle, SnapshotDescriptor, SnapshotManifest, SnapshotPolicy } from "../shared/types/snapshot";
 import type { SnapshotValidationLimits } from "../src/snapshot-validation";
 
 type Role = "item" | "policy" | "manifest";
@@ -87,4 +87,34 @@ export function snapshotLimits(): SnapshotValidationLimits {
 export function snapshotPacket(fixture: ReturnType<typeof snapshotFixture>) {
   return { descriptor: [...fixture.descriptorBytes],
     objects: Object.fromEntries(Object.entries(fixture.objects).map(([hash, bytes]) => [hash, [...bytes]])) };
+}
+export function bundledSnapshotFixture(options: Pick<SnapshotFixtureOptions, "manifest" | "policy"> = {}) {
+  const template = snapshotFixture().items[0];
+  if (!template) throw new Error("Missing synthetic template");
+  const items = [1, 2, 3, 4].map(value => {
+    let seed = value;
+    const text = Array.from({ length: 3072 }, () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return String.fromCharCode(32 + seed % 95);
+    }).join("");
+    return { ...template, lyricId: `10000000-0000-4000-8000-00000000000${value}`, title: `Synthetic planning ${value}`,
+      lines: [{ kind: "line" as const, lineId: `20000000-0000-4000-8000-00000000000${value}`, text }] };
+  });
+  let bundles: Record<string, SnapshotBundle> = {};
+  const fixture = snapshotFixture({ items, ...options, manifest: manifest => {
+    const members = manifest.catalog.map(entry => entry.item);
+    bundles = Object.fromEntries(["a", "b"].map((letter, index) => {
+      const selected = members.slice(index * 2, index * 2 + 2).sort();
+      const encodedBytes = selected.reduce((sum, hash) => {
+        const object = manifest.objects[hash];
+        if (!object) throw new Error("Missing synthetic member");
+        return sum + object.encodedBytes;
+      }, 600);
+      return [letter.repeat(64), { path: `bundles/${letter.repeat(64)}.zip`, members: selected, encodedBytes,
+        changedAt: "2026-01-01T00:00:00.000Z" }];
+    }));
+    const bundled = { ...manifest, bundles };
+    return options.manifest ? options.manifest(bundled) : bundled;
+  } });
+  return { ...fixture, bundles };
 }

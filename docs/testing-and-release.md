@@ -111,6 +111,12 @@ The complete unit command may likewise use `npm test -- --maxWorkers=2` or
 `npm test -- --maxWorkers=1` to avoid
 concurrent large byte-boundary fixtures exhausting local scheduling resources.
 This changes only scheduling; retain every test and its existing timeout.
+The existing personal-restore browser setup's in-memory Vite build can
+intermittently exceed its unchanged30s hook deadline locally. This remains an
+unresolved runner-reliability issue, not permission to skip its cases or increase
+timeouts. A failed/incomplete full run is not a pass; a focused retry cannot
+replace a complete successful suite. Stop with exact logs if the full gate
+cannot be completed.
 `npm test -- first-use personal-backup personal-model` and
 `node node_modules\@playwright\test\cli.js test first-use personal-backup app-shell --workers=2`
 are incremental first-use checks, not finalization substitutes. They cover pending/
@@ -147,6 +153,15 @@ aggregate/-1 and original declared-length proof. Its test-only entry is compiled
 in memory, never imported by the app. Neither suite establishes authenticated
 publication, live download preparation or complete multilingual/
 offline readiness. See [the byte-validation guide](snapshot-validation.md).
+`npm test -- snapshot-transfer snapshot-validation --maxWorkers=2` additionally
+maps to GEN-03/OFF-02/04/06/15 and SET-01/02: admitted original-only requirements,
+inert optional-field projection, copied deterministic plans, exact bundle count/
+encoded and remaining-transfer ceilings, explicit exclusion/capped allowances,
+verified-member reuse and recovered-candidate parity. The content-store browser
+suite compiles the actual portable Shared module, verifies retained metadata
+bytes and checks planning without artifact requests, activation, revision changes
+or personal writes. Synthetic bundle metadata is not actual ZIP/CRC validation.
+These selectors remain incremental, never full-finalization substitutes.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

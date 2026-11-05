@@ -9,7 +9,7 @@ import {
 } from "../../shared/tools/content-state.mjs";
 import type { ContentStoreConfig } from "../../src/content-store";
 import { personalSnapshot } from "../lyric-browser";
-import { snapshotFixture, snapshotLimits, snapshotPacket } from "../snapshot-fixture";
+import { bundledSnapshotFixture, snapshotFixture, snapshotLimits, snapshotPacket } from "../snapshot-fixture";
 import messages from "../../shared/generated/web/ui.json" with { type: "json" };
 
 type FixtureObject = { sha256: string; encodedBytes: number; bytes: number[] };
@@ -892,6 +892,67 @@ test("scoped target reads verify actual bytes without revision writes and reject
   expect(result.failures.corrupt).toContain("integrity");
   expect(result.failures.fence).toContain("stale");
   expect(result.failures.abort).toContain("AbortError");
+});
+
+test("browser-admitted transfer planning uses actual verified metadata, reports exclusions and never downloads or activates content", async ({ page }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), fixture = bundledSnapshotFixture();
+  const network: string[] = [];
+  page.on("request", request => {
+    if (/(?:objects|bundles)\/[0-9a-f]{64}\./.test(request.url())) network.push(request.url());
+  });
+  const sizes = Object.values(fixture.bundles).map(bundle => bundle.encodedBytes).sort((a, b) => a - b);
+  const maximum = sizes[0];
+  if (!maximum) throw new Error("Missing synthetic bundle size");
+  const result = await page.evaluate(async ({ config, packet, limits, maximum }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    const candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async hash => {
+      const bytes = packet.objects[hash];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    const planning = { maxBundleMembers: 100, maxBundleEncodedBytes: 32 * 1024 * 1024,
+      maxExtraBytes: 8 * 1024 * 1024, maxExtraPercent: 25, maxTransferEncodedBytes: 131072 };
+    const planned = await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(candidate.plan());
+      const verified: string[] = [];
+      for (const object of candidate.metadataObjects()) {
+        await writer.putObject(object.sha256, object.bytes);
+        await writer.readObject(object.sha256);
+        verified.push(object.sha256);
+      }
+      const before = await store.snapshot();
+      const all = candidate.transferPlan(verified, planning);
+      const bounded = candidate.transferPlan(verified, { ...planning, maxBundleEncodedBytes: maximum });
+      const recovered = await backend.resumeSnapshot(candidate.plan(), hash => writer.readObject(hash), limits);
+      const resumed = recovered.transferPlan(verified, planning);
+      let refusal = "";
+      try { candidate.transferPlan(verified, { ...planning, maxTransferEncodedBytes: all.plan.missingEncodedBytes - 1 }); }
+      catch (reason) {
+        if (!(reason instanceof backend.ContentError)) throw reason;
+        refusal = reason.code;
+      }
+      const after = await store.snapshot();
+      return { before, after, all, bounded, resumed, refusal };
+    });
+    store.close();
+    return planned;
+  }, { config: config(), packet: snapshotPacket(fixture), limits: snapshotLimits(), maximum });
+  expect(result.all.plan.requests.map(request => request.kind)).toEqual(["bundle", "bundle"]);
+  expect(result.bounded.excludedBundles).toHaveLength(1);
+  expect(result.bounded.plan.requests.filter(request => request.kind === "bundle")).toHaveLength(1);
+  expect(result.bounded.plan.requests.filter(request => request.kind === "object")).toHaveLength(2);
+  expect(result.all.plan.requests.flatMap(request => request.covers).sort()).toEqual(fixture.manifest.catalog.map(entry => entry.item).sort());
+  expect(result.all.plan.requests.flatMap(request => request.covers)).not.toContain(fixture.descriptorHash);
+  expect(result.resumed).toEqual(result.all);
+  expect(result.refusal).toBe("capacity");
+  expect(result.after).toEqual(result.before);
+  expect(result.after.control.active).toBeNull();
+  expect(result.after.control.target).not.toBeNull();
+  expect(network).toEqual([]);
+  expect(await personalSnapshot(page)).toEqual(personal);
 });
 
 for(const fault of ["json","gzip"] as const) {

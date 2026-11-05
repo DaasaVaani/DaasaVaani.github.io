@@ -67,7 +67,8 @@ production defaults, transport, complete validator or readiness integration.
 Existing content lifecycles stay in memory; Android and Library are unchanged.
 The [staged snapshot validator](snapshot-validation.md) provides the narrow
 prelaunch descriptor/manifest/policy/item byte and target-binding layer, with
-durably rooted original descriptor evidence for new-page recovery. Do not
+durably rooted original descriptor evidence for new-page recovery and pure bounded
+ZIP/object transfer planning. Do not confuse planning with network/ZIP validation or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.
 

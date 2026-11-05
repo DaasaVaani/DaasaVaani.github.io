@@ -29,6 +29,10 @@ stored-object validation to a target. It tolerates optional fields without
 accepting unsupported required capabilities. Original descriptor evidence is rooted
 durably for fresh-page reconstruction and revalidation after writer-page death;
 this is not live downloading or full offline support.
+Its isolated transfer planner binds admitted originals to Shared's deterministic
+ZIP/object planning, explicitly excludes oversized optional bundles and caps
+extra bytes to trusted limits/headroom. Planning does not fetch/decode ZIPs or
+prove readiness.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

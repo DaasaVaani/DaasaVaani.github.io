@@ -40,6 +40,11 @@ Its required set also roots the exact original plain descriptor for fresh-page
 reconstruction after writer-page death, followed by full declared-length/identity
 revalidation. It remains outside the app; production multilingual proof, publisher
 provenance and live offline integration remain gates.
+The candidate's [isolated transfer planner](snapshot-validation.md#isolated-transfer-planning)
+projects known admitted fields into the portable Shared implementation. It excludes
+local descriptor evidence from remote requirements, reports unsafe optional ZIP
+exclusions and narrowed allowances, and caps extra bytes to remaining transfer
+headroom. This pure plan has no request/storage/UI or readiness side effects.
 
 ## Data flow
 

@@ -59,6 +59,11 @@ global item/line identity checks. Original descriptor evidence is also durably
 rooted for independently bounded fresh-page recovery and full revalidation before
 activation. Missing evidence is an explicit error, not a fabricated descriptor.
 Live support and complete production proof remain open.
+GEN-03/OFF-02/04/06/15 additionally have an isolated admitted-metadata transfer
+planner: independently pinned portable Shared selection, original-only requirements,
+explicit unsafe-ZIP exclusions, trusted allowance/headroom caps and deterministic
+individual coverage. It does not validate ZIP bytes, fetch artifacts or activate
+offline content; caller-verified hashes remain an explicit precondition.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

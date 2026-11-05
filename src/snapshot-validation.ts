@@ -3,6 +3,8 @@ import {
   assertConsumerManifest, assertConsumerPolicy, assertConsumerItem,
 } from "../shared/tools/snapshot-consumer.mjs";
 import { ContentError, assertContentPlan } from "../shared/tools/content-state.mjs";
+import { createDownloadPlanner } from "../shared/tools/download-planner-reference.mjs";
+import type { DownloadPlan, TransferPlanningPolicy } from "../shared/tools/download-planner-reference.mjs";
 import type { ContentPlan, ContentObjectReceipt } from "../shared/types/content";
 import type { LyricObjectReference } from "../shared/types/lyrics";
 import type { SnapshotManifest } from "../shared/types/snapshot";
@@ -29,7 +31,65 @@ export interface SnapshotValidationLimits {
 export interface SnapshotCandidate {
   plan(): ContentPlan;
   metadataObjects(): { sha256: string; bytes: Uint8Array }[];
+  transferPlan(verified: readonly string[], limits: SnapshotTransferLimits): SnapshotTransferPlan;
   validate(plan: ContentPlan, read: ContentReader, signal?: AbortSignal): Promise<void>;
+}
+export interface SnapshotTransferLimits {
+  maxBundleMembers: number;
+  maxBundleEncodedBytes: number;
+  maxExtraBytes: number;
+  maxExtraPercent: number;
+  maxTransferEncodedBytes: number;
+}
+type TransferLimitField = Exclude<keyof SnapshotTransferLimits, "maxTransferEncodedBytes">;
+export interface SnapshotTransferPlan {
+  plan: DownloadPlan;
+  effectivePolicy: TransferPlanningPolicy;
+  adjustments: { field: TransferLimitField; published: number; effective: number }[];
+  excludedBundles: { sha256: string; limits: ("maxBundleMembers" | "maxBundleEncodedBytes")[] }[];
+}
+const transferLimitFields = ["maxBundleMembers", "maxBundleEncodedBytes", "maxExtraBytes", "maxExtraPercent"] as const;
+function transferPlan(manifest: SnapshotManifest, policy: TransferPlanningPolicy,
+  originals: ContentObjectReceipt[], verified: readonly string[], input: SnapshotTransferLimits): SnapshotTransferPlan {
+  const keys = [...transferLimitFields, "maxTransferEncodedBytes"] as const;
+  if (!Array.isArray(verified) || !input || Object.keys(input).sort().join(",") !== [...keys].sort().join(",") ||
+      keys.some(key => !Number.isSafeInteger(input[key]) ||
+        (key === "maxExtraBytes" || key === "maxExtraPercent" ? input[key] < 0 : input[key] <= 0)) ||
+      input.maxExtraPercent > 100) {
+    throw new ContentError("invalid", "Explicit snapshot transfer safety limits are required");
+  }
+  const limits = { ...input };
+  const effectivePolicy: TransferPlanningPolicy = {
+    maxBundleMembers: Math.min(policy.maxBundleMembers, limits.maxBundleMembers),
+    maxBundleEncodedBytes: Math.min(policy.maxBundleEncodedBytes, limits.maxBundleEncodedBytes),
+    requestCostBytes: policy.requestCostBytes,
+    maxExtraBytes: Math.min(policy.maxExtraBytes, limits.maxExtraBytes),
+    maxExtraPercent: Math.min(policy.maxExtraPercent, limits.maxExtraPercent),
+  };
+  const base = { formatVersion: 1 as const, objects: originals.map(object => ({ ...object })),
+    required: originals.map(object => object.sha256), verified: [...verified] };
+  const baseline = createDownloadPlanner(effectivePolicy)({ ...base, bundles: [] });
+  if (baseline.transferEncodedBytes > limits.maxTransferEncodedBytes) {
+    throw new ContentError("capacity", "Missing original objects exceed the trusted transfer byte limit");
+  }
+  effectivePolicy.maxExtraBytes = Math.min(effectivePolicy.maxExtraBytes,
+    limits.maxTransferEncodedBytes - baseline.transferEncodedBytes);
+  const excludedBundles: SnapshotTransferPlan["excludedBundles"] = [];
+  const bundles = [];
+  for (const [sha256, bundle] of Object.entries(manifest.bundles).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) {
+    const exceeded: SnapshotTransferPlan["excludedBundles"][number]["limits"] = [];
+    if (bundle.members.length > effectivePolicy.maxBundleMembers) exceeded.push("maxBundleMembers");
+    if (bundle.encodedBytes > effectivePolicy.maxBundleEncodedBytes) exceeded.push("maxBundleEncodedBytes");
+    if (exceeded.length) excludedBundles.push({ sha256, limits: exceeded });
+    else bundles.push({ sha256, encodedBytes: bundle.encodedBytes, members: [...bundle.members] });
+  }
+  const plan = createDownloadPlanner(effectivePolicy)({ ...base, bundles });
+  if (plan.transferEncodedBytes > limits.maxTransferEncodedBytes) {
+    throw new ContentError("capacity", "Selected artifacts exceed the trusted transfer byte limit");
+  }
+  return { plan, effectivePolicy, excludedBundles,
+    adjustments: transferLimitFields.filter(field => effectivePolicy[field] !== policy[field])
+      .map(field => ({ field, published: policy[field], effective: effectivePolicy[field] })) };
 }
 const numericLimits = [
   "maxDescriptorBytes", "maxManifestEncodedBytes", "maxManifestDecodedBytes",
@@ -175,15 +235,16 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
   const manifest = manifestObject.value;
   assertConsumerManifestEnvelope(manifest, limits.supportedCapabilities);
   const original = originals(manifest, { sha256: descriptor.manifest.sha256, encodedBytes: descriptor.manifest.encodedBytes }, limits);
-  const required = original.required;
+  const required = [...original.required];
   encoded = BigInt(descriptorBytes.length) + original.encoded;
   decoded = BigInt(descriptorBytes.length) + BigInt(descriptor.manifest.decodedBytes) + original.decoded;
   aggregate(encoded, decoded, limits);
   const policyReference = manifest.objects[manifest.policy];
   if (!policyReference) throw new ContentError("invalid", "Snapshot has no policy object");
   const policyObject = await decode(read, { ...policyReference, sha256: manifest.policy }, limits.chunkBytes, signal);
-  assertConsumerPolicy(policyObject.value);
-  assertConsumerManifest(manifest, policyObject.value, limits.supportedCapabilities);
+  const policy = policyObject.value;
+  assertConsumerPolicy(policy);
+  assertConsumerManifest(manifest, policy, limits.supportedCapabilities);
   const descriptorReceipt = { sha256: await encodedSha256(descriptorBytes), encodedBytes: descriptorBytes.length };
   if (required.some(object => object.sha256 === descriptorReceipt.sha256)) {
     throw new ContentError("invalid", "Descriptor evidence cannot alias an original snapshot object");
@@ -203,6 +264,8 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
   return Object.freeze({
     plan: () => structuredClone(plan),
     metadataObjects: () => metadata.map(object => ({ sha256: object.sha256, bytes: new Uint8Array(object.bytes) })),
+    transferPlan: (verified: readonly string[], transferLimits: SnapshotTransferLimits) =>
+      transferPlan(manifest, policy.transferPlanning, original.required, verified, transferLimits),
     validate: async (target: ContentPlan, currentRead: ContentReader, currentSignal?: AbortSignal) => {
       const captured = structuredClone(target);
       assertContentPlan(captured);

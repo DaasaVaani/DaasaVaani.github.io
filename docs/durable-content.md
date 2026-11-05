@@ -168,7 +168,7 @@ workflow checks, not this selector alone. Shared independently validates the pur
 protocol; Website supplies physical-storage evidence, not native/device parity.
 
 Remaining gates include Library's live sequenced publication/ledger/receipts and
-activation, genuine descriptor admission, bounded transport/ZIP planning, complete
+activation, genuine descriptor admission, live bounded transport/ZIP validation, complete
 decoded-schema/capability proof, explicit consent/progress/cancel/retry/removal UI,
 production settings and storage/quota/
 eviction handling, active-version reader/

@@ -347,6 +347,15 @@ evidence is not established.
 ### ALG-08: Bundle packing and download planning
 
 - **Requirements:** GEN-03, OFF-02/04/06/15, CI-06, SET-01/02.
+- **Implemented prerequisite:** the [isolated admitted-metadata adapter](snapshot-validation.md#isolated-transfer-planning)
+  reuses Shared's portable exact planner, not a second selection algorithm.
+  It runs an individual-only baseline to derive remaining network headroom, caps
+  extras, filters/reports oversized optional bundles and runs the same planner on
+  eligible bundles. Projection and exclusions scan originals/bundle members;
+  deterministic hash sorting and the planner's existing candidate sort/BigInt
+  comparisons retain their separate costs. Copies scale with admitted originals
+  and bounded manifest bundle metadata; this is not measured peak-heap or
+  transport/ZIP byte proof. No optimality claim is added.
 - **Already fixed:** deterministic changed-at/path grouping; ZIP STORE containing
   original gzip objects; up to 100 members and 32 MiB per bundle. Individual
   objects remain fetchable; no thumbnail/video bytes enter reading transfers.

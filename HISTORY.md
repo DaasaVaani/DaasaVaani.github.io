@@ -1,5 +1,57 @@
 # Documentation history
 
+## 2026-11-05: approved isolated bounded snapshot transfer planning
+
+- After recovery publication, the owner chose eligible ZIPs plus individual
+  originals with explicit exclusions/narrowed allowances, rather than refusing
+  the entire transfer on policy mismatch or disabling every ZIP. Limits must never
+  increase to match fetched policy; safe individual coverage remains available.
+- Shared independently publishedf5cea0de070241470e8d02b5f24e06c83f57e1b1:
+  the existing deterministic planner now uses browser-safe JSON schema imports,
+  strong declarations and focused immutable-input/error conformance. Its
+  algorithm/policy/defaults remain unchanged. Focused27/27 and full439/439 checks,
+  hygiene, YAML22, generated/schema consistency, docs/links/anchors, workflow/
+  ShellCheck and whitespace passed; exact
+  [hosted42037470867](https://github.com/DaasaVaani/shared/actions/runs/42037470867)
+  succeeded before Website independently adopted the prerequisite.
+- Website adds pure candidate transfer planning with explicit safety limits,
+  actual admitted original-only requirements (never a remote local-descriptor
+  object), known-field projection, deterministic exclusion reports, narrowed
+  allowance reports and extra-byte headroom from an individual-only baseline.
+  It performs no requests, ZIP decoding, activation, revision or personal writes.
+  Caller-declared verified hashes are a precondition, not metadata/byte proof.
+- First strict check found lost narrowing of a mutable decoded-object property
+  captured by the new method. Captured the asserted policy in a dedicated const,
+  without a cast or weakened type. Focused final50/50 decoder/planner units and
+  54/54 real-browser storage/planner cases passed with fresh build/strict types.
+  Synthetic bundle lengths/hashes exercise planning only, not ZIP framing/CRC.
+- Complete `npm test -- --maxWorkers=1` passed193/193 in20 files.
+  The first complete serial browser run passed541/546, failed1 and left4 unrun:
+  the unchanged narrow-layout personal-restore `beforeAll` in-memory build
+  exceeded30s. This was not a pass. Repeated the entire browser suite without
+  changing its cases, projects, assertions, timeouts or the unrelated restore test.
+- Final complete `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed546/546 across desktop/mobile/narrow in11.2m with fresh production build/
+  strict typecheck and zero skipped cases, using the configured clean c2837cc
+  fixture publisher. Final changed-Markdown checks passed11 files and all153
+  unique unchanged requirement IDs; strict YAML4, installed actionlint1.7.12/
+  ShellCheck0.11.0 and Git whitespace checks passed. The unresolved intermittent
+  local setup timeout is now an explicit current validation warning, never a waiver.
+
+## 2026-11-05: exact descriptor-recovery hosted/live verification
+
+- Website5b6248daceb7304b1dc07273f5d7a1ced7af97ea was published after all
+  final local178 units/543 browsers and ancillary checks. Exact hosted Repository
+  checks/deployment42038034884 and CodeQL42038033756 succeeded. Actual hosted
+  logs confirmed178 units and543 browsers (6.3m browser scheduling).
+- Live root/open HTML and JS returned HTTP200 and matched exact Pages artifact
+  13418659784 byte-for-byte. Root/open HTML SHA256:
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  JS `/assets/index-Ca_7nR8A.js` SHA256:
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the exact downloaded tar/empty directory. Shipped app behavior was
+  intentionally unchanged; no live offline readiness or release claim was made.
+
 ## 2026-11-05: approved original-descriptor retention and isolated recovery
 
 - The owner selected retaining the exact original descriptor as an additional
