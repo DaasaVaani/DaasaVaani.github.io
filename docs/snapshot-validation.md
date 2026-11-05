@@ -20,7 +20,7 @@ strict; consumer tolerance is not permission to publish unknown source fields.
 
 ## Explicit trusted limits
 
-Every `inspectSnapshot` call supplies all of `SnapshotValidationLimits`:
+Every `inspectSnapshot` or `resumeSnapshot` call supplies all of `SnapshotValidationLimits`:
 
 - descriptor byte ceiling;
 - independent encoded and decoded ceilings for manifest, policy and item roles;
@@ -61,21 +61,30 @@ store's complete logical accounting nor physical allocation/heap guarantees.
    the same manner, then validate policy shape and manifest/policy semantics.
    Compatible gzip header/compression profiles are accepted; a consumer does not
    require byte-for-byte reproduction of the producer's compression algorithm.
-5. Return a process-local candidate with `plan()`, `metadataObjects()` and
-   `validate(plan, readStored, signal?)`. Plans and manifest/policy byte seeds are
-   copies; callers cannot mutate the captured candidate through these accessors.
+5. Hash the original plain descriptor bytes locally and add their receipt to the
+   required set. Return a candidate with `plan()`, `metadataObjects()` and
+   `validate(plan, readStored, signal?)`. Plans and descriptor/manifest/policy byte
+   seeds are copies; callers cannot mutate captured evidence through accessors.
+   Seeds are ordered descriptor first, then manifest and policy.
 
 The candidate plan contains the genuine descriptor's sequence/manifest reference
-and a strict hash-sorted set of manifest, policy and all original item receipts.
-It does not include ZIP archives or claim their CRC/framing was inspected.
+and a strict hash-sorted set of manifest, policy, all original item receipts and
+exactly one additional original descriptor receipt. The descriptor is its exact
+canonical JSON plus LF, not gzip, a fabricated remote object path, a decoded lyric
+copy or an authentication token. It cannot alias an original object.
+Every receipt/object/count/single-object and logical-byte storage limit applies
+to it; identical stored hashes count once under Shared's accounting and reachability
+rules. No new store, schema version or plan field is introduced.
+The plan does not include ZIP archives or claim their CRC/framing was inspected.
 The [durable-content adapter](durable-content.md) still owns writer fencing,
 transactional byte checkpoints, atomic activation and reader pins.
 
 `validate` must be the actual activation callback, not replaced with a no-op:
 
 1. Require the exact captured target reference and complete required set.
-2. Re-read and independently reverify stored manifest/policy actual bytes through
-   the complete admission path; no remembered receipt or parsed cache is proof.
+2. Read and verify the actual stored original descriptor, then independently
+   reverify manifest/policy bytes through the complete admission path; no remembered
+   receipt, synthesized descriptor or parsed cache is proof.
 3. Read/decode/schema-check every item. Bind actual item UUID/title/ordered tags
    to its catalog entry, preserve literal text/layout and enforce canonical known
    line semantics. Reject line identities colliding with any catalog UUID or
@@ -89,19 +98,49 @@ all-object-read guard alone does not establish decoded/capability proof.
 Errors propagate as explicit typed Shared metadata errors, content integrity/
 capacity errors or native cancellation; there is no success-shaped fallback.
 
-## Persistence, provenance and remaining gates
+## Durable evidence and recovery order
 
-The candidate retains the originally supplied descriptor only in memory.
-Closing/reopening the IndexedDB connection within that session does not persist
-the candidate or prove reconstruction after browser death. Durable retention of
-the admitted descriptor, or an approved reconstruction protocol, remains open
-before live crash-resumable validation. Never fabricate a feed/sequence from the
-old unsequenced publication or call a remembered flag readiness.
+Persist `plan()` and all `metadataObjects()` through the scoped writer before
+claiming a locally recoverable metadata checkpoint. Partial individual checkpoints
+remain useful progress, not a recovery/readiness flag. The candidate itself is
+process-local; `resumeSnapshot(targetPlan, readStored, limits, signal?)`
+reconstructs it from actual retained evidence in a fresh process:
+
+1. Capture/validate the plan and trusted limits. Refuse more than `maxItems + 3`
+   receipts (one manifest, one policy, one descriptor) and excessive planned
+   encoded aggregate before any read.
+2. Verify the root manifest's actual encoded length/hash and parse its one complete
+   gzip member under the trusted manifest decoded ceiling. This preliminary read
+   is not proof of the original descriptor's declared decoded length or identity.
+3. Perform early envelope/capability refusal, bound all original roles/counts and
+   derive their exact receipts. Map-based membership checks require every original
+   receipt with its exact length and exactly one extra descriptor receipt.
+4. Admit descriptor/complete aggregates, verify its actual stored bytes, then run
+   full `inspectSnapshot` on those original bytes. This repeats manifest decoding
+   with the original exact decoded length, policy verification and all semantic
+   bindings. Require the reconstructed plan to equal the retained plan, including
+   sequence and manifest identity.
+5. Download/checkpoint missing original items only through a future explicit
+   transport adapter, then use the reconstructed candidate's actual `validate`
+   activation callback. Recovery alone never activates a partial snapshot.
+
+Inside `withWriter`, use `sha256 => writer.readObject(sha256)` for retained target
+reads. This verifies actual bytes and the captured fence before/after reading
+without changing the revision; it is not an activation callback escape hatch.
+Do not pass a current feed, remembered descriptor or synthesized sequence as
+recovery evidence. A valid generic old plan containing only original objects
+returns explicit `unsupported`: original-descriptor admission or restart is
+required. Missing/corrupt/extra/mismatched evidence fails, preserving the previous
+active snapshot and committed progress. No automatic deletion or fallback occurs.
+If essential metadata was never checkpointed, offline reconstruction is genuinely
+incomplete; this API reports the missing bytes rather than guessing them.
+
+## Provenance and remaining gates
 
 Byte/schema validity also does not authenticate a publisher's protected ledger,
 deployment provenance, source approval or legal permissions. The future caller
 must establish the genuine publication/descriptor origin. Live sequenced
-publication, descriptor-retention/reconstruction, production settings, transport/
+publication, production settings, transport/
 ZIP planning, consent/progress/cancel/retry/removal UI, active-version reader/search
 integration, repair/degraded readiness, full multilingual capability proof and
 supported browser/device evidence remain gates. No Library or Android pin is
@@ -114,14 +153,22 @@ gzip fixtures, exact aggregate ceilings/-1, role/count refusal, unsupported
 capabilities before lookups, copied candidate/configuration boundaries, canonical
 optional fields/integer-like keys, actual hash/length, compatible gzip profiles,
 CRC/trailing/concatenated corruption, duplicate JSON keys, malformed UTF8/surrogates,
-item/catalog/global-identity mismatch, wrong targets and cancellation.
+item/catalog/global-identity mismatch, wrong targets and cancellation. Recovery
+tests cover metadata-only reconstruction, original evidence corruption/absence,
+old generic plans, extra/missing/wrong-length receipts, sequence binding, exact
+aggregate thresholds, preliminary inflation/count/descriptor bounds and mandatory
+original declared-length revalidation.
 
 [Actual browser storage tests](../tests/browser/content-store.spec.ts) compile
 the [test-only entry](../tests/isolated-content.ts) into an in-memory Vite module;
-it is not a production app entrypoint. They re-open partial IndexedDB state with
-a retained candidate, complete activation through the real decoder and preserve
-the previous active snapshot when rehashed noncanonical JSON or malformed gzip
-passes encoded receipts but fails full validation. Personal data stays unchanged.
+it is not a production app entrypoint. They close an actual writer page, confirm
+native lock release and reconstruct a candidate in a new page using only the
+stored plan/evidence and explicit limits. That new page receives only missing
+item objects, no descriptor/candidate/current-feed argument, then completes actual
+validation/activation. Scoped reads check copied bytes, unchanged revision,
+late/abort/corrupt/mid-read-fence refusal. Missing/corrupt evidence and rehashed
+invalid JSON/gzip preserve previous active content and progress; personal data
+stays unchanged.
 These synthetic inputs are permitted storage fixtures, not invented lyric truth.
 
 Incremental checks:

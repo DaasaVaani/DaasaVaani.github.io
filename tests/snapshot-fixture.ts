@@ -70,8 +70,10 @@ export function snapshotFixture(options: SnapshotFixtureOptions = {}) {
     format: "daasavaani-snapshot-feed", formatVersion: 1, sequence: options.sequence ?? 1, manifest: manifestReference,
   };
   const descriptorBytes = new TextEncoder().encode(fixtureCanonical(descriptor) + "\n");
-  return { descriptor, descriptorBytes, objects, manifest, items, policy,
-    encodedBytes: descriptorBytes.length + Object.values(objects).reduce((sum, bytes) => sum + bytes.length, 0),
+  const descriptorHash = createHash("sha256").update(descriptorBytes).digest("hex");
+  objects[descriptorHash] = descriptorBytes;
+  return { descriptor, descriptorBytes, descriptorHash, objects, manifest, items, policy,
+    encodedBytes: Object.values(objects).reduce((sum, bytes) => sum + bytes.length, 0),
     decodedBytes: descriptorBytes.length + manifestReference.decodedBytes +
       Object.values(manifest.objects).reduce((sum, object) => sum + object.decodedBytes, 0),
   };

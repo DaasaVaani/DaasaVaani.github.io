@@ -28,6 +28,7 @@ export interface ContentWriteScope {
   remove(): Promise<ContentDataset>;
   dropTarget(): Promise<ContentDataset>;
   putObject(sha256: string, bytes: Uint8Array): Promise<ContentDataset>;
+  readObject(sha256: string): Promise<Uint8Array>;
   activate(validate: (plan: ContentPlan, read: ContentReader) => Promise<void>): Promise<ContentDataset>;
   collect(): Promise<{ removed: ContentReference[]; deferred: ContentReference[] }>;
 }
@@ -132,9 +133,10 @@ export class ContentStore {
   close() { this.database.close(); }
   snapshot() { return dataset(this.database, this.limits); }
   async withWriter<T>(expected: ExpectedContent, work: (writer: ContentWriteScope) => Promise<T>, signal?: AbortSignal): Promise<T> {
-    return navigator.locks.request(this.writerLock(), { ifAvailable: true, ...(signal ? { signal } : {}) }, async lock => {
-      if (!lock) throw new ContentError("busy", "Another content writer owns this database");
+    signal?.throwIfAborted();
+    return navigator.locks.request(this.writerLock(), { ifAvailable: true }, async lock => {
       signal?.throwIfAborted();
+      if (!lock) throw new ContentError("busy", "Another content writer owns this database");
       const captured = await this.commit({ epoch: expected.epoch, revision: expected.revision },
         (before, fence) => claimContentWriter(before, fence, crypto.randomUUID(), this.limits), () => signal?.throwIfAborted());
       const writer = new ContentWriter({
@@ -149,6 +151,7 @@ export class ContentStore {
         remove: () => writer.run(() => writer.remove()),
         dropTarget: () => writer.run(() => writer.dropTarget()),
         putObject: (sha256, bytes) => writer.run(() => writer.putObject(sha256, bytes)),
+        readObject: sha256 => writer.run(() => writer.readObject(sha256)),
         activate: validate => writer.run(() => writer.activate(validate)),
         collect: () => writer.run(() => writer.collect()),
       };
@@ -279,6 +282,24 @@ class ContentWriter implements ContentWriteScope {
   }
   remove() { return this.change((before, expected) => removeContentRoots(before, expected, this.store.config)); }
   dropTarget() { return this.change((before, expected) => dropContentTarget(before, expected, this.store.config)); }
+  async readObject(sha256: string) {
+    this.guard();
+    const captured = { ...this.expected }, before = await this.store.snapshot();
+    const fenced = (state: ContentState) => {
+      if (state.epoch !== captured.epoch || state.revision !== captured.revision) {
+        throw new ContentError("stale", "Target changed while reading verified progress");
+      }
+    };
+    fenced(before.control);
+    const target = before.control.target;
+    const plan = target && before.snapshots.find(value => contentKey(value.reference) === contentKey(target.reference));
+    if (!plan) throw new ContentError("target", "Verified progress reads require a target plan");
+    const read = await this.store.reader(plan), bytes = await read(sha256);
+    this.guard();
+    fenced((await this.store.snapshot()).control);
+    this.guard();
+    return bytes;
+  }
   async putObject(sha256: string, input: Uint8Array) {
     this.guard();
     const bytes = new Uint8Array(input), before = await this.store.snapshot();

@@ -36,8 +36,10 @@ validation remain D5/P6 gates; the owning guide defines exact physical behavior.
 The [isolated staged validator](snapshot-validation.md) now supplies actual
 descriptor/manifest/policy/item byte proof for the supported prelaunch envelope,
 with early capability refusal and complete target/global-identity binding.
-It remains outside the app; production multilingual proof, publisher provenance
-and durable descriptor retention/reconstruction remain integration gates.
+Its required set also roots the exact original plain descriptor for fresh-page
+reconstruction after writer-page death, followed by full declared-length/identity
+revalidation. It remains outside the app; production multilingual proof, publisher
+provenance and live offline integration remain gates.
 
 ## Data flow
 

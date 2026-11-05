@@ -389,8 +389,15 @@ evidence is not established.
   IndexedDB checkpoint/activation rollback, whole-operation locks, explicit resume
   and browser page-death recovery. It has no transport or complete production validator.
   The [staged byte validator](snapshot-validation.md) additionally binds real
-  canonical/gzip/hash/length proof for the narrow prelaunch family; its descriptor
-  candidate remains process-local, not a durable recovery or full capability proof.
+  canonical/gzip/hash/length proof for the narrow prelaunch family. Its plan roots
+  the original descriptor; fresh-page recovery performs bounded preliminary
+  manifest decoding, derives the exact original set with expected O(N) map/set
+  membership work for N receipts, locates exactly one evidence object, then repeats
+  complete admission using that original descriptor. Hash sorting/canonical
+  serialization still has its separate key-sort costs; actual byte work scales
+  with verified encoded/decoded bytes and includes the repeated metadata reads.
+  Copies and bounded codec work are additional live allocations, not measured heap
+  guarantees. This is not transport, full capability or complete offline proof.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

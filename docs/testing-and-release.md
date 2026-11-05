@@ -107,7 +107,8 @@ all configured projects and the intended worker count.
 On a resource-constrained local host, the same complete browser command may use
 `--workers=1` instead. This changes scheduling only: keep all projects, tests,
 assertions and existing time limits; incomplete or failed runs remain blockers.
-The complete unit command may likewise use `npm test -- --maxWorkers=2` to avoid
+The complete unit command may likewise use `npm test -- --maxWorkers=2` or
+`npm test -- --maxWorkers=1` to avoid
 concurrent large byte-boundary fixtures exhausting local scheduling resources.
 This changes only scheduling; retain every test and its existing timeout.
 `npm test -- first-use personal-backup personal-model` and
@@ -138,9 +139,13 @@ descriptor/manifest/policy/item bytes, copied candidates/trusted limits, exact
 aggregate ceilings/-1, unsupported capability refusal before lookups, compatible
 gzip profiles, malformed/rehashed gzip/JSON, item/global identity and cancellation.
 The same real content-store browser suite now exercises actual staged decoding/
-activation and preservation on rehashed invalid replacements. Its test-only entry
-is compiled in memory, never imported by the app. Neither suite establishes durable
-descriptor reconstruction, authenticated publication or complete multilingual/
+activation and preservation on rehashed invalid replacements. It also checks actual
+writer-page death/new-page descriptor reconstruction without original in-memory
+arguments, missing/corrupt evidence preservation and scoped read copying/no-revision/
+late/abort/corrupt/mid-read-fence behavior. Unit recovery checks retain exact
+aggregate/-1 and original declared-length proof. Its test-only entry is compiled
+in memory, never imported by the app. Neither suite establishes authenticated
+publication, live download preparation or complete multilingual/
 offline readiness. See [the byte-validation guide](snapshot-validation.md).
 
 Native URL construction, chooser/copy/manual controls, canonical-only list

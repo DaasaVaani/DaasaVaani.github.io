@@ -66,9 +66,10 @@ reader-safe collection. It is deliberately not imported by the app and has no
 production defaults, transport, complete validator or readiness integration.
 Existing content lifecycles stay in memory; Android and Library are unchanged.
 The [staged snapshot validator](snapshot-validation.md) provides the narrow
-prelaunch descriptor/manifest/policy/item byte and target-binding layer. Do not
+prelaunch descriptor/manifest/policy/item byte and target-binding layer, with
+durably rooted original descriptor evidence for new-page recovery. Do not
 advertise these capabilities in app settings or substitute it for complete
-production validation, authenticated publication or durable descriptor recovery.
+production validation, authenticated publication or live offline preparation.
 
 Both clients' [public canonical lyric links](lyric-preview.md#public-lyric-links)
 use the configured Website base and exact lyric identity, never copied lyrics or

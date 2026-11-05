@@ -56,6 +56,7 @@ The callback receives only a scoped interface:
 
 - `begin(plan)` and explicit `phase("downloading" | "paused")`;
 - `putObject(sha256, bytes)` for whole verified target objects;
+- `readObject(sha256)` for fenced verified reads of retained target bytes;
 - `activate(validate)` for a fenced, completely verified candidate;
 - `dropTarget()`, `remove()` and explicit `collect()`.
 
@@ -66,6 +67,9 @@ writer lock. Unawaited operations fail explicitly; their late guards prevent
 terminal writes. Retained writer capabilities cannot mutate after departure.
 Abort remains cooperative for the callback itself; no timeout releases a writer
 while its asynchronous operation is still running.
+The nonblocking native request uses `ifAvailable` without the incompatible native
+`signal` option. Cancellation is checked before requesting, inside the callback
+and by operation/terminal guards; it does not release the lock ahead of unfinished work.
 
 Failure attempts a durable paused target checkpoint while the lock is still held,
 including after cancellation. If that also fails, both errors are surfaced in an
@@ -83,6 +87,15 @@ their subsequent commit still uses the original captured fence.
 applies the explicit single-object bound and checks actual SHA-256. Reusing a
 stored digest independently verifies the existing immutable Blob. Corrupt reuse
 is refused, not silently repaired or replaced.
+
+`readObject` requires a current target and checks the captured epoch/revision before
+and after actual length/digest verification. It returns copied bytes without a
+revision mutation. It shares the same tracked scope, cancellation and late-use
+guards as writes; it is not a general unrooted-object or active-reader API.
+The [staged recovery profile](snapshot-validation.md#durable-evidence-and-recovery-order)
+roots the original plain descriptor as one extra immutable object alongside all
+original gzip objects. All accounting, count limits and collection roots include
+that evidence; no physical schema/version changes or fabricated remote paths exist.
 
 `activate` passes a copied plan and verified lazy reader to the supplied validator.
 The validator must read every required actual object and must reject on incomplete
@@ -137,6 +150,10 @@ Chromium desktop/mobile/narrow projects use real IndexedDB and Web Locks:
 - complete personal-database preservation for covered preparation/removal/closure.
 - actual staged decoding during partial-store reopen and activation; rehashed
   invalid JSON/gzip cannot replace the prior active snapshot through valid receipts.
+- new-page reconstruction from retained original descriptor evidence after actual
+  writer-page death, then completion/activation without a supplied descriptor;
+- missing/corrupt evidence preservation and read-only scoped revision/copy/fence/
+  abort/late-use checks.
 
 Incremental command:
 
@@ -153,7 +170,7 @@ protocol; Website supplies physical-storage evidence, not native/device parity.
 Remaining gates include Library's live sequenced publication/ledger/receipts and
 activation, genuine descriptor admission, bounded transport/ZIP planning, complete
 decoded-schema/capability proof, explicit consent/progress/cancel/retry/removal UI,
-production settings, durable descriptor retention/reconstruction and storage/quota/
+production settings and storage/quota/
 eviction handling, active-version reader/
 search integration, same-version repair/degraded readiness, and the supported
 browser/device matrix. OFF-01/02/03/04/08/09/10/12/13/14/17 and full OFF-06/07/

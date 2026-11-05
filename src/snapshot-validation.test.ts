@@ -1,5 +1,5 @@
 import { expect, test, vi } from "vitest";
-import { inspectSnapshot } from "./snapshot-validation";
+import { inspectSnapshot, resumeSnapshot } from "./snapshot-validation";
 import { fixtureCanonical, snapshotFixture, snapshotLimits } from "../tests/snapshot-fixture";
 
 function provider(fixture: ReturnType<typeof snapshotFixture>) {
@@ -9,6 +9,115 @@ function provider(fixture: ReturnType<typeof snapshotFixture>) {
     return new Uint8Array(bytes);
   });
 }
+test("recovery reconstructs a fresh candidate from retained metadata without reading unfinished items", async () => {
+  const fixture = snapshotFixture(), candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits());
+  const metadata = new Map(candidate.metadataObjects().map(object => [object.sha256, object.bytes]));
+  const read = vi.fn(async (hash: string) => {
+    const bytes = metadata.get(hash);
+    if (!bytes) throw new Error("Recovery must not request incomplete items");
+    return new Uint8Array(bytes);
+  });
+  const recovered = await resumeSnapshot(candidate.plan(), read, snapshotLimits());
+  expect(recovered.plan()).toEqual(candidate.plan());
+  expect(read.mock.calls.map(([hash]) => hash)).toEqual([
+    fixture.descriptor.manifest.sha256, fixture.descriptorHash, fixture.descriptor.manifest.sha256, fixture.manifest.policy,
+  ]);
+  await recovered.validate(recovered.plan(), provider(fixture));
+});
+test.each(["missing", "corrupt"] as const)("recovery refuses %s original descriptor bytes rather than manufacturing evidence", async fault => {
+  const fixture = snapshotFixture(), read = provider(fixture);
+  const candidate = await inspectSnapshot(fixture.descriptorBytes, read, snapshotLimits());
+  await expect(resumeSnapshot(candidate.plan(), async hash => {
+    const bytes = await read(hash);
+    if (hash !== fixture.descriptorHash) return bytes;
+    if (fault === "missing") return new Uint8Array();
+    bytes[0] = 0;
+    return bytes;
+  }, snapshotLimits())).rejects.toMatchObject({ code: "integrity" });
+});
+test("old generic plans explicitly require original-descriptor admission or restart without mutation", async () => {
+  const fixture = snapshotFixture(), candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits());
+  const plan = candidate.plan();
+  plan.required = plan.required.filter(object => object.sha256 !== fixture.descriptorHash);
+  const before = structuredClone(plan);
+  await expect(resumeSnapshot(plan, provider(fixture), snapshotLimits())).rejects.toMatchObject({
+    code: "unsupported", message: expect.stringContaining("original-descriptor admission or restart"),
+  });
+  expect(plan).toEqual(before);
+});
+test.each(["extra", "missing-original", "wrong-length"] as const)("recovery refuses %s receipts before reading descriptor evidence", async fault => {
+  const fixture = snapshotFixture(), candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits());
+  const plan = candidate.plan(), itemHash = fixture.manifest.catalog[0]?.item;
+  if (!itemHash) throw new Error("Missing synthetic item");
+  if (fault === "extra") plan.required.push({ sha256: "f".repeat(64), encodedBytes: 1 });
+  else if (fault === "missing-original") plan.required = plan.required.filter(object => object.sha256 !== itemHash);
+  else {
+    const receipt = plan.required.find(object => object.sha256 === itemHash);
+    if (!receipt) throw new Error("Missing synthetic receipt");
+    receipt.encodedBytes++;
+  }
+  plan.required.sort((a, b) => a.sha256 < b.sha256 ? -1 : a.sha256 > b.sha256 ? 1 : 0);
+  const read = provider(fixture);
+  await expect(resumeSnapshot(plan, read, snapshotLimits())).rejects.toMatchObject({ code: "invalid" });
+  expect(read).toHaveBeenCalledTimes(1);
+});
+test("a valid original descriptor for another sequence cannot authenticate the retained reference", async () => {
+  const fixture = snapshotFixture(), other = snapshotFixture({ sequence: 2 });
+  const candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits()), plan = candidate.plan();
+  plan.required = plan.required.filter(object => object.sha256 !== fixture.descriptorHash);
+  plan.required.push({ sha256: other.descriptorHash, encodedBytes: other.descriptorBytes.length });
+  plan.required.sort((a, b) => a.sha256 < b.sha256 ? -1 : a.sha256 > b.sha256 ? 1 : 0);
+  await expect(resumeSnapshot(plan, provider(other), snapshotLimits())).rejects.toMatchObject({ code: "invalid" });
+});
+test.each(["encoded", "decoded"] as const)("recovery accounts for descriptor evidence once at the exact %s aggregate boundary", async kind => {
+  const fixture = snapshotFixture(), candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits());
+  const key = kind === "encoded" ? "maxTotalEncodedBytes" : "maxTotalDecodedBytes";
+  const ceiling = kind === "encoded" ? fixture.encodedBytes : fixture.decodedBytes;
+  const exact = { ...snapshotLimits(), [key]: ceiling };
+  await expect(resumeSnapshot(candidate.plan(), provider(fixture), exact)).resolves.toBeDefined();
+  const read = provider(fixture);
+  await expect(resumeSnapshot(candidate.plan(), read, { ...exact, [key]: ceiling - 1 })).rejects.toMatchObject({ code: "capacity" });
+  expect(read).toHaveBeenCalledTimes(kind === "encoded" ? 0 : 1);
+});
+test("recovery bounds preliminary inflation, evidence bytes and object count before further acquisition", async () => {
+  const fixture = snapshotFixture(), candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits());
+  for (const limits of [
+    { ...snapshotLimits(), maxManifestDecodedBytes: fixture.descriptor.manifest.decodedBytes - 1 },
+    { ...snapshotLimits(), maxDescriptorBytes: fixture.descriptorBytes.length - 1 },
+    { ...snapshotLimits(), maxItems: 1 },
+  ]) {
+    const read = provider(fixture);
+    await expect(resumeSnapshot(candidate.plan(), read, limits)).rejects.toMatchObject({ code: "capacity" });
+    expect(read.mock.calls.length).toBeLessThanOrEqual(1);
+  }
+});
+test("recovery cannot bypass the original declared manifest decoded length", async () => {
+  const fixture = snapshotFixture(), candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits());
+  const descriptor = structuredClone(fixture.descriptor);
+  descriptor.manifest.decodedBytes--;
+  const bytes = new TextEncoder().encode(fixtureCanonical(descriptor) + "\n");
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  const hash = [...digest].map(value => value.toString(16).padStart(2, "0")).join("");
+  const plan = candidate.plan();
+  plan.required = plan.required.filter(object => object.sha256 !== fixture.descriptorHash);
+  plan.required.push({ sha256: hash, encodedBytes: bytes.length });
+  plan.required.sort((a, b) => a.sha256 < b.sha256 ? -1 : a.sha256 > b.sha256 ? 1 : 0);
+  const read = provider(fixture);
+  await expect(resumeSnapshot(plan, async requested => requested === hash ? bytes : read(requested), snapshotLimits()))
+    .rejects.toMatchObject({ code: "integrity" });
+});
+test("recovery captures limits and cancels without reading another object", async () => {
+  const fixture = snapshotFixture(), candidate = await inspectSnapshot(fixture.descriptorBytes, provider(fixture), snapshotLimits());
+  const abort = new AbortController(), read = provider(fixture), limits = snapshotLimits();
+  await expect(resumeSnapshot(candidate.plan(), async hash => {
+    limits.maxDescriptorBytes = 1;
+    return read(hash);
+  }, limits)).resolves.toBeDefined();
+  abort.abort();
+  read.mockClear();
+  await expect(resumeSnapshot(candidate.plan(), read, snapshotLimits(), abort.signal)).rejects.toMatchObject({ name: "AbortError" });
+  expect(read).not.toHaveBeenCalled();
+});
 test("actual staged snapshot bytes bind complete original-object plans, preserve candidates and reverify all stored bytes", async () => {
   const fixture = snapshotFixture(), read = provider(fixture);
   const candidate = await inspectSnapshot(fixture.descriptorBytes, read, snapshotLimits());
@@ -20,7 +129,7 @@ test("actual staged snapshot bytes bind complete original-object plans, preserve
   candidate.metadataObjects().forEach(object => object.bytes.fill(0));
   expect(candidate.plan().reference.sequence).toBe(1);
   await candidate.validate(candidate.plan(), read);
-  expect(read.mock.calls).toHaveLength(6);
+  expect(read.mock.calls).toHaveLength(7);
 });
 test("unknown optional nested fields and integer-like JSON keys are inert without losing their canonical byte identity", async () => {
   const fixture = snapshotFixture({

@@ -3,8 +3,9 @@ import {
   assertConsumerManifest, assertConsumerPolicy, assertConsumerItem,
 } from "../shared/tools/snapshot-consumer.mjs";
 import { ContentError, assertContentPlan } from "../shared/tools/content-state.mjs";
-import type { ContentPlan } from "../shared/types/content";
+import type { ContentPlan, ContentObjectReceipt } from "../shared/types/content";
 import type { LyricObjectReference } from "../shared/types/lyrics";
+import type { SnapshotManifest } from "../shared/types/snapshot";
 import type { ContentReader } from "./content-store";
 import { encodedSha256 } from "./encoded-bytes";
 import { TransferError } from "./list-transfer-types";
@@ -105,7 +106,7 @@ function aggregate(encoded: bigint, decoded: bigint, limits: Readonly<SnapshotVa
     throw new ContentError("capacity", "Complete snapshot exceeds trusted aggregate byte limits");
   }
 }
-async function decode(read: ContentReader, expected: LyricObjectReference, chunkBytes: number, signal?: AbortSignal) {
+async function readEncoded(read: ContentReader, expected: ContentObjectReceipt, signal?: AbortSignal) {
   signal?.throwIfAborted();
   const input = await read(expected.sha256);
   signal?.throwIfAborted();
@@ -117,16 +118,41 @@ async function decode(read: ContentReader, expected: LyricObjectReference, chunk
     throw new ContentError("integrity", "Snapshot object encoded length or SHA256 differs from its reference");
   }
   signal?.throwIfAborted();
+  return bytes;
+}
+async function decodeBounded(read: ContentReader, expected: ContentObjectReceipt,
+  decodedLimit: number, chunkBytes: number, limitCode: "integrity" | "capacity", signal?: AbortSignal) {
+  const bytes = await readEncoded(read, expected, signal);
   let decoded: Uint8Array;
-  try { decoded = transformTransferBytes(bytes, true, true, expected.decodedBytes, chunkBytes, 0); }
+  try { decoded = transformTransferBytes(bytes, true, true, decodedLimit, chunkBytes, 0); }
   catch (reason) {
+    if (reason instanceof TransferError && reason.code === "decodedLimit") {
+      throw new ContentError(limitCode, "Snapshot object exceeds its decoded byte boundary");
+    }
     if (reason instanceof TransferError) throw new ContentError("integrity", "Snapshot object is not one complete bounded gzip member");
     throw reason;
   }
-  if (decoded.length !== expected.decodedBytes) throw new ContentError("integrity", "Snapshot object decoded length differs from its reference");
   const value = json(decoded, false);
   signal?.throwIfAborted();
-  return { bytes, value };
+  return { bytes, value, decodedBytes: decoded.length };
+}
+async function decode(read: ContentReader, expected: LyricObjectReference, chunkBytes: number, signal?: AbortSignal) {
+  const object = await decodeBounded(read, expected, expected.decodedBytes, chunkBytes, "integrity", signal);
+  if (object.decodedBytes !== expected.decodedBytes) throw new ContentError("integrity", "Snapshot object decoded length differs from its reference");
+  return object;
+}
+function originals(manifest: SnapshotManifest, receipt: ContentObjectReceipt, limits: Readonly<SnapshotValidationLimits>) {
+  if (manifest.catalog.length > limits.maxItems) throw new ContentError("capacity", "Snapshot exceeds the trusted item count");
+  const required = [{ ...receipt }];
+  let encoded = BigInt(receipt.encodedBytes), decoded = 0n;
+  for (const [sha256, object] of Object.entries(manifest.objects)) {
+    if (sha256 === receipt.sha256) throw new ContentError("invalid", "Manifest cannot be one of its own objects");
+    reference({ ...object, sha256 }, object.role === "policy" ? limits.maxPolicyEncodedBytes : limits.maxItemEncodedBytes,
+      object.role === "policy" ? limits.maxPolicyDecodedBytes : limits.maxItemDecodedBytes);
+    encoded += BigInt(object.encodedBytes); decoded += BigInt(object.decodedBytes);
+    required.push({ sha256, encodedBytes: object.encodedBytes });
+  }
+  return { required, encoded, decoded };
 }
 export async function inspectSnapshot(descriptorInput: Uint8Array, read: ContentReader,
   inputLimits: SnapshotValidationLimits, signal?: AbortSignal): Promise<SnapshotCandidate> {
@@ -148,27 +174,28 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
   const manifestObject = await decode(read, descriptor.manifest, limits.chunkBytes, signal);
   const manifest = manifestObject.value;
   assertConsumerManifestEnvelope(manifest, limits.supportedCapabilities);
-  if (manifest.catalog.length > limits.maxItems) throw new ContentError("capacity", "Snapshot exceeds the trusted item count");
-  const required = [{ sha256: descriptor.manifest.sha256, encodedBytes: descriptor.manifest.encodedBytes }];
-  for (const [sha256, object] of Object.entries(manifest.objects)) {
-    if (sha256 === descriptor.manifest.sha256) throw new ContentError("invalid", "Manifest cannot be one of its own objects");
-    reference({ ...object, sha256 }, object.role === "policy" ? limits.maxPolicyEncodedBytes : limits.maxItemEncodedBytes,
-      object.role === "policy" ? limits.maxPolicyDecodedBytes : limits.maxItemDecodedBytes);
-    encoded += BigInt(object.encodedBytes); decoded += BigInt(object.decodedBytes);
-    required.push({ sha256, encodedBytes: object.encodedBytes });
-  }
+  const original = originals(manifest, { sha256: descriptor.manifest.sha256, encodedBytes: descriptor.manifest.encodedBytes }, limits);
+  const required = original.required;
+  encoded = BigInt(descriptorBytes.length) + original.encoded;
+  decoded = BigInt(descriptorBytes.length) + BigInt(descriptor.manifest.decodedBytes) + original.decoded;
   aggregate(encoded, decoded, limits);
   const policyReference = manifest.objects[manifest.policy];
   if (!policyReference) throw new ContentError("invalid", "Snapshot has no policy object");
   const policyObject = await decode(read, { ...policyReference, sha256: manifest.policy }, limits.chunkBytes, signal);
   assertConsumerPolicy(policyObject.value);
   assertConsumerManifest(manifest, policyObject.value, limits.supportedCapabilities);
+  const descriptorReceipt = { sha256: await encodedSha256(descriptorBytes), encodedBytes: descriptorBytes.length };
+  if (required.some(object => object.sha256 === descriptorReceipt.sha256)) {
+    throw new ContentError("invalid", "Descriptor evidence cannot alias an original snapshot object");
+  }
+  required.push(descriptorReceipt);
   const plan: ContentPlan = {
     reference: { sequence: descriptor.sequence, manifestSha256: descriptor.manifest.sha256 },
     required: required.sort((a, b) => a.sha256 < b.sha256 ? -1 : a.sha256 > b.sha256 ? 1 : 0),
   };
   assertContentPlan(plan);
   const metadata = [
+    { sha256: descriptorReceipt.sha256, bytes: descriptorBytes },
     { sha256: descriptor.manifest.sha256, bytes: manifestObject.bytes },
     { sha256: manifest.policy, bytes: policyObject.bytes },
   ];
@@ -180,7 +207,8 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
       const captured = structuredClone(target);
       assertContentPlan(captured);
       if (canonicalJson(captured) !== canonicalJson(plan)) throw new ContentError("invalid", "Validation candidate differs from the target plan");
-      const fresh = await inspectSnapshot(descriptorBytes, currentRead, limits, currentSignal);
+      const retainedDescriptor = await readEncoded(currentRead, descriptorReceipt, currentSignal);
+      const fresh = await inspectSnapshot(retainedDescriptor, currentRead, limits, currentSignal);
       if (canonicalJson(fresh.plan()) !== canonicalJson(plan)) throw new ContentError("integrity", "Stored snapshot metadata differs from its candidate");
       const identities = new Set(manifest.catalog.map(entry => entry.lyricId));
       for (const entry of manifest.catalog) {
@@ -197,4 +225,49 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
       currentSignal?.throwIfAborted();
     },
   });
+}
+export async function resumeSnapshot(target: ContentPlan, read: ContentReader,
+  inputLimits: SnapshotValidationLimits, signal?: AbortSignal): Promise<SnapshotCandidate> {
+  const limits = captureLimits(inputLimits);
+  signal?.throwIfAborted();
+  assertContentPlan(target);
+  if (BigInt(target.required.length) > BigInt(limits.maxItems) + 3n) {
+    throw new ContentError("capacity", "Retained target exceeds the trusted item and evidence count");
+  }
+  const captured = structuredClone(target);
+  assertContentPlan(captured);
+  aggregate(captured.required.reduce((sum, object) => sum + BigInt(object.encodedBytes), 0n), 0n, limits);
+  const manifestReceipt = captured.required.find(object => object.sha256 === captured.reference.manifestSha256);
+  if (!manifestReceipt) throw new ContentError("invalid", "Retained target has no manifest receipt");
+  if (manifestReceipt.encodedBytes > limits.maxManifestEncodedBytes) {
+    throw new ContentError("capacity", "Retained manifest exceeds its trusted encoded limit");
+  }
+  const preliminary = await decodeBounded(read, manifestReceipt, limits.maxManifestDecodedBytes, limits.chunkBytes, "capacity", signal);
+  const manifest = preliminary.value;
+  assertConsumerManifestEnvelope(manifest, limits.supportedCapabilities);
+  const original = originals(manifest, manifestReceipt, limits);
+  const expected = new Map(original.required.map(object => [object.sha256, object.encodedBytes]));
+  const retained = new Map(captured.required.map(object => [object.sha256, object.encodedBytes]));
+  const evidence = captured.required.filter(object => !expected.has(object.sha256));
+  const originalsMatch = original.required.every(object => retained.get(object.sha256) === object.encodedBytes);
+  if (!evidence.length && captured.required.length === original.required.length && originalsMatch) {
+    throw new ContentError("unsupported", "Retained target has no original descriptor evidence; explicit original-descriptor admission or restart is required");
+  }
+  const descriptorReceipt = evidence[0];
+  if (evidence.length !== 1 || !descriptorReceipt || captured.required.length !== original.required.length + 1 ||
+      !originalsMatch) {
+    throw new ContentError("invalid", "Retained target does not bind exactly one descriptor and every original object");
+  }
+  if (descriptorReceipt.encodedBytes > limits.maxDescriptorBytes) {
+    throw new ContentError("capacity", "Retained descriptor exceeds its trusted byte limit");
+  }
+  aggregate(BigInt(descriptorReceipt.encodedBytes) + original.encoded,
+    BigInt(descriptorReceipt.encodedBytes) + BigInt(preliminary.decodedBytes) + original.decoded, limits);
+  const descriptorBytes = await readEncoded(read, descriptorReceipt, signal);
+  const candidate = await inspectSnapshot(descriptorBytes, read, limits, signal);
+  if (canonicalJson(candidate.plan()) !== canonicalJson(captured)) {
+    throw new ContentError("invalid", "Original descriptor and retained target identity differ");
+  }
+  signal?.throwIfAborted();
+  return candidate;
 }

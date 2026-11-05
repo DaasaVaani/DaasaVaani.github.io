@@ -55,8 +55,10 @@ limits and Library sequenced publication activation remain open D5/P6 work.
 The [staged snapshot validator](snapshot-validation.md) additionally closes the
 isolated prelaunch byte/schema admission prerequisite: tolerant metadata,
 actual canonical/gzip/length/hash checks, original-object target binding and
-global item/line identity checks. Live support and complete production proof
-remain open, including durable admitted-descriptor retention/reconstruction.
+global item/line identity checks. Original descriptor evidence is also durably
+rooted for independently bounded fresh-page recovery and full revalidation before
+activation. Missing evidence is an explicit error, not a fabricated descriptor.
+Live support and complete production proof remain open.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

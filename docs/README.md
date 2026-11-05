@@ -27,7 +27,8 @@ The [isolated durable-content guide](durable-content.md) owns Website's physical
 IndexedDB/Web Locks prerequisite and its actual-browser test boundary; it links
 the authoritative Shared protocol and leaves live offline integration open.
 The [staged snapshot validator](snapshot-validation.md) owns actual Website byte/
-schema admission, consumer tolerance and its narrower prelaunch/persistence boundary.
+schema admission, consumer tolerance, rooted original descriptor recovery and its
+narrower prelaunch/persistence boundary.
 
 ## Owners
 

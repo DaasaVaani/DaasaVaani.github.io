@@ -664,11 +664,234 @@ test("the actual tolerant snapshot validator resumes real stored canonical bytes
   },{ config: config(),packet: snapshotPacket(fixture),limits: snapshotLimits() });
   expect(result.incomplete).toBe("integrity");
   expect(result.interrupted.control.active).toBeNull();
-  expect(result.interrupted.objects).toHaveLength(2);
+  expect(result.interrupted.objects).toHaveLength(3);
   expect(result.active.control.active).toEqual({ sequence: 1,manifestSha256: fixture.descriptor.manifest.sha256 });
   expect(result.active.control.target).toBeNull();
   expect(result.active.objects).toHaveLength(Object.keys(fixture.objects).length);
   expect(await personalSnapshot(page)).toEqual(personal);
+});
+
+test("a new page recovers original descriptor evidence after actual writer-page death and completes the same target", async ({ page, context }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), settings = config(), a = snapshotFixture();
+  const b = snapshotFixture({ sequence: 2, items: a.items.map(item => ({ ...item, title: item.title + " next" })) });
+  const writerPage = await context.newPage();
+  await setup(writerPage);
+  await writerPage.evaluate(async ({ config, a, b, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    const inspect = (packet: typeof a) => backend.inspectSnapshot(new Uint8Array(packet.descriptor), async hash => {
+      const bytes = packet.objects[hash];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    const active = await inspect(a);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(active.plan());
+      for (const [hash, bytes] of Object.entries(a.objects)) await writer.putObject(hash, new Uint8Array(bytes));
+      await writer.activate((plan, read) => active.validate(plan, read));
+    });
+    const candidate = await inspect(b);
+    let started!: () => void;
+    const ready = new Promise<void>(resolve => { started = resolve; });
+    const writing = store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(candidate.plan());
+      for (const object of candidate.metadataObjects()) await writer.putObject(object.sha256, object.bytes);
+      started();
+      await new Promise<void>(() => {});
+    });
+    await Promise.race([ready, writing.then(() => { throw new Error("Writer unexpectedly completed"); })]);
+  }, { config: settings, a: snapshotPacket(a), b: snapshotPacket(b), limits: snapshotLimits() });
+  await writerPage.close();
+  await expect.poll(() => page.evaluate(async name =>
+    (await navigator.locks.query()).held?.some(lock => lock.name === `DaasaVaani-content-writer:${name}`),
+  settings.databaseName)).toBe(false);
+  const freshPage = await context.newPage();
+  await setup(freshPage);
+  const remaining = Object.fromEntries(b.manifest.catalog.map(entry => {
+    const bytes = b.objects[entry.item];
+    if (!bytes) throw new Error("Missing synthetic remaining item");
+    return [entry.item, [...bytes]];
+  }));
+  const result = await freshPage.evaluate(async ({ config, remaining, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config), interrupted = await store.snapshot();
+    const reference = interrupted.control.target?.reference;
+    const plan = interrupted.snapshots.find(plan => plan.reference.sequence === reference?.sequence &&
+      plan.reference.manifestSha256 === reference.manifestSha256);
+    if (!plan) throw new Error("Missing retained target");
+    await store.withWriter(interrupted.control, async writer => {
+      const candidate = await backend.resumeSnapshot(plan, hash => writer.readObject(hash), limits);
+      await writer.phase("downloading");
+      for (const [hash, bytes] of Object.entries(remaining)) await writer.putObject(hash, new Uint8Array(bytes));
+      await writer.activate((target, read) => candidate.validate(target, read));
+    });
+    const active = await store.snapshot();
+    const encoded = await store.withActiveReader(async (plan, read) => {
+      const values: Record<string, number[]> = {};
+      for (const object of plan.required) values[object.sha256] = [...await read(object.sha256)];
+      return values;
+    });
+    store.close();
+    return { interrupted, active, encoded };
+  }, { config: settings, remaining, limits: snapshotLimits() });
+  expect(result.interrupted.control.active).toEqual({ sequence: 1, manifestSha256: a.descriptor.manifest.sha256 });
+  expect(result.interrupted.control.target?.phase).toBe("downloading");
+  expect(result.active.control.active).toEqual({ sequence: 2, manifestSha256: b.descriptor.manifest.sha256 });
+  expect(result.active.control.target).toBeNull();
+  expect(result.encoded).toEqual(snapshotPacket(b).objects);
+  expect(await personalSnapshot(freshPage)).toEqual(personal);
+  await freshPage.close();
+});
+
+for (const fault of ["missing", "corrupt"] as const) {
+  test(`failed recovery with ${fault} descriptor evidence preserves the previous active snapshot and target progress`, async ({ page }) => {
+    await setup(page);
+    const personal = await personalSnapshot(page), a = snapshotFixture(), b = snapshotFixture({ sequence: 2 });
+    const result = await page.evaluate(async ({ config, a, b, descriptorHash, fault, limits }) => {
+      const path = "/isolated-content-store.js";
+      const backend: typeof import("../isolated-content") = await import(path);
+      let store = await backend.ContentStore.open(config);
+      const inspect = (packet: typeof a) => backend.inspectSnapshot(new Uint8Array(packet.descriptor), async hash => {
+        const bytes = packet.objects[hash];
+        if (!bytes) throw new Error("Missing synthetic metadata");
+        return new Uint8Array(bytes);
+      }, limits);
+      const previous = await inspect(a), candidate = await inspect(b);
+      await store.withWriter((await store.snapshot()).control, async writer => {
+        await writer.begin(previous.plan());
+        for (const [hash, bytes] of Object.entries(a.objects)) await writer.putObject(hash, new Uint8Array(bytes));
+        await writer.activate((plan, read) => previous.validate(plan, read));
+        await writer.begin(candidate.plan());
+        for (const object of candidate.metadataObjects()) {
+          if (fault !== "missing" || object.sha256 !== descriptorHash) await writer.putObject(object.sha256, object.bytes);
+        }
+      });
+      store.close();
+      if (fault === "corrupt") {
+        const database = await new Promise<IDBDatabase>((resolve, reject) => {
+          const request = indexedDB.open(config.databaseName);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        await new Promise<void>((resolve, reject) => {
+          const transaction = database.transaction("objects", "readwrite");
+          const bytes = new Uint8Array(b.descriptor); bytes[0] = 0;
+          transaction.objectStore("objects").put({ sha256: descriptorHash, encodedBytes: bytes.length, bytes: new Blob([bytes]) });
+          transaction.oncomplete = () => resolve();
+          transaction.onabort = () => reject(transaction.error);
+        });
+        database.close();
+      }
+      store = await backend.ContentStore.open(config);
+      const before = await store.snapshot(), target = before.control.target;
+      const plan = before.snapshots.find(plan => plan.reference.sequence === target?.reference.sequence &&
+        plan.reference.manifestSha256 === target.reference.manifestSha256);
+      if (!plan) throw new Error("Missing retained target");
+      let failure = "";
+      try {
+        await store.withWriter(before.control, async writer => {
+          await backend.resumeSnapshot(plan, hash => writer.readObject(hash), limits);
+        });
+      } catch (reason) {
+        if (!(reason instanceof backend.ContentError)) throw reason;
+        failure = reason.code;
+      }
+      const after = await store.snapshot();
+      const readable = await store.withActiveReader(async (plan, read) => {
+        for (const object of plan.required) await read(object.sha256);
+        return plan.reference;
+      });
+      store.close();
+      return { before, after, failure, readable };
+    }, { config: config(), a: snapshotPacket(a), b: snapshotPacket(b), descriptorHash: b.descriptorHash, fault, limits: snapshotLimits() });
+    expect(result.failure).toBe("integrity");
+    expect(result.after.control.active).toEqual(result.before.control.active);
+    expect(result.readable).toEqual(result.before.control.active);
+    expect(result.after.control.target?.phase).toBe("paused");
+    expect(result.after.snapshots).toEqual(result.before.snapshots);
+    expect(result.after.objects).toEqual(result.before.objects);
+    expect(await personalSnapshot(page)).toEqual(personal);
+  });
+}
+
+test("scoped target reads verify actual bytes without revision writes and reject late, aborted, corrupt and stale reads", async ({ page }) => {
+  await setup(page);
+  const sample = fixture(1);
+  const result = await page.evaluate(async ({ config, fixture }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../../src/content-store") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    let late: (() => Promise<Uint8Array>) | undefined;
+    const success = await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(fixture.plan);
+      for (const object of fixture.objects) await writer.putObject(object.sha256, new Uint8Array(object.bytes));
+      const before = await store.snapshot(), bytes = await writer.readObject(fixture.first.sha256);
+      bytes.fill(0);
+      const again = [...await writer.readObject(fixture.first.sha256)], after = await store.snapshot();
+      late = () => writer.readObject(fixture.first.sha256);
+      return { before, after, again };
+    });
+    let stale = "";
+    try { if (!late) throw new Error("Missing retained scope"); await late(); }
+    catch (reason) {
+      if (!(reason instanceof backend.ContentError)) throw reason;
+      stale = reason.code;
+    }
+    const failures: Record<string, string[]> = {};
+    const errors = (reason: unknown): string[] => reason instanceof AggregateError ? reason.errors.flatMap(errors) :
+      reason instanceof backend.ContentError ? [reason.code] : reason instanceof Error ? [reason.name] : [String(reason)];
+    for (const mode of ["missing", "fence", "abort", "corrupt"]) {
+      const database = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open(config.databaseName);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      const original = Blob.prototype.arrayBuffer;
+      const controller = new AbortController();
+      try {
+        await store.withWriter((await store.snapshot()).control, async writer => {
+          if (mode === "fence") Blob.prototype.arrayBuffer = async function () {
+            const bytes = await original.call(this);
+            await new Promise<void>((resolve, reject) => {
+              const transaction = database.transaction("control", "readwrite"), table = transaction.objectStore("control");
+              const request = table.get("state");
+              request.onsuccess = () => { const state = request.result; state.revision++; table.put(state, "state"); };
+              transaction.oncomplete = () => resolve();
+              transaction.onabort = () => reject(transaction.error);
+            });
+            return bytes;
+          };
+          if (mode === "corrupt") {
+            await new Promise<void>((resolve, reject) => {
+              const transaction = database.transaction("objects", "readwrite");
+              transaction.objectStore("objects").put({ sha256: fixture.first.sha256,
+                encodedBytes: fixture.first.encodedBytes, bytes: new Blob([new Uint8Array(fixture.first.encodedBytes)]) });
+              transaction.oncomplete = () => resolve();
+              transaction.onabort = () => reject(transaction.error);
+            });
+          }
+          if (mode === "abort") controller.abort();
+          await writer.readObject(mode === "missing" ? "f".repeat(64) : fixture.first.sha256);
+        }, controller.signal);
+      } catch (reason) { failures[mode] = errors(reason); }
+      finally {
+        Blob.prototype.arrayBuffer = original;
+        database.close();
+      }
+    }
+    store.close();
+    return { success, stale, failures };
+  }, { config: config(), fixture: sample });
+  expect(result.success.before).toEqual(result.success.after);
+  expect(result.success.again).toEqual(sample.first.bytes);
+  expect(result.stale).toBe("stale");
+  expect(result.failures.missing).toContain("integrity");
+  expect(result.failures.corrupt).toContain("integrity");
+  expect(result.failures.fence).toContain("stale");
+  expect(result.failures.abort).toContain("AbortError");
 });
 
 for(const fault of ["json","gzip"] as const) {

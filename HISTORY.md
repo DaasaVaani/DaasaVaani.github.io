@@ -1,5 +1,74 @@
 # Documentation history
 
+## 2026-11-05: approved original-descriptor retention and isolated recovery
+
+- The owner selected retaining the exact original descriptor as an additional
+  rooted immutable object, rather than reconstruction from admitted metadata or
+  requiring its external availability. This supersedes the earlier process-local
+  candidate recovery limitation recorded below. No live downloader, publisher
+  activation, production defaults, offline-readiness claim, Android/Library pin
+  change or source-attribution work was authorized by this slice.
+- Shared published40f3c403b664ccd23cbb123617b8381bc88cf648 with the consumer
+  evidence profile and six metadata-only reachability/accounting/lifecycle cases.
+  Full `npm run check` passed435/435; focused46/46, generated consistency,
+  hygiene, strict YAML, links/anchors, actionlint/ShellCheck and whitespace passed.
+  Exact [hosted42032895705](https://github.com/DaasaVaani/shared/actions/runs/42032895705)
+  succeeded before Website independently adopted the prerequisite. No portable
+  runtime/types/schema/version/default changes were needed.
+- Website retains the original plain descriptor receipt/bytes alongside every
+  original gzip object. Recovery uses a bounded preliminary manifest only to
+  identify exact original receipts and one extra evidence object, then re-admits
+  the actual original descriptor and checks exact reconstructed target equality.
+  Preliminary parsing cannot bypass its declared decoded length or sequence.
+  Old generic plans explicitly require original-descriptor admission or restart.
+  All normal limits, roots and logical accounting include evidence.
+- Added tracked target `readObject`, verified actual bytes/copying and captured
+  before/after fence checks without revision mutation. Recovery tests close a real
+  writer page, confirm lock release and reconstruct in a new page supplied only
+  missing items and explicit limits, not the descriptor or old candidate.
+  Missing/corrupt evidence preserves previous active content and progress.
+- First focused browser run passed48/51 and failed the three new scoped-read
+  layout cases: supplying the existing writer signal hit native `NotSupportedError`
+  because Web Locks forbids `signal` together with `ifAvailable`. Fixed that tightly
+  coupled cancellation path: nonblocking native request has no signal option;
+  explicit pre-request/callback/operation/terminal checks retain cancellation and
+  full-operation ownership. No fallback coordination or timeout stealing was added.
+- First full `npm test -- --maxWorkers=2` passed177/178 and failed the unchanged
+  real-publication decoded-boundary test's5s timeout under local contention. This
+  was not a pass. Repeated the entire suite with one worker, without selectors,
+  changed assertions or raised timeouts; the documented scheduling alternative
+  now explicitly includes one unit worker.
+- Focused final `npm test -- snapshot-validation --maxWorkers=2` passed35/35;
+  `node node_modules\@playwright\test\cli.js test content-store --workers=1`
+  passed51/51 across all three layouts with fresh build/types. Complete
+  `npm test -- --maxWorkers=1` passed178/178 in19 files, without skipped cases.
+- The first complete browser run with one worker passed538/543, failed1 and
+  left4 unrun: the existing desktop personal-restore `beforeAll` in-memory build
+  exceeded its unchanged30s hook deadline (the same pre-existing setup boundary
+  observed in the previous slice). It was not a pass. Repeated the entire
+  browser suite with its selectors, projects, assertions and timeouts unchanged.
+- Final complete `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed543/543 across desktop/mobile/narrow in11.6m, with fresh production build/
+  strict typecheck and zero skipped cases, using the configured clean c2837cc
+  fixture publisher. The unchanged personal-restore hook/cases all passed.
+  Final changed-Markdown checks passed11 files and all153 unique unchanged
+  requirement IDs; strict locked Node YAML parsing passed4 files, installed
+  actionlint1.7.12/ShellCheck0.11.0 and Git whitespace checks passed.
+
+## 2026-11-04: exact staged-validator hosted/live verification
+
+- Website4ae8ccf6a618c388314cb36fe6fea990b2d8badc was published after the
+  complete165-unit/531-browser serial run. Exact hosted Repository checks/
+  deployment41840416514 and CodeQL41840416271 succeeded. Actual hosted logs
+  confirmed165 units and531 browsers, including normal hosted concurrency.
+- Live root/open HTML and JS returned HTTP200 and matched the exact Pages artifact
+  13329086609 byte-for-byte. Root/open HTML SHA256:
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  JS `/assets/index-Ca_7nR8A.js` SHA256:
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the downloaded tar/empty directory and verified clean matching
+  Website main/remote state.
+
 ## 2026-11-04: approved isolated tolerant staged snapshot validator
 
 - The owner selected the recommended Shared/Website snapshot-validator slice
