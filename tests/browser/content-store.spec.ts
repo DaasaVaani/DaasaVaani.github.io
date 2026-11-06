@@ -1052,6 +1052,7 @@ test("native Fetch rejects redirects without contacting the landing address and 
       await writer.activate((plan, read) => candidate.validate(plan, read));
     });
     const before = await store.snapshot(), failures: { code: string; status?: number; retryAfter?: string | null }[] = [];
+    const decisions: ReturnType<typeof backend.snapshotRetryDecision>[] = [];
     for (const path of ["redirect", "overlong", "wrong", "unavailable", "unavailable-hidden"]) {
       try {
         await backend.fetchSnapshotArtifact({ url: `https://snapshot.invalid/${path}`, sha256, encodedBytes: bytes.length },
@@ -1060,6 +1061,9 @@ test("native Fetch rejects redirects without contacting the landing address and 
       } catch (reason) {
         if (!(reason instanceof backend.SnapshotHttpError)) throw reason;
         failures.push({ code: reason.code, ...(reason.status ? { status: reason.status, retryAfter: reason.retryAfter } : {}) });
+        decisions.push(backend.snapshotRetryDecision(reason, { attempt: 1, nowMs: 0, jitterUnit: 0.5,
+          networkTransient: false, retryAfterReadable: path !== "unavailable-hidden" },
+        { maxAttempts: 3, backoffMs: [1000, 2000], jitterPercent: 20, maxAutomaticWaitMs: 120000 }));
       }
     }
     const after = await store.snapshot();
@@ -1068,11 +1072,14 @@ test("native Fetch rejects redirects without contacting the landing address and 
       return true;
     });
     store.close();
-    return { before, after, failures, readable };
+    return { before, after, failures, decisions, readable };
   }, { config: config(), packet, bytes: [...bytes], sha256: createHash("sha256").update(bytes).digest("hex"), limits: snapshotLimits() });
   expect(result.failures).toEqual([{ code: "network" }, { code: "integrity" }, { code: "integrity" },
     { code: "http", status: 503, retryAfter: "121" }, { code: "http", status: 503, retryAfter: null }]);
   expect(visited).toEqual(["/redirect", "/overlong", "/wrong", "/unavailable", "/unavailable-hidden"]);
+  expect(result.decisions).toEqual([{ action: "fail", reason: "permanent" }, { action: "fail", reason: "permanent" },
+    { action: "fail", reason: "permanent" }, { action: "pause", reason: "wait-limit", delayMs: 121000 },
+    { action: "pause", reason: "retry-after-unavailable", delayMs: null }]);
   expect(result.after).toEqual(result.before);
   expect(result.readable).toBe(true);
   expect(await personalSnapshot(page)).toEqual(personal);

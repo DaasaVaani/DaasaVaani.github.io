@@ -54,6 +54,9 @@ The separate [isolated HTTPS artifact attempt](snapshot-validation.md#isolated-d
 requires direct credentialless URLs, rejects redirects, bounds request/body
 deadlines and verifies complete encoded length/SHA. It has no automatic retry,
 descriptor discovery, selected-plan orchestration or production app import.
+The [pure retry decision layer](snapshot-validation.md#isolated-retry-decisions)
+returns bounded retry/fail/pause actions using explicit attempt, clock, jitter,
+failure/header evidence and policy, without timers or side effects.
 
 ## Data flow
 

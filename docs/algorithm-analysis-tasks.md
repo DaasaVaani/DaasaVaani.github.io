@@ -420,6 +420,14 @@ evidence is not established.
   Redirects are rejected. Retry/backoff, hidden cross-origin Retry-After headers,
   failure classification and cumulative multi-attempt accounting remain integration
   work; no automatic retry or whole-snapshot transport proof is claimed.
+  The [pure retry decision prerequisite](snapshot-validation.md#isolated-retry-decisions)
+  validates one explicit backoff array and scans one raw Retry-After string.
+  Time is O(A+H) for A backoff entries/H header characters, with no unbounded
+  integer conversion; temporary string validation/normalization is additional
+  memory. It takes the maximum jittered backoff/server wait, never shortens either,
+  and explicitly pauses unknown/unreadable/unusable/excessive waits. Native network
+  errors require separate transient evidence; no actual retry, clock/random read
+  or scheduling side effect occurs.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

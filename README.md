@@ -41,6 +41,9 @@ An [isolated HTTPS artifact adapter](docs/snapshot-validation.md#isolated-direct
 adds one explicitly bounded request with no redirects, exact encoded length/SHA,
 deadlines and cancellation. It is not a live downloader, retry coordinator,
 publisher-authentication mechanism or readiness control.
+Its [pure retry decisions](docs/snapshot-validation.md#isolated-retry-decisions)
+classify failures and bound backoff/server waits explicitly, without automatically
+retrying requests or treating hidden headers as an absent server wait.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

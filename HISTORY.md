@@ -1,5 +1,57 @@
 # Documentation history
 
+## 2026-11-06: main synchronization, historical branch consolidation and retry prerequisite
+
+- At the owner's request, fetched/pruned all four remotes while preserving clean
+  worktrees and independent Shared pins. Websitecd2a154, Shared73d69642 and
+  Android2b4f4a6 were already at remote main. Library fast-forwarded six collaborator
+  attribution-review commits from4f9d788 to697069e. The source-review handoff was
+  not resumed or modified; no generated source/taxonomy was consumed by Website.
+- The owner reaffirmed direct-main work and no new working branches. Most old
+  implementation/validation refs were already ancestors. The owner selected
+  the recommended Website-only historical consolidation; dependency proposals
+  and the explicitly deferred Library workflow branch remain separate reviewed/
+  fully validated integration work, not blindly accepted. Branch deletion was
+  not requested or performed.
+- Audited both old Website branch deltas. Renamed Pages links82980fe were already
+  patch-equivalent on main. Bootstrap/security history079cc2e (including62a801d/
+  b756476) contained pinned/allowlisted placeholder deployment, workflow lint,
+  weekly Dependabot, private-report links and dated access/policy observations.
+  Still-applicable details already exist in current workflows/security/maintenance
+  guidance; historical observations are reference only. Old PR-only bypass,
+  placeholder deployment/no-app-tooling statements conflict with superseding
+  approved direct-main/full-app-check policy and must not replace it.
+- Used a reviewed `ours` ancestry merge of the two historical tips on main,
+  retaining the complete current tree rather than resurrecting deleted deployment
+  workflows or obsolete current documentation. Both histories are preserved as
+  parents. No protection, workflow pin, application behavior or Shared pin changed
+  merely to consolidate them.
+- Continued the main application prerequisite with a pure retry decision helper.
+  Caller policy/context supply total attempts, backoff, jitter, wait ceiling,
+  clock and transient/header evidence. Approved transient HTTP classes/timeout
+  and explicitly classified network errors are eligible; native/permanent errors
+  fail, hidden/unusable/excessive server waits pause. Exact inclusive bounds,
+  strict calendar/weekday checks and safe oversized-header handling never shorten
+  waits or fabricate absent-header evidence. No timers/network/storage/defaults,
+  automatic retry, source work or offline-readiness activation were added.
+- Websitecd2a154's prior exact Repository checks/deployment42150353070 and
+  CodeQL42150352789 passed; hosted252 units/561 browsers(6.3m) confirmed. Live
+  root/open HTML and JS matched Pages artifact13472680561 HTTP200 byte-for-byte;
+  root/open SHA5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6
+  and `/assets/index-Ca_7nR8A.js`
+  SHAe0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the exact owned download/empty directory.
+- Final `npm test -- --maxWorkers=1` passed296/296 in23 files. Complete
+  `node node_modules\@playwright\test\cli.js test --workers=1` passed561/561
+  across desktop/mobile/narrow in10.2m with fresh production build/strict typecheck,
+  zero skipped cases and the configured clean c2837cc fixture publisher. Actual
+  native redirect/integrity/visible/hidden-header errors fed the pure helper and
+  produced explicit fail/pause without an extra request or active/personal change.
+  Changed-Markdown checks passed11 files/all153 unchanged requirement IDs;
+  strict YAML4, actionlint1.7.12/ShellCheck0.11.0 and Git whitespace passed.
+  No dependency/toolchain, production setting, workflow/protection or other
+  consumer pin was changed by this validated Website batch.
+
 ## 2026-11-06: direct HTTPS artifact-transfer prerequisite
 
 - The owner chose rejecting redirects at the isolated HTTP adapter, rather than

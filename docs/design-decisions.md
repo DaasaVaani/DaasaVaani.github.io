@@ -65,6 +65,9 @@ The isolated HTTP artifact primitive requires direct configured HTTPS addresses,
 rejects redirects and enforces explicit per-attempt byte/idle/total limits plus
 encoded length/SHA. It has no automatic retry/coordinator/live activation; CORS
 header visibility and native failure classification remain production retry gates.
+An isolated pure decision helper now applies caller-supplied total-attempt/backoff/
+jitter/wait limits. Unknown/transient evidence and hidden/unusable Retry-After
+must fail/pause explicitly; no actual retry loop or consent is enabled.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

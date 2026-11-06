@@ -182,3 +182,6 @@ browser/device matrix. OFF-01/02/03/04/08/09/10/12/13/14/17 and full OFF-06/07/
 The separate [isolated HTTP artifact attempt](snapshot-validation.md#isolated-direct-https-artifact-transfer)
 can supply verified encoded bytes to the scoped writer; it does not integrate
 consent/retries, alter storage fences or activate a snapshot itself.
+The [isolated retry decision helper](snapshot-validation.md#isolated-retry-decisions)
+likewise schedules nothing; durable pause, retry cancellation and active-content
+preservation remain the scoped coordinator's responsibilities.

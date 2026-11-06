@@ -253,6 +253,48 @@ admission or readiness. Pass verified ZIPs through `admitBundle`, checkpoint onl
 originals, and run complete `candidate.validate` before activation. Individual
 objects likewise need full decoded validation after encoded transfer proof.
 
+## Isolated retry decisions
+
+[snapshotRetryDecision](../src/snapshot-retry.ts) is a pure next-action prerequisite
+for OFF-06/07/15 and QUAL-06, not an automatic retry loop. The caller supplies
+exact `SnapshotRetryPolicy` fields `maxAttempts`, `backoffMs`, `jitterPercent` and
+`maxAutomaticWaitMs`, plus exact `SnapshotRetryContext` fields `attempt`, `nowMs`,
+`jitterUnit`, `networkTransient` and `retryAfterReadable`. Attempts are one-based;
+the backoff array has exactly one nonnegative safe millisecond value per possible
+retry. Caller values narrow/implement trusted policy, never fetched allowances.
+No product defaults are introduced; the approved three total attempts, 1s/2s
+backoff, +/-20% jitter and 120s automatic-wait ceiling remain in Shared's design.
+
+- Return `fail` for non-HTTP native errors/cancellation, integrity/schema/capacity/
+  invalid errors and HTTP statuses outside408/429/500/502/503/504. An ambiguous
+  browser `network` error is eligible only with independently established explicit
+  transient evidence; redirects/CORS are not assumed transient.
+- Stop after the final total attempt, even if a response suggests waiting.
+  Otherwise compute the indexed backoff with supplied unit jitter in inclusive
+  `[0,1]`, and round upwards to a whole millisecond. The function reads no clock
+  or random source and schedules no request, timeout or storage mutation.
+- For eligible HTTP failures require explicit Retry-After readability evidence.
+  Unreadable headers return `pause`, not an absent-header fallback. Readable null
+  means absent. Decimal nonnegative seconds and exact IMF-fixdate HTTP dates are
+  supported; calendar/weekday mismatches, malformed and obsolete alternate date
+  forms pause explicitly rather than guessing. An oversized numeric wait pauses
+  without unsafe arithmetic; no enormous BigInt parsing is needed.
+- Never shorten the server wait or backoff: take their maximum. Past dates impose
+  no additional wait. Exactly the caller's automatic-wait ceiling is eligible;
+  anything above pauses, reporting safe `delayMs` where calculable, otherwise null.
+  Unknown wait (`delayMs: null`) does not mean zero. Invalid context/policy and
+  arithmetic overflow throw explicit `SnapshotHttpError("invalid")`.
+
+The exact discriminated result is `{ action: "retry", delayMs }`,
+`{ action: "fail", reason: "permanent" | "attempts-exhausted" }`, or
+`{ action: "pause", reason: "retry-after-unavailable" | "retry-after-invalid" |
+"wait-limit", delayMs: number | null }`. Callers retain the original failure for
+display/logging and preserve checkpoints/active content. They must supply a
+trustworthy clock/header-visibility/transient classification, respect cancellation
+during actual waits and prove cumulative attempt-byte and selected-target bounds
+before orchestration. These decisions do not implement user consent, automatic
+retry, remote-host CORS validation, production defaults or offline readiness.
+
 ## Durable evidence and recovery order
 
 Persist `plan()` and all `metadataObjects()` through the scoped writer before

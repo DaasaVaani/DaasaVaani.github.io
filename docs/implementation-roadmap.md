@@ -70,6 +70,10 @@ An isolated one-attempt HTTPS artifact adapter supplies direct-address,
 encoded-length/SHA, deadline and cancellation proof. Live orchestration, approved
 retry/backoff/CORS evidence, consent and production configuration remain open;
 there is no automatic retry or application import.
+An isolated pure retry decision prerequisite implements total-attempt/backoff/
+jitter/Retry-After ceilings and explicit failure/pause classification from supplied
+evidence. Timed retries, cumulative network accounting and genuine host evidence
+remain orchestration gates; no live preparation is enabled.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

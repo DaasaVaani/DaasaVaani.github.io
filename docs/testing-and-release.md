@@ -183,6 +183,13 @@ responses, actual selected ZIP/member/full decoder activation, redirect rejectio
 without landing-address contact, readable versus CORS-hidden Retry-After, and
 active/personal preservation through HTTP/length/hash failures. These are adapter
 checks, not a real remote-host/CDN deployment, retry coordinator or live downloader.
+`npm test -- snapshot-retry snapshot-http --maxWorkers=1` adds pure retry-decision
+evidence: exact eligible/permanent classes, three-attempt exhaustion, inclusive
+jitter/backoff/wait ceilings, server waits never shortened, strict date/calendar/
+weekday validation, malformed/oversized/hidden-header pause, input/overflow refusal
+and no clock/random/timer/network side effects. The content-store browser cases
+feed actual native HTTP/redirect/CORS-visible/hidden errors into the real helper
+and verify fail/pause actions with active/personal preservation and no retry request.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

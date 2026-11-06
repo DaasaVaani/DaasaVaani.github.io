@@ -35,6 +35,9 @@ Its [actual bundle admission](snapshot-validation.md#actual-zip-bundle-admission
 binds strict ZIP/member byte proof to the candidate before full decoded validation.
 The [isolated direct HTTPS attempt](snapshot-validation.md#isolated-direct-https-artifact-transfer)
 provides bounded actual artifact transfer without redirects or live app integration.
+The [pure retry decision API](snapshot-validation.md#isolated-retry-decisions)
+owns explicit failure classification and bounded backoff/Retry-After decisions,
+not an automatic scheduler or live download.
 
 ## Owners
 
