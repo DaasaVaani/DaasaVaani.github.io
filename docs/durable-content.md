@@ -179,3 +179,6 @@ eviction handling, active-version reader/
 search integration, same-version repair/degraded readiness, and the supported
 browser/device matrix. OFF-01/02/03/04/08/09/10/12/13/14/17 and full OFF-06/07/
 11/15/16 remain unclosed. There is no real offline save or release-readiness claim.
+The separate [isolated HTTP artifact attempt](snapshot-validation.md#isolated-direct-https-artifact-transfer)
+can supply verified encoded bytes to the scoped writer; it does not integrate
+consent/retries, alter storage fences or activate a snapshot itself.

@@ -66,6 +66,10 @@ individual coverage. Separate strict bundle admission now verifies actual ZIP/
 member bytes against admitted references before returning independent originals.
 These APIs do not fetch artifacts or activate offline content themselves;
 caller-verified hashes and full decoded validation remain explicit preconditions.
+An isolated one-attempt HTTPS artifact adapter supplies direct-address,
+encoded-length/SHA, deadline and cancellation proof. Live orchestration, approved
+retry/backoff/CORS evidence, consent and production configuration remain open;
+there is no automatic retry or application import.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

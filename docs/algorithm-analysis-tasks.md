@@ -412,6 +412,14 @@ evidence is not established.
   with verified encoded/decoded bytes and includes the repeated metadata reads.
   Copies and bounded codec work are additional live allocations, not measured heap
   guarantees. This is not transport, full capability or complete offline proof.
+  A separate [isolated HTTPS artifact attempt](snapshot-validation.md#isolated-direct-https-artifact-transfer)
+  supplies direct-address HTTP200 and exact encoded length/SHA proof. It copies
+  chunks into one fixed buffer and hashes in O(B) work/storage for B admitted artifact bytes, with
+  native buffers and hashing copies additionally live. Idle/total deadlines and
+  cancellation do not prove physical heap/wire-byte bounds or interruptible crypto.
+  Redirects are rejected. Retry/backoff, hidden cross-origin Retry-After headers,
+  failure classification and cumulative multi-attempt accounting remain integration
+  work; no automatic retry or whole-snapshot transport proof is claimed.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

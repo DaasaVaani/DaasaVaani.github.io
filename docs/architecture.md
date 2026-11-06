@@ -50,8 +50,18 @@ binds declared members to the exact producer ZIP STORE profile through Shared's
 private-snapshot framing/CRC/SHA checks. It returns encoded originals, never
 extracts paths or persists ZIPs, and requires complete decoded validation before
 activation. Pre/post cancellation is not interruptible parsing or a worker claim.
+The separate [isolated HTTPS artifact attempt](snapshot-validation.md#isolated-direct-https-artifact-transfer)
+requires direct credentialless URLs, rejects redirects, bounds request/body
+deadlines and verifies complete encoded length/SHA. It has no automatic retry,
+descriptor discovery, selected-plan orchestration or production app import.
 
 ## Data flow
+
+The [build-time settings loader](../tools/web-settings.ts) owns the existing strict
+web/portable settings checks, Unicode resource verification and generated global
+defines. Production Vite and isolated personal-restore builds consume the same
+values. The test-only build excludes unrelated production configuration/plugins;
+production license, manifest and app-shell generation remain unchanged.
 
 The approved [lyric identity contract](https://github.com/DaasaVaani/shared/blob/main/docs/lyric-identity.md)
 adds an owner-supplied text-authoring/review path independent of provider API

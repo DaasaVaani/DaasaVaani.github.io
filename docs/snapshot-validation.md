@@ -206,6 +206,53 @@ fails gzip/canonical JSON/lyric semantics; preserve previous active content.
 The existing compatible-gzip consumer rules remain unchanged inside the exact ZIP
 container policy. Newly admitted and recovered candidates share this API.
 
+## Isolated direct HTTPS artifact transfer
+
+[fetchSnapshotArtifact](../src/snapshot-http.ts) supplies one isolated HTTP attempt
+for an already admitted artifact, not descriptor discovery or a downloader/coordinator.
+It is not imported by the application. The caller supplies exactly
+`{ url, sha256, encodedBytes }` and explicit `SnapshotHttpLimits`:
+`maxEncodedBytes`, `noProgressTimeoutMs`, `totalTimeoutMs`. All numbers are positive
+safe integers; timer values must also fit the platform timer range. Declared bytes
+above the caller ceiling fail before requesting. Inputs are captured before I/O.
+
+- Use the genuine configured **direct HTTPS** URL, without URL credentials or
+  fragment. Fetch uses `redirect: "error"`, omitted credentials, no referrer and
+  `cache: "no-store"`. A redirect fails; there is no landing-host fallback, HTTP
+  exception or Range request. HTTP200, unchanged final URL and a response body are
+  required. This is address enforcement, not publisher authentication.
+- Start both deadlines before requesting headers. Only nonempty body chunks reset
+  the idle deadline; progress never extends the total deadline. Browser-native
+  AbortSignal cancellation aborts the request/body. Clear timers/listeners and abort
+  any remaining transfer on exit, including overlong/error responses.
+- After successful headers, allocate one private admitted-length buffer and copy
+  each chunk into it. Refuse an overlong chunk before copying it,
+  require exact completed encoded length, then verify the entire encoded SHA.
+  HTTP Content-Length is deliberately not treated as artifact length: browsers
+  remove HTTP Content-Encoding before exposing the artifact gzip/ZIP body.
+  There is no physical wire-byte, chunk-allocation or peak-heap guarantee.
+- Preserve caller cancellation reasons and native crypto failures. Crypto has no
+  interruptible guarantee; cancellation/deadline guards after hashing prevent a
+  late success but do not promise immediate interruption of WebCrypto.
+
+`SnapshotHttpError.code` distinguishes `invalid`, `capacity`, `http`, `network`,
+`timeout` and `integrity`. HTTP errors expose status and the readable raw
+`retryAfter` header, without parsing it or scheduling a retry. Null means absent
+**or CORS-unreadable**, not proof the server specified no wait. Cross-origin
+Retry-After needs actual host exposure/evidence before production retry conformance
+can be claimed. Browser fetch does not reliably distinguish redirect/CORS/permanent
+request refusal from transient network TypeErrors; never blindly retry every
+`network` result. No automatic retries occur in this primitive.
+
+Callers must bind URLs/references to their selected admitted plan, account cumulative
+attempt bytes, implement approved transient classification/backoff/Retry-After,
+concurrency, genuine descriptor origin, consent and preservation. The approved
+30s idle/20min artifact-attempt policy remains in Shared; this low-level API has no
+hidden product defaults. It does not prove selection, full snapshot budget, storage
+admission or readiness. Pass verified ZIPs through `admitBundle`, checkpoint only
+originals, and run complete `candidate.validate` before activation. Individual
+objects likewise need full decoded validation after encoded transfer proof.
+
 ## Durable evidence and recovery order
 
 Persist `plan()` and all `metadataObjects()` through the scoped writer before

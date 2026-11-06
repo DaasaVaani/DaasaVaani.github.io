@@ -955,10 +955,20 @@ test("browser-admitted transfer planning uses actual verified metadata, reports 
   expect(await personalSnapshot(page)).toEqual(personal);
 });
 
-test("actual selected strict ZIP archives checkpoint only their verified originals and complete full decoder activation", async ({ page }) => {
+for (const transport of ["local", "https"] as const) {
+test(`actual selected strict ZIP archives via ${transport} checkpoint only verified originals and complete full decoder activation`, async ({ page }) => {
   await setup(page);
   const personal = await personalSnapshot(page), fixture = actualBundledSnapshotFixture();
-  const result = await page.evaluate(async ({ config, packet, archives, limits }) => {
+  const fetched: string[] = [];
+  if (transport === "https") await page.route("https://snapshot.invalid/bundles/*", route => {
+    const hash = new URL(route.request().url()).pathname.split("/").pop()?.replace(/\.zip$/, "");
+    const bytes = hash ? fixture.archives[hash] : undefined;
+    if (!hash || !bytes) throw new Error("Unexpected synthetic archive request");
+    fetched.push(hash);
+    return route.fulfill({ status: 200, body: Buffer.from(bytes),
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/zip" } });
+  });
+  const result = await page.evaluate(async ({ config, packet, archives, limits, transport }) => {
     const path = "/isolated-content-store.js";
     const backend: typeof import("../isolated-content") = await import(path);
     const store = await backend.ContentStore.open(config);
@@ -981,7 +991,11 @@ test("actual selected strict ZIP archives checkpoint only their verified origina
         if (request.kind !== "bundle") throw new Error("Synthetic fixture must select its actual archives");
         const bytes = archives[request.sha256];
         if (!bytes) throw new Error("Missing selected synthetic archive");
-        const members = await candidate.admitBundle(request.sha256, new Uint8Array(bytes),
+        const encoded = transport === "https" ? await backend.fetchSnapshotArtifact({
+          url: `https://snapshot.invalid/bundles/${request.sha256}.zip`, sha256: request.sha256,
+          encodedBytes: request.encodedBytes,
+        }, { maxEncodedBytes: 32 * 1024 * 1024, noProgressTimeoutMs: 30000, totalTimeoutMs: 1200000 }) : new Uint8Array(bytes);
+        const members = await candidate.admitBundle(request.sha256, encoded,
           { maxBundleMembers: 100, maxBundleEncodedBytes: 32 * 1024 * 1024 });
         for (const member of members) await writer.putObject(member.sha256, member.bytes);
       }
@@ -996,7 +1010,7 @@ test("actual selected strict ZIP archives checkpoint only their verified origina
     });
     store.close();
     return { requests, active, original };
-  }, { config: config(), packet: snapshotPacket(fixture), limits: snapshotLimits(),
+  }, { config: config(), packet: snapshotPacket(fixture), limits: snapshotLimits(), transport,
     archives: Object.fromEntries(Object.entries(fixture.archives).map(([hash, bytes]) => [hash, [...bytes]])) });
   expect(result.requests).toHaveLength(2);
   expect(result.requests.every(request => request.kind === "bundle")).toBe(true);
@@ -1004,6 +1018,63 @@ test("actual selected strict ZIP archives checkpoint only their verified origina
   expect(result.active.control.target).toBeNull();
   expect(result.original).toEqual(snapshotPacket(fixture).objects);
   expect(result.active.objects.some(object => Object.hasOwn(fixture.archives, object.sha256))).toBe(false);
+  expect(fetched.sort()).toEqual(transport === "https" ? result.requests.map(request => request.sha256).sort() : []);
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
+}
+
+test("native Fetch rejects redirects without contacting the landing address and failed HTTP artifacts preserve active content", async ({ page }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), packet = snapshotPacket(snapshotFixture()), visited: string[] = [];
+  const bytes = new Uint8Array([31, 139, 8, 0, 1, 2]);
+  await page.route("https://snapshot.invalid/**", route => {
+    const path = new URL(route.request().url()).pathname;
+    visited.push(path);
+    const headers = { "Access-Control-Allow-Origin": "*" };
+    if (path === "/redirect") return route.fulfill({ status: 302,
+      headers: { ...headers, Location: "https://snapshot.invalid/landing" } });
+    if (path === "/unavailable" || path === "/unavailable-hidden") return route.fulfill({ status: 503,
+      headers: { ...headers, "Retry-After": "121", ...(path === "/unavailable" ? { "Access-Control-Expose-Headers": "Retry-After" } : {}) } });
+    return route.fulfill({ status: 200, headers, body: Buffer.from(path === "/overlong" ? [...bytes, 0] : [...bytes].reverse()) });
+  });
+  const result = await page.evaluate(async ({ config, packet, bytes, sha256, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    const candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async hash => {
+      const bytes = packet.objects[hash];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(candidate.plan());
+      for (const [hash, bytes] of Object.entries(packet.objects)) await writer.putObject(hash, new Uint8Array(bytes));
+      await writer.activate((plan, read) => candidate.validate(plan, read));
+    });
+    const before = await store.snapshot(), failures: { code: string; status?: number; retryAfter?: string | null }[] = [];
+    for (const path of ["redirect", "overlong", "wrong", "unavailable", "unavailable-hidden"]) {
+      try {
+        await backend.fetchSnapshotArtifact({ url: `https://snapshot.invalid/${path}`, sha256, encodedBytes: bytes.length },
+          { maxEncodedBytes: bytes.length, noProgressTimeoutMs: 30000, totalTimeoutMs: 1200000 });
+        throw new Error("Synthetic invalid HTTP artifact unexpectedly succeeded");
+      } catch (reason) {
+        if (!(reason instanceof backend.SnapshotHttpError)) throw reason;
+        failures.push({ code: reason.code, ...(reason.status ? { status: reason.status, retryAfter: reason.retryAfter } : {}) });
+      }
+    }
+    const after = await store.snapshot();
+    const readable = await store.withActiveReader(async (plan, read) => {
+      for (const object of plan.required) await read(object.sha256);
+      return true;
+    });
+    store.close();
+    return { before, after, failures, readable };
+  }, { config: config(), packet, bytes: [...bytes], sha256: createHash("sha256").update(bytes).digest("hex"), limits: snapshotLimits() });
+  expect(result.failures).toEqual([{ code: "network" }, { code: "integrity" }, { code: "integrity" },
+    { code: "http", status: 503, retryAfter: "121" }, { code: "http", status: 503, retryAfter: null }]);
+  expect(visited).toEqual(["/redirect", "/overlong", "/wrong", "/unavailable", "/unavailable-hidden"]);
+  expect(result.after).toEqual(result.before);
+  expect(result.readable).toBe(true);
   expect(await personalSnapshot(page)).toEqual(personal);
 });
 

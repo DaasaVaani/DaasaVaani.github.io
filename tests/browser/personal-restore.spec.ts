@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import messages from "../../shared/generated/web/ui.json" with { type: "json" };
 import type { PersonalContents } from "../../src/personal-model";
 import { personalSnapshot } from "../lyric-browser";
+import { webDefines } from "../../tools/web-settings";
 
 declare global {
   interface Window {
@@ -15,7 +16,7 @@ declare global {
 let source: string;
 test.beforeAll(async () => {
   const built = await build({
-    configFile: fileURLToPath(new URL("../../vite.config.ts", import.meta.url)), logLevel: "error",
+    configFile: false, define: webDefines, logLevel: "error",
     build: { write: false, emptyOutDir: false, minify: false, lib: {
       entry: fileURLToPath(new URL("../../src/personal.ts", import.meta.url)), name: "personalRestoreApi", formats: ["iife"],
     } },

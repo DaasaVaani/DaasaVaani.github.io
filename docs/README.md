@@ -33,6 +33,8 @@ It also owns the [isolated transfer-planning API](snapshot-validation.md#isolate
 including explicit trusted bounds/exclusion reporting, not live transport.
 Its [actual bundle admission](snapshot-validation.md#actual-zip-bundle-admission)
 binds strict ZIP/member byte proof to the candidate before full decoded validation.
+The [isolated direct HTTPS attempt](snapshot-validation.md#isolated-direct-https-artifact-transfer)
+provides bounded actual artifact transfer without redirects or live app integration.
 
 ## Owners
 

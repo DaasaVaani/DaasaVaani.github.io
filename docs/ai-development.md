@@ -70,6 +70,8 @@ prelaunch descriptor/manifest/policy/item byte and target-binding layer, with
 durably rooted original descriptor evidence for new-page recovery and pure bounded
 ZIP/object transfer planning. Its separate actual bundle admission verifies the
 exact producer ZIP container profile/member bytes before full decoded validation.
+An isolated direct HTTPS artifact attempt separately enforces caller byte/deadline
+bounds and encoded SHA, with no redirects, automatic retry or application import.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.

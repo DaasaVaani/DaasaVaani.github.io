@@ -61,6 +61,10 @@ exact producer container profile, not compatible metadata/order variations; all
 framing/CRC/hash checks use one bounded private snapshot before originals return.
 Compatible gzip decoding remains a separate unchanged step. No network or
 readiness flag is enabled.
+The isolated HTTP artifact primitive requires direct configured HTTPS addresses,
+rejects redirects and enforces explicit per-attempt byte/idle/total limits plus
+encoded length/SHA. It has no automatic retry/coordinator/live activation; CORS
+header visibility and native failure classification remain production retry gates.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

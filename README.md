@@ -37,6 +37,10 @@ Actual bundle admission separately verifies the exact producer ZIP STORE profile
 and every original member's encoded bytes through Shared, then returns originals
 for checkpointing and full decoded validation. It still adds no live transport
 or offline UI.
+An [isolated HTTPS artifact adapter](docs/snapshot-validation.md#isolated-direct-https-artifact-transfer)
+adds one explicitly bounded request with no redirects, exact encoded length/SHA,
+deadlines and cancellation. It is not a live downloader, retry coordinator,
+publisher-authentication mechanism or readiness control.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

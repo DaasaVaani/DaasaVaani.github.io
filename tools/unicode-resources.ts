@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import Ajv2020 from "ajv/dist/2020";
+import Ajv2020 from "ajv/dist/2020.js";
 import { strictYaml } from "../shared/tools/generate-catalog.mjs";
 import schema from "../shared/schemas/unicode-settings.schema.json" with { type: "json" };
 import manifest from "../shared/generated/unicode/manifest.json" with { type: "json" };

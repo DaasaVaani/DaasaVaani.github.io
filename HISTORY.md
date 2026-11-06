@@ -1,5 +1,94 @@
 # Documentation history
 
+## 2026-11-06: direct HTTPS artifact-transfer prerequisite
+
+- The owner chose rejecting redirects at the isolated HTTP adapter, rather than
+  following browser redirects with final-address validation or deferring transport.
+  Configured addresses must work directly; moving an artifact requires an explicit
+  address/configuration update. This does not activate production downloads.
+- Added one-attempt artifact byte transfer with explicit encoded/idle/total ceilings,
+  captured URL/hash/length, credential omission, no HTTP cache or Range, direct
+  HTTP200/final-address checks and complete artifact encoded length/SHA proof.
+  Shared planning, ZIP admission and full decoded activation remain separate.
+  No new settings defaults, retries, coordinator or live application import were added.
+- First focused units passed33/34: one test reused an already consumed synthetic
+  Response for two crypto attempts. Fixed the test server stub to return a fresh
+  response per request; final focused37/37 units and strict TypeScript passed.
+- First focused storage browsers passed66/69; all three new error-path cases
+  correctly could not read cross-origin Retry-After without header exposure.
+  Added realistic CORS exposure for the readable-header case and an independent
+  unexposed case expecting null. No browser/header validation was weakened.
+  A null header means absent or unreadable, not proof no server wait exists;
+  production retry/hosting integration still needs applicable CORS evidence.
+- Final focused `npm test -- snapshot-http --maxWorkers=1` passed38/38;
+  `node node_modules\@playwright\test\cli.js test content-store --workers=1`
+  passed69/69 with fresh production build/strict typecheck. The final adapter copies
+  chunks into one admitted-length private buffer before hashing, avoiding retained
+  per-chunk arrays. Empty URL fragments are explicitly refused.
+- Complete `npm test -- --maxWorkers=1` passed252/252 in22 files. First complete
+  `node node_modules\@playwright\test\cli.js test --workers=1` passed556/561 in10.6m,
+  failed1 and left4 unrun: the unchanged mobile personal-restore `beforeAll`
+  in-memory build exceeded its existing30s deadline. This was not a pass.
+  Repeated every browser project/case unchanged, without increasing timeouts,
+  weakening assertions or treating focused retries as a full gate.
+- The second complete unchanged browser run also passed556/561, failed1 and
+  left4 unrun in11.9m: the same existing personal-restore setup exceeded30s,
+  this time in the narrow project. No complete browser gate passed for this
+  change set. HTTP work remains uncommitted/unpushed pending guidance on the
+  existing setup-reliability blocker; no timeout, test or validation waiver was made.
+  Final changed-Markdown checks passed11 files/all153 requirement IDs; strict YAML4,
+  workflow/ShellCheck and whitespace had passed. These checks do not replace the
+  blocked full browser suite.
+- The owner then explicitly approved investigating/fixing the existing setup
+  root cause while preserving assertions/timeouts. Diagnostic Vite hooks measured
+  39.7s to config resolution and about0.4s for the actual restore bundle; a separate
+  config-only load took22.7s. Vite's supported unbundled config runner still took25.5s.
+  An initial license-only hypothesis appeared faster at1.8s, but a subsequent
+  unchanged licensed build also completed in1.9s and Vite's license plugin executes
+  after config resolution. That hypothesis was disproved; the temporary
+  `license: false` change was removed, not accepted as a root-cause fix.
+- Removed the actual unnecessary full-application-config dependency from the
+  timed in-memory restore build. Extracted the unchanged strict settings/
+  Unicode checks and define serialization into tools/web-settings.ts, reused by
+  production Vite and the isolated `configFile: false` restore build. Production
+  plugins/license generation remain unchanged; no test/hook timeout increased.
+  Native ESM settings loading initially exposed two extensionless Ajv imports;
+  made both explicit `.js` imports rather than adding a toolchain or loader.
+- A diagnostic using resolveConfig's environment-expanded defines produced a
+  mismatched development bundle; it was not equivalence evidence. Repeated using
+  the actual shared webDefines: full-config and isolated builds emitted identical
+  JavaScript bytes and module graphs,626321 bytes, SHA256
+  6f58775bb42fc98254efa26dc0d62b2a67a50e5bd7f96ce14202cecf890b27bd.
+  The isolated actual bundle took95ms versus1.7s for the then-warm full config.
+  Final complete units again passed252/252; focused actual personal-restore
+  checks passed15/15 across all projects with fresh production build/strict types.
+  Archived the earlier operational warning above; current validation guidance now
+  describes the shared-settings isolated setup, not an exemption from the full gate.
+- Final complete `npm test -- --maxWorkers=1` passed252/252 in22 files.
+  `node node_modules\@playwright\test\cli.js test personal-restore --workers=1`
+  passed15/15 in33.4s; the subsequent complete
+  `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed561/561 across desktop/mobile/narrow in9.9m, with fresh production build/
+  strict typecheck and zero skipped cases using the configured clean c2837cc
+  fixture publisher. No existing cases, assertions or timeouts changed.
+  Changed-Markdown checks passed11 files/all153 unchanged requirement IDs; strict
+  YAML4, actionlint1.7.12/ShellCheck0.11.0 and Git whitespace checks passed.
+  No new dependencies/toolchains, live downloads/readiness, source changes or
+  Library/Android pin updates accompany this change.
+
+## 2026-11-06: exact ZIP-admission hosted/live verification
+
+- Websitec8eab7a071a3d118b48a4b1c3b62f84dae5c2f1a passed exact hosted
+  Repository checks/deployment42048964847 and CodeQL42048965737 after all local
+  gates. Hosted logs confirmed214 units in21 files and555 browsers in6.7m.
+- Live root/open HTML and JS returned HTTP200 and matched exact Pages artifact
+  13427125454 byte-for-byte. Root/open SHA256:
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  JS `/assets/index-Ca_7nR8A.js` SHA256:
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the exact owned tar/empty directory. Shipped application behavior
+  stayed unchanged; this was not live offline activation or release readiness.
+
 ## 2026-11-05: approved exact-profile ZIP admission prerequisite
 
 - The owner explicitly chose the exact deterministic producer ZIP container

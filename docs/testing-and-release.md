@@ -111,12 +111,12 @@ The complete unit command may likewise use `npm test -- --maxWorkers=2` or
 `npm test -- --maxWorkers=1` to avoid
 concurrent large byte-boundary fixtures exhausting local scheduling resources.
 This changes only scheduling; retain every test and its existing timeout.
-The existing personal-restore browser setup's in-memory Vite build can
-intermittently exceed its unchanged30s hook deadline locally. This remains an
-unresolved runner-reliability issue, not permission to skip its cases or increase
-timeouts. A failed/incomplete full run is not a pass; a focused retry cannot
-replace a complete successful suite. Stop with exact logs if the full gate
-cannot be completed.
+The personal-restore browser setup builds the actual personal-storage module with
+`configFile: false` and the same [validated settings/defines](../tools/web-settings.ts)
+used by the production configuration. It does not reload unrelated production
+plugins inside its unchanged30s hook. Strict settings/Unicode validation and actual
+storage tests remain mandatory. A failed/incomplete full run is not a pass;
+focused retries cannot replace a complete successful suite.
 `npm test -- first-use personal-backup personal-model` and
 `node node_modules\@playwright\test\cli.js test first-use personal-backup app-shell --workers=2`
 are incremental first-use checks, not finalization substitutes. They cover pending/
@@ -173,6 +173,16 @@ personal data; ZIP hashes never become stored required objects. Shared's full
 portable conformance is independently pinned; browser build/types are Website-owned.
 These tests do not establish live downloading, worker interruption, authentication
 or complete offline readiness.
+
+`npm test -- snapshot-http --maxWorkers=1` covers the isolated direct HTTPS
+artifact attempt: exact inclusive ceilings, pre-request invalid/capacity refusal,
+request policy, whole encoded SHA/length, chunk copies, stream/network causes,
+idle/total deadlines, progress, caller cancellation and native crypto failures.
+The content-store browser suite uses real native Fetch with synthetic HTTPS route
+responses, actual selected ZIP/member/full decoder activation, redirect rejection
+without landing-address contact, readable versus CORS-hidden Retry-After, and
+active/personal preservation through HTTP/length/hash failures. These are adapter
+checks, not a real remote-host/CDN deployment, retry coordinator or live downloader.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the
