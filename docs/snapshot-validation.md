@@ -484,6 +484,48 @@ progress/cancel/removal UI, acquire descriptors, audit/repair damage, change rea
 precedence, establish cross-tab persisted network accounting or enable automatic
 continuation after browser closure.
 
+## Atomic explicit transfer resume
+
+`resumeSnapshotTransfer(store, expected, validationLimits, options, budget, signal?)`
+from [the staging module](../src/snapshot-staging.ts) combines original-evidence
+reconstruction and serial staging in **one** whole-operation writer scope.
+It accepts no current descriptor, feed, remembered candidate, alternate publication
+identity or synthesized sequence. This is the preferred isolated entrypoint when
+resuming after process/page departure; it does not enable automatic resume.
+
+The exact validation limits/capability list, staging options, nested transfer/
+HTTP/retry bounds and shared-budget identity are captured/validated before writer
+entry. The same validation/transfer capture helpers serve standalone admission/
+planning; no second permissive validation implementation or fake request is used.
+The writer claim validates the captured expected fence. Under that same lock:
+
+1. Require a retained target and its stored plan. Absence is an explicit `target`
+   error, never a request to discover or begin a different snapshot.
+2. Run the existing full `resumeSnapshot` reconstruction through scoped actual
+   `writer.readObject` reads and the captured validation bounds. Every original
+   descriptor/manifest/policy identity and length/schema/capability check remains
+   mandatory. Missing/corrupt evidence fails explicitly; old plans without the
+   descriptor profile report `unsupported` and require explained explicit recovery.
+3. Pass the reconstructed candidate into the same serial staging implementation,
+   without releasing/reacquiring the lock, nesting writers or supplying a newer
+   feed. Recheck actual retained item bytes before reuse and fetch only the
+   remaining admitted artifacts under the explicit trusted publication directory.
+4. Return exactly `{ candidate, staged }`. `candidate` is the genuine immutable
+   reconstructed process-local validator; `staged` has the staging result shape
+   above. Success still leaves the target paused. A separate fenced
+   `writer.activate((plan, read) => candidate.validate(plan, read, signal))`
+   remains mandatory; the returned object is not a readiness receipt.
+
+Cancellation during reconstruction prevents staging/requests and preserves the
+caller reason; request/checkpoint failures retain the normal durable paused
+target and old active snapshot. A failed drain/pause is still surfaced, not hidden.
+The same optional signal controls reconstruction and staging. No silent restart,
+deletion, refund, extra consent or new allowance is inferred by reopening.
+Previously acquired metadata and prior invocations' reservations remain outside
+the current call's transfer counters. Production origin provenance, approved UI
+consent/retry/restart explanation and durable physical-accounting integration are
+still required before a live slice.
+
 ## Durable evidence and recovery order
 
 The separate [bounded attempt runner](#isolated-cancellable-attempt-runner) can

@@ -88,6 +88,10 @@ serially awaits selected requests/original checkpoints. It never replaces anothe
 target or activates on transfer completion; success leaves paused progress for
 separate full validation. Existing busy/stale/cancellation/pause-failure behavior
 remains mandatory, with no early writer release or personal-data writes.
+The [explicit atomic resume helper](snapshot-validation.md#atomic-explicit-transfer-resume)
+uses one writer claim for original metadata reconstruction and missing-artifact
+staging, with no lock gap/nested writer or current-feed input. Returned candidates
+are process-local validators, not readiness or permission to omit full activation.
 
 Every mutation builds the prospective Shared candidate inside one IndexedDB
 read/write transaction, validates its complete logical limits and captured fence,

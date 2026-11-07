@@ -80,6 +80,8 @@ writer fence, actual-byte retained-progress verification and exact selected path
 under an explicit trusted HTTPS directory. This is an implementation prerequisite,
 not a production concurrency selection. Success leaves a paused target and full
 decoded activation remains separate; live configuration/consent/readiness stay open.
+Explicit atomic resume uses the same complete writer scope for original-evidence
+reconstruction and staging; no feed lookup, silent restart or lock gap is supplied.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

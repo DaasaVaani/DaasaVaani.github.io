@@ -1,5 +1,48 @@
 # Documentation history
 
+## 2026-11-07: explicit single-fence retained transfer recovery
+
+- Continued after serial staging published as
+  `0e034a7be176c3db1dca8e37fd3fac3e55243046`. Exact hosted Repository checks/
+  deployment 42348629459 passed 359 units/588 browsers (6.8m); CodeQL
+  42348629397 passed. Live HTTP200 root/open/JavaScript matched exact Pages
+  artifact 13564558685: root/open SHA256
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  `/assets/index-Ca_7nR8A.js` SHA256
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the exact downloaded tar/empty owned directory; main/remote exact.
+- Added explicit retained-only resume with complete validation-limit/capability,
+  staging/transfer/HTTP/retry capture before writer entry. Reused the strict
+  validation/transfer capture helpers and the same serial staging core. One
+  writer claim covers original stored descriptor/manifest/policy reconstruction
+  and missing-artifact requests/checkpoints; no lock gap, nested writer, current
+  feed, remembered candidate or synthesized sequence. Returns the genuine
+  reconstructed candidate and staging result, still paused for separate full
+  activation. Missing/unsupported/corrupt evidence fails, never silently restarts.
+- Focused `npm test -- snapshot-staging snapshot-transfer snapshot-validation snapshot-attempts snapshot-http snapshot-retry --maxWorkers=1`
+  passed 201 units and `npx tsc --noEmit` passed before the additional legacy/
+  reconstruction-cancellation cases. Fresh-page native coverage receives only
+  database configuration/validation bounds and separately verifies actual
+  missing-artifact fetch, full activation and unchanged old active/personal data.
+  No live app import, production settings/consent, source reinterpretation or
+  independent consumer pin change accompanies this slice.
+- Tightened the publication-directory defense to reject empty query/fragment
+  delimiters in selected paths, not only nonempty URL search/hash values. Genuine
+  Shared-admitted paths already exclude these delimiters; the coordinator's own
+  guard and explicit tests now match its documented contract even for a supplied
+  malformed candidate. Stopped the first full local browser run after its 367
+  units passed to include that final change; that interrupted run is not a pass.
+  Complete final-tree validation was restarted with the added boundary cases.
+- Final `npm test -- --maxWorkers=1` passed all 369 units across 25 files.
+  With the configured clean fixture-publisher override,
+  `node node_modules\@playwright\test\cli.js test --workers=1` passed all 597
+  browser cases across every layout (11.5m), with fresh production build/strict
+  types/fixture publication. The session documentation validator passed all 11
+  changed Markdown files and all 153 requirement IDs; strict locked YAML parsing
+  passed four files; actionlint 1.7.12/ShellCheck 0.11.0 and staged/unstaged
+  `git diff --check` passed. Full final-tree validation replaces, rather than
+  claims success for, the intentionally interrupted earlier run.
+
 ## 2026-11-07: isolated serial selected-artifact staging
 
 - Continued on clean exact main after selected paths

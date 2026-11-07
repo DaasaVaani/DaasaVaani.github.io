@@ -76,6 +76,10 @@ remaining selection and serially awaits requests and original checkpoints.
 No detached work, concurrent writer mutations or implicit target replacement is
 used. Success leaves the target paused for separate full validator activation;
 live UI/consent, authenticated publication and production settings remain gates.
+Its [atomic resume entrypoint](snapshot-validation.md#atomic-explicit-transfer-resume)
+admits captured validation bounds before claiming the writer, reconstructs the
+retained candidate using scoped stored-byte reads and stages within that same
+lock. Missing/unsupported/corrupt evidence is never replaced with a current feed.
 
 ## Data flow
 

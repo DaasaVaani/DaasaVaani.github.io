@@ -61,16 +61,20 @@ export interface SnapshotTransferPlan {
   excludedBundles: { sha256: string; limits: ("maxBundleMembers" | "maxBundleEncodedBytes")[] }[];
 }
 const transferLimitFields = ["maxBundleMembers", "maxBundleEncodedBytes", "maxExtraBytes", "maxExtraPercent"] as const;
-function transferPlan(manifest: SnapshotManifest, manifestReference: LyricObjectReference, policy: TransferPlanningPolicy,
-  originals: ContentObjectReceipt[], verified: readonly string[], input: SnapshotTransferLimits): SnapshotTransferPlan {
+export function captureSnapshotTransferLimits(input: SnapshotTransferLimits): SnapshotTransferLimits {
   const keys = [...transferLimitFields, "maxTransferEncodedBytes"] as const;
-  if (!Array.isArray(verified) || !input || Object.keys(input).sort().join(",") !== [...keys].sort().join(",") ||
+  if (!input || Object.keys(input).sort().join(",") !== [...keys].sort().join(",") ||
       keys.some(key => !Number.isSafeInteger(input[key]) ||
         (key === "maxExtraBytes" || key === "maxExtraPercent" ? input[key] < 0 : input[key] <= 0)) ||
       input.maxExtraPercent > 100) {
     throw new ContentError("invalid", "Explicit snapshot transfer safety limits are required");
   }
-  const limits = { ...input };
+  return { ...input };
+}
+function transferPlan(manifest: SnapshotManifest, manifestReference: LyricObjectReference, policy: TransferPlanningPolicy,
+  originals: ContentObjectReceipt[], verified: readonly string[], input: SnapshotTransferLimits): SnapshotTransferPlan {
+  if (!Array.isArray(verified)) throw new ContentError("invalid", "Explicit verified object hashes are required");
+  const limits = captureSnapshotTransferLimits(input);
   const effectivePolicy: TransferPlanningPolicy = {
     maxBundleMembers: Math.min(policy.maxBundleMembers, limits.maxBundleMembers),
     maxBundleEncodedBytes: Math.min(policy.maxBundleEncodedBytes, limits.maxBundleEncodedBytes),
@@ -116,7 +120,7 @@ const numericLimits = [
   "maxPolicyEncodedBytes", "maxPolicyDecodedBytes", "maxItemEncodedBytes",
   "maxItemDecodedBytes", "maxItems", "maxTotalEncodedBytes", "maxTotalDecodedBytes", "chunkBytes",
 ] as const;
-function captureLimits(input: SnapshotValidationLimits): Readonly<SnapshotValidationLimits> {
+export function captureSnapshotValidationLimits(input: SnapshotValidationLimits): Readonly<SnapshotValidationLimits> {
   if (!input || Object.keys(input).sort().join(",") !== [...numericLimits, "supportedCapabilities"].sort().join(",") ||
       numericLimits.some(key => !Number.isSafeInteger(input[key]) || input[key] <= 0) ||
       !Array.isArray(input.supportedCapabilities) ||
@@ -236,7 +240,7 @@ function originals(manifest: SnapshotManifest, receipt: ContentObjectReceipt, li
 }
 export async function inspectSnapshot(descriptorInput: Uint8Array, read: ContentReader,
   inputLimits: SnapshotValidationLimits, signal?: AbortSignal): Promise<SnapshotCandidate> {
-  const limits = captureLimits(inputLimits);
+  const limits = captureSnapshotValidationLimits(inputLimits);
   signal?.throwIfAborted();
   if (!(descriptorInput instanceof Uint8Array) || !descriptorInput.length) {
     throw new ContentError("integrity", "Snapshot descriptor bytes are absent");
@@ -339,7 +343,7 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
 }
 export async function resumeSnapshot(target: ContentPlan, read: ContentReader,
   inputLimits: SnapshotValidationLimits, signal?: AbortSignal): Promise<SnapshotCandidate> {
-  const limits = captureLimits(inputLimits);
+  const limits = captureSnapshotValidationLimits(inputLimits);
   signal?.throwIfAborted();
   assertContentPlan(target);
   if (BigInt(target.required.length) > BigInt(limits.maxItems) + 3n) {

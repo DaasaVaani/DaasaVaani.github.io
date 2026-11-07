@@ -53,6 +53,8 @@ The [isolated serial staging coordinator](docs/snapshot-validation.md#isolated-s
 verifies retained bytes, fetches selected artifacts and checkpoints only originals
 under one writer fence. Success leaves a paused target for separate full validation/
 activation; no app import, live consent or readiness UI is enabled.
+Its explicit retained-only resume entrypoint reconstructs metadata and stages
+missing originals under that same fence, with no feed lookup or silent restart.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

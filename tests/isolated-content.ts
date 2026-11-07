@@ -3,4 +3,4 @@ export { inspectSnapshot, resumeSnapshot, ContentError, SnapshotConsumerError, S
 export { fetchSnapshotArtifact, SnapshotHttpError } from "../src/snapshot-http";
 export { snapshotRetryDecision } from "../src/snapshot-retry";
 export { fetchSnapshotWithRetries, SnapshotAttemptBudget, SnapshotAttemptError } from "../src/snapshot-attempts";
-export { stageSnapshotTransfer } from "../src/snapshot-staging";
+export { stageSnapshotTransfer, resumeSnapshotTransfer } from "../src/snapshot-staging";

@@ -47,6 +47,8 @@ bounds concurrent same-instance artifact attempts without claiming wire accounti
 The [isolated serial staging API](snapshot-validation.md#isolated-serial-transfer-staging)
 connects actual verified progress, selected requests and fenced checkpoints.
 It preserves previous active content and requires separate full validation/activation.
+Its [atomic explicit resume](snapshot-validation.md#atomic-explicit-transfer-resume)
+reconstructs from original stored evidence under the same complete writer scope.
 
 ## Owners
 

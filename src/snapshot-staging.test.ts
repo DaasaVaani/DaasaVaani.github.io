@@ -4,7 +4,7 @@ import type { ContentDataset, ContentPlan, ExpectedContent } from "../shared/typ
 import type { ContentStore, ContentWriteScope } from "./content-store";
 import { ContentError, inspectSnapshot, resumeSnapshot } from "./snapshot-validation";
 import { SnapshotAttemptBudget } from "./snapshot-attempts";
-import { stageSnapshotTransfer, type SnapshotStagingOptions } from "./snapshot-staging";
+import { resumeSnapshotTransfer, stageSnapshotTransfer, type SnapshotStagingOptions } from "./snapshot-staging";
 import { actualBundledSnapshotFixture, snapshotFixture, snapshotLimits } from "../tests/snapshot-fixture";
 
 const hash = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
@@ -233,7 +233,7 @@ test("nested options are captured before asynchronous writer work", async () => 
   expect(context.fetcher.mock.calls.every(([url]) => url.startsWith("https://snapshot.invalid/publication/"))).toBe(true);
 });
 test.each(["../escape.json.gz", "/outside/object.json.gz", "https://other.invalid/object.json.gz",
-  "objects/changed.json.gz?query", "objects/changed.json.gz#fragment"])(
+  "objects/changed.json.gz?query", "objects/changed.json.gz#fragment", "objects/changed.json.gz?", "objects/changed.json.gz#"])(
   "a selected path %s cannot escape or extend the explicit publication directory", async path => {
     const context = await setup(false);
     const candidate = { ...context.candidate, transferPlan: (...args: Parameters<typeof context.candidate.transferPlan>) => {
@@ -252,6 +252,98 @@ test("per-artifact attempt capacity is preflighted for the complete selection be
   input.attemptOptions.maxAttemptEncodedBytes = 1;
   await expect(stageSnapshotTransfer(context.store, context.expected, context.candidate, input, budget))
     .rejects.toMatchObject({ code: "capacity" });
+  expect(context.fetcher).not.toHaveBeenCalled();
+  expect(budget.snapshot().reservedEncodedBytes).toBe(0);
+});
+test("atomic explicit resume reconstructs actual metadata and stages only missing bytes in one writer scope", async () => {
+  const context = await setup(false);
+  await context.writer.begin(context.candidate.plan());
+  for (const object of context.candidate.metadataObjects()) await context.writer.putObject(object.sha256, object.bytes);
+  const item = context.fixture.manifest.catalog[0]?.item;
+  if (!item || !context.fixture.objects[item]) throw new Error("Missing synthetic original");
+  await context.writer.putObject(item, context.fixture.objects[item]);
+  const result = await resumeSnapshotTransfer(context.store, context.expected, snapshotLimits(), options(), new SnapshotAttemptBudget(131072));
+  expect(context.entered).toHaveBeenCalledOnce();
+  expect(context.writer.begin).toHaveBeenCalledOnce();
+  expect(result.candidate.plan()).toEqual(context.candidate.plan());
+  expect(result.staged.fetchedArtifacts).toBe(1);
+  expect(result.staged.transfer.artifacts.some(artifact => artifact.sha256 === item)).toBe(false);
+  await result.candidate.validate(result.candidate.plan(), context.writer.readObject);
+  expect(context.state.control.active).toBeNull();
+  expect(context.state.control.target?.phase).toBe("paused");
+});
+test.each(["missing", "corrupt"] as const)("atomic resume refuses %s original descriptor without requesting or inventing evidence", async fault => {
+  const context = await setup(false);
+  await context.writer.begin(context.candidate.plan());
+  for (const object of context.candidate.metadataObjects()) context.stored.set(object.sha256, object.bytes);
+  if (fault === "missing") context.stored.delete(context.fixture.descriptorHash);
+  else context.stored.set(context.fixture.descriptorHash, new Uint8Array(context.fixture.descriptorBytes.length));
+  const budget = new SnapshotAttemptBudget(131072);
+  await expect(resumeSnapshotTransfer(context.store, context.expected, snapshotLimits(), options(), budget))
+    .rejects.toMatchObject({ code: "integrity" });
+  expect(context.entered).toHaveBeenCalledOnce();
+  expect(context.fetcher).not.toHaveBeenCalled();
+  expect(budget.snapshot().reservedEncodedBytes).toBe(0);
+});
+test("explicit resume without a retained target never begins a replacement", async () => {
+  const context = await setup(false);
+  await expect(resumeSnapshotTransfer(context.store, context.expected, snapshotLimits(), options(), new SnapshotAttemptBudget(131072)))
+    .rejects.toMatchObject({ code: "target" });
+  expect(context.writer.begin).not.toHaveBeenCalled();
+  expect(context.fetcher).not.toHaveBeenCalled();
+});
+test("all resume limit shapes are validated before writer entry", async () => {
+  const context = await setup(false);
+  await expect(resumeSnapshotTransfer(context.store, context.expected, { ...snapshotLimits(), maxItems: 0 },
+    options(), new SnapshotAttemptBudget(131072))).rejects.toMatchObject({ code: "invalid" });
+  const input = options();
+  input.transferLimits.maxTransferEncodedBytes = 0;
+  await expect(resumeSnapshotTransfer(context.store, context.expected, snapshotLimits(), input,
+    new SnapshotAttemptBudget(131072))).rejects.toMatchObject({ code: "invalid" });
+  expect(context.entered).not.toHaveBeenCalled();
+  expect(context.fetcher).not.toHaveBeenCalled();
+});
+test("resume validation limits and capability arrays are captured before writer entry", async () => {
+  const context = await setup(false);
+  await context.writer.begin(context.candidate.plan());
+  for (const object of context.candidate.metadataObjects()) context.stored.set(object.sha256, object.bytes);
+  const capabilities = [...snapshotLimits().supportedCapabilities];
+  const limits = { ...snapshotLimits(), supportedCapabilities: capabilities }, original = context.store.withWriter;
+  context.store.withWriter = async <T>(expected: ExpectedContent, work: (writer: ContentWriteScope) => Promise<T>) => {
+    limits.maxItems = 0;
+    limits.supportedCapabilities.length = 0;
+    return original(expected, work);
+  };
+  const result = await resumeSnapshotTransfer(context.store, context.expected, limits, options(), new SnapshotAttemptBudget(131072));
+  expect(result.staged.fetchedArtifacts).toBe(2);
+  expect(context.entered).toHaveBeenCalledOnce();
+});
+test("legacy target plans without original descriptor evidence fail explicitly rather than restart", async () => {
+  const context = await setup(false), legacy = context.candidate.plan();
+  legacy.required = legacy.required.filter(object => object.sha256 !== context.fixture.descriptorHash);
+  await context.writer.begin(legacy);
+  for (const [sha256, bytes] of Object.entries(context.fixture.objects)) {
+    if (sha256 !== context.fixture.descriptorHash) context.stored.set(sha256, bytes);
+  }
+  await expect(resumeSnapshotTransfer(context.store, context.expected, snapshotLimits(), options(), new SnapshotAttemptBudget(131072)))
+    .rejects.toMatchObject({ code: "unsupported" });
+  expect(context.fetcher).not.toHaveBeenCalled();
+  expect(context.writer.begin).toHaveBeenCalledOnce();
+});
+test("cancellation during original-evidence reconstruction stops before staging or reservation", async () => {
+  const context = await setup(false);
+  await context.writer.begin(context.candidate.plan());
+  for (const object of context.candidate.metadataObjects()) context.stored.set(object.sha256, object.bytes);
+  const controller = new AbortController(), reason = new DOMException("Synthetic reconstruction departure", "AbortError");
+  const original = context.writer.readObject;
+  context.writer.readObject = vi.fn(async sha256 => {
+    const bytes = await original(sha256);
+    controller.abort(reason);
+    return bytes;
+  });
+  const budget = new SnapshotAttemptBudget(131072);
+  await expect(resumeSnapshotTransfer(context.store, context.expected, snapshotLimits(), options(), budget, controller.signal))
+    .rejects.toBe(reason);
   expect(context.fetcher).not.toHaveBeenCalled();
   expect(budget.snapshot().reservedEncodedBytes).toBe(0);
 });

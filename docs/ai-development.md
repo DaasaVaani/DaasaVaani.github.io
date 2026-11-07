@@ -84,6 +84,9 @@ now verifies stored bytes, checkpoints metadata, fetches admitted paths under an
 explicit trusted HTTPS directory and persists only originals. It owns one writer
 scope and leaves the target paused even on success. Complete activation remains
 separate; no production app import, consent or automatic updates are enabled.
+The [explicit atomic resume API](snapshot-validation.md#atomic-explicit-transfer-resume)
+reconstructs from stored original evidence and stages under the same writer
+scope; it never consults a feed or silently restarts missing/unsupported evidence.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.

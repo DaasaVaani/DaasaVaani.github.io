@@ -1132,6 +1132,121 @@ test(`isolated serial staging via ${mode} verifies native progress, preserves ac
 });
 }
 
+for (const evidence of ["valid", "missing", "corrupt"] as const) {
+test(`fresh-page atomic transfer resume uses only ${evidence} retained evidence and never a current feed or remembered candidate`, async ({ page, context }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), next = actualBundledSnapshotFixture({ sequence: 2 }), settings = config();
+  const seeded = await page.evaluate(async ({ config, previous, packet, limits, evidence }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(previous.plan);
+      for (const object of previous.objects) await writer.putObject(object.sha256, new Uint8Array(object.bytes));
+      await writer.activate(async (plan, read) => { for (const object of plan.required) await read(object.sha256); });
+    });
+    const candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async sha256 => {
+      const bytes = packet.objects[sha256];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    const metadata = candidate.metadataObjects(), descriptor = metadata[0];
+    if (!descriptor) throw new Error("Missing synthetic descriptor");
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(candidate.plan());
+      for (const object of metadata) {
+        if (evidence !== "missing" || object.sha256 !== descriptor.sha256) await writer.putObject(object.sha256, object.bytes);
+      }
+      const metadataHashes = new Set(metadata.map(object => object.sha256));
+      const item = candidate.plan().required.find(object => !metadataHashes.has(object.sha256));
+      const bytes = item && packet.objects[item.sha256];
+      if (!item || !bytes) throw new Error("Missing synthetic retained item");
+      await writer.putObject(item.sha256, new Uint8Array(bytes));
+      await writer.phase("paused");
+    });
+    store.close();
+    if (evidence === "corrupt") {
+      const database = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open(config.databaseName);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      await new Promise<void>((resolve, reject) => {
+        const transaction = database.transaction("objects", "readwrite");
+        transaction.objectStore("objects").put({ sha256: descriptor.sha256, encodedBytes: descriptor.bytes.length,
+          bytes: new Blob([new Uint8Array(descriptor.bytes.length)]) });
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+      });
+      database.close();
+    }
+    return { descriptor: descriptor.sha256 };
+  }, { config: settings, previous: fixture(1), packet: snapshotPacket(next), limits: snapshotLimits(), evidence });
+  await page.close();
+  const reopened = await context.newPage();
+  await setup(reopened);
+  const visited: string[] = [];
+  await reopened.route("https://snapshot.invalid/publication/**", route => {
+    const sha256 = new URL(route.request().url()).pathname.split("/").pop()?.split(".")[0];
+    const bytes = sha256 && (next.archives[sha256] ?? next.objects[sha256]);
+    if (!bytes) throw new Error("Unexpected synthetic recovery artifact");
+    visited.push(route.request().url());
+    return route.fulfill({ status: 200, body: Buffer.from(bytes), headers: { "Access-Control-Allow-Origin": "*" } });
+  });
+  const result = await reopened.evaluate(async ({ config, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config), before = await store.snapshot();
+    const budget = new backend.SnapshotAttemptBudget(131072);
+    let failure = "", fetchedArtifacts = 0, selectedPaths: string[] = [];
+    try {
+      const resumed = await backend.resumeSnapshotTransfer(store, before.control, limits, {
+        publicationBaseUrl: "https://snapshot.invalid/publication/",
+        transferLimits: { maxBundleMembers: 100, maxBundleEncodedBytes: 32768, maxExtraBytes: 8192,
+          maxExtraPercent: 25, maxTransferEncodedBytes: 131072 },
+        attemptOptions: { httpLimits: { maxEncodedBytes: 32768, noProgressTimeoutMs: 30000, totalTimeoutMs: 120000 },
+          maxAttemptEncodedBytes: 131072, retryAfterReadable: true, isTransientNetworkError: () => false,
+          retryPolicy: { maxAttempts: 2, backoffMs: [0], jitterPercent: 0, maxAutomaticWaitMs: 120000 } },
+      }, budget);
+      fetchedArtifacts = resumed.staged.fetchedArtifacts;
+      selectedPaths = resumed.staged.transfer.artifacts.map(artifact => artifact.path);
+      const staged = await store.snapshot();
+      if (staged.control.active?.sequence !== 1 || staged.control.target?.phase !== "paused") {
+        throw new Error("Transfer resume must not activate");
+      }
+      await store.withWriter(staged.control, writer => writer.activate((plan, read) => resumed.candidate.validate(plan, read)));
+    } catch (reason) {
+      if (!(reason instanceof backend.ContentError)) throw reason;
+      failure = reason.code;
+    }
+    const after = await store.snapshot(), readable = await store.withActiveReader(async (plan, read) => {
+      for (const object of plan.required) await read(object.sha256);
+      return true;
+    });
+    store.close();
+    return { before, after, failure, fetchedArtifacts, selectedPaths, readable, budget: budget.snapshot() };
+  }, { config: settings, limits: snapshotLimits() });
+  expect(result.readable).toBe(true);
+  if (evidence === "valid") {
+    expect(result.failure).toBe("");
+    expect(result.fetchedArtifacts).toBeGreaterThan(0);
+    expect(result.after.control.active).toEqual({ sequence: 2, manifestSha256: next.descriptor.manifest.sha256 });
+    expect(result.after.control.target).toBeNull();
+    expect(visited).toEqual(result.selectedPaths.map(path => `https://snapshot.invalid/publication/${path}`));
+    expect(visited.some(url => url.includes(seeded.descriptor))).toBe(false);
+  } else {
+    expect(result.failure).toBe("integrity");
+    expect(result.after.control.active).toEqual(result.before.control.active);
+    expect(result.after.control.target).toEqual(result.before.control.target);
+    expect(result.after.objects).toEqual(result.before.objects);
+    expect(visited).toEqual([]);
+    expect(result.budget.reservedEncodedBytes).toBe(0);
+  }
+  expect(await personalSnapshot(reopened)).toEqual(personal);
+});
+}
+
 for (const fault of ["capacity", "cancel", "integrity"] as const) {
 test(`isolated serial staging ${fault} failure pauses its native target without replacing active content or personal data`, async ({ page }) => {
   await setup(page);

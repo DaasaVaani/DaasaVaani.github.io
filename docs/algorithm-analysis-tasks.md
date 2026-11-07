@@ -454,6 +454,11 @@ evidence is not established.
   artifact pipeline at a time, but private/hash/decoder/browser buffers still add
   memory. Complete transfer leaves paused progress, never a readiness flag.
   No production concurrency/throughput or physical heap/network proof follows.
+  Atomic explicit resume additionally performs the existing bounded original-
+  evidence reconstruction and serial staging under one writer scope; it repeats
+  actual-byte checks rather than trusting receipts and never introduces a feed
+  lookup or target-switch heuristic. The longer held lock can return `busy` to
+  other writers; it is not timeout-stealable or a background continuation claim.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

@@ -1,12 +1,15 @@
 import { ContentError, assertContentPlan } from "../shared/tools/content-state.mjs";
 import type { ContentPlan, ExpectedContent } from "../shared/types/content";
-import type { ContentStore } from "./content-store";
+import type { ContentStore, ContentWriteScope } from "./content-store";
 import {
   captureSnapshotAttemptOptions, fetchSnapshotWithRetries, SnapshotAttemptBudget,
   type SnapshotAttemptOptions,
 } from "./snapshot-attempts";
 import { captureSnapshotHttpRequest, SnapshotHttpError } from "./snapshot-http";
-import type { SnapshotCandidate, SnapshotTransferLimits, SnapshotTransferPlan } from "./snapshot-validation";
+import { captureSnapshotTransferLimits, captureSnapshotValidationLimits, resumeSnapshot } from "./snapshot-validation";
+import type {
+  SnapshotCandidate, SnapshotTransferLimits, SnapshotTransferPlan, SnapshotValidationLimits,
+} from "./snapshot-validation";
 
 export interface SnapshotStagingOptions {
   publicationBaseUrl: string;
@@ -37,9 +40,7 @@ function publicationBase(value: string) {
   return url;
 }
 
-export async function stageSnapshotTransfer(store: Pick<ContentStore, "snapshot" | "withWriter">,
-  expected: ExpectedContent, candidate: SnapshotCandidate,
-  input: SnapshotStagingOptions, budget: SnapshotAttemptBudget, signal?: AbortSignal): Promise<SnapshotStagingResult> {
+function captureStagingInputs(input: SnapshotStagingOptions, budget: SnapshotAttemptBudget, signal?: AbortSignal) {
   signal?.throwIfAborted();
   if (!input || Object.keys(input).sort().join(",") !== "attemptOptions,publicationBaseUrl,transferLimits" ||
       !(budget instanceof SnapshotAttemptBudget)) {
@@ -47,11 +48,19 @@ export async function stageSnapshotTransfer(store: Pick<ContentStore, "snapshot"
   }
   const base = publicationBase(input.publicationBaseUrl);
   const attemptOptions = captureSnapshotAttemptOptions(input.attemptOptions);
-  const transferLimits = { ...input.transferLimits };
+  const transferLimits = captureSnapshotTransferLimits(input.transferLimits);
+  return { base, attemptOptions, transferLimits };
+}
+function captureStagingCandidate(candidate: SnapshotCandidate) {
   const plan = candidate.plan(), metadata = candidate.metadataObjects();
   assertContentPlan(plan);
-  candidate.transferPlan(plan.required.map(object => object.sha256), transferLimits);
-  return store.withWriter(expected, async writer => {
+  return { candidate, plan, metadata };
+}
+async function stageUnderWriter(store: Pick<ContentStore, "snapshot">, writer: ContentWriteScope,
+  admitted: ReturnType<typeof captureStagingCandidate>, inputs: ReturnType<typeof captureStagingInputs>,
+  budget: SnapshotAttemptBudget, signal?: AbortSignal): Promise<SnapshotStagingResult> {
+    const { candidate, plan, metadata } = admitted;
+    const { base, attemptOptions, transferLimits } = inputs;
     const before = await store.snapshot();
     if (before.control.target) {
       const target = before.control.target.reference;
@@ -80,7 +89,7 @@ export async function stageSnapshotTransfer(store: Pick<ContentStore, "snapshot"
     const transfer = candidate.transferPlan([...verified], transferLimits);
     const requests = transfer.artifacts.map(artifact => {
       const url = new URL(artifact.path, base);
-      if (url.origin !== base.origin || !url.href.startsWith(base.href) || url.search || url.hash) {
+      if (url.origin !== base.origin || !url.href.startsWith(base.href) || url.href.includes("?") || url.href.includes("#")) {
         throw new ContentError("invalid", "Selected artifact escaped the explicit publication directory");
       }
       return captureSnapshotHttpRequest({ url: url.href, sha256: artifact.sha256,
@@ -117,5 +126,28 @@ export async function stageSnapshotTransfer(store: Pick<ContentStore, "snapshot"
     signal?.throwIfAborted();
     await writer.phase("paused");
     return { transfer, fetchedArtifacts: transfer.artifacts.length, attempts, reservedEncodedBytes };
+}
+export async function stageSnapshotTransfer(store: Pick<ContentStore, "snapshot" | "withWriter">,
+  expected: ExpectedContent, candidate: SnapshotCandidate,
+  input: SnapshotStagingOptions, budget: SnapshotAttemptBudget, signal?: AbortSignal): Promise<SnapshotStagingResult> {
+  const inputs = captureStagingInputs(input, budget, signal);
+  const admitted = captureStagingCandidate(candidate);
+  return store.withWriter(expected, writer => stageUnderWriter(store, writer, admitted, inputs, budget, signal), signal);
+}
+export async function resumeSnapshotTransfer(store: Pick<ContentStore, "snapshot" | "withWriter">,
+  expected: ExpectedContent, validationLimits: SnapshotValidationLimits,
+  input: SnapshotStagingOptions, budget: SnapshotAttemptBudget, signal?: AbortSignal):
+  Promise<{ candidate: SnapshotCandidate; staged: SnapshotStagingResult }> {
+  const inputs = captureStagingInputs(input, budget, signal);
+  const limits = captureSnapshotValidationLimits(validationLimits);
+  return store.withWriter(expected, async writer => {
+    const before = await store.snapshot(), reference = before.control.target?.reference;
+    const target = reference && before.snapshots.find(plan => plan.reference.sequence === reference.sequence &&
+      plan.reference.manifestSha256 === reference.manifestSha256);
+    if (!target) throw new ContentError("target", "Explicit transfer resume requires a retained snapshot target");
+    const candidate = await resumeSnapshot(target, writer.readObject, limits, signal);
+    const admitted = captureStagingCandidate(candidate);
+    const staged = await stageUnderWriter(store, writer, admitted, inputs, budget, signal);
+    return { candidate, staged };
   }, signal);
 }

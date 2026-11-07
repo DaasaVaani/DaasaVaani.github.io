@@ -221,6 +221,14 @@ real native storage/locks and HTTPS requests: ZIP/individual/retry transfers,
 interrupted later-artifact recovery from retained metadata, capacity/cancellation/
 integrity failure preserving the old reader and all personal data, no ZIP storage,
 paused-only staging completion and separate complete decoder activation.
+The same units also cover atomic explicit resume under a single writer call,
+strict pre-writer validation/capability-array capture, no-target/legacy/missing/
+corrupt evidence refusal and cancellation during reconstruction with no request/
+reservation. Native browser cases close the original page completely and open a
+new page receiving only database configuration and validation bounds, not a feed,
+descriptor or remembered candidate. Valid retained-only resume fetches missing
+artifacts and separately validates/activates; missing/corrupt original descriptor
+bytes fail before requesting and preserve all stored progress/active/personal data.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

@@ -90,6 +90,10 @@ shared attempt allowance and selected artifact/original checkpoints inside one
 writer scope. Successful transfer deliberately remains paused, not active/ready;
 complete validator activation is separate. Production host provenance/configuration,
 consent/progress UI, concurrency policy and live reader integration remain open.
+Explicit original-evidence reconstruction plus staging can now share one writer
+scope through the [atomic resume API](snapshot-validation.md#atomic-explicit-transfer-resume).
+Fresh-page tests supply no remembered candidate/current descriptor; unsupported,
+missing or corrupt evidence fails without a request, restart or active replacement.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical
