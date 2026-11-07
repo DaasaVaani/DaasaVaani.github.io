@@ -31,6 +31,8 @@ schema admission, consumer tolerance, rooted original descriptor recovery and it
 narrower prelaunch/persistence boundary.
 It also owns the [isolated transfer-planning API](snapshot-validation.md#isolated-transfer-planning),
 including explicit trusted bounds/exclusion reporting, not live transport.
+Selected request paths are independently projected from the captured admitted
+descriptor/manifest; the genuine publication origin remains an integration gate.
 Its [actual bundle admission](snapshot-validation.md#actual-zip-bundle-admission)
 binds strict ZIP/member byte proof to the candidate before full decoded validation.
 The [isolated direct HTTPS attempt](snapshot-validation.md#isolated-direct-https-artifact-transfer)

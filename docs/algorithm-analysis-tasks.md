@@ -349,6 +349,10 @@ evidence is not established.
 - **Requirements:** GEN-03, OFF-02/04/06/15, CI-06, SET-01/02.
 - **Implemented prerequisite:** the [isolated admitted-metadata adapter](snapshot-validation.md#isolated-transfer-planning)
   reuses Shared's portable exact planner, not a second selection algorithm.
+  Exact selected publication paths are projected from captured descriptor/manifest
+  references in request order, with copied coverage arrays and no new selection
+  heuristic. Projection costs O(request count + copied coverage); host binding,
+  transport effects and actual verified-receipt evidence remain separate obligations.
   It runs an individual-only baseline to derive remaining network headroom, caps
   extras, filters/reports oversized optional bundles and runs the same planner on
   eligible bundles. Projection and exclusions scan originals/bundle members;

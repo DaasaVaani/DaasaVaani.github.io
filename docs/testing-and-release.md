@@ -204,6 +204,12 @@ integer arithmetic, invalid/pre-cancelled no-spend, failed/cancelled no-refund a
 concurrent initial/retry contention. Native browser cases share one ledger across
 three actual HTTPS runners: exactly two affordable requests complete and the third
 fails before requesting, with active content/personal data unchanged.
+Transfer-planning units additionally compare the exact selected artifact path/
+identity shape for ZIPs, excluded-ZIP individual fallback, manifest/policy/items,
+complete verified sets and independently recovered candidates. Mutation of artifact
+paths/lengths/coverage cannot alter planner results or captured evidence. Actual
+native ZIP tests resolve the admitted path rather than reconstructing it from a
+digest, retaining full decoder activation and personal-data preservation.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

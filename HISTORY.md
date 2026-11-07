@@ -1,5 +1,37 @@
 # Documentation history
 
+## 2026-11-07: exact selected publication-relative artifact paths
+
+- Continued after shared reservations published as
+  `8c8af1268bedfd3b068cbc3e04310a8ff2238609`. Exact Repository checks/deployment
+  42322934248 passed with all 332 units/567 browsers (6.4m); CodeQL 42322934599
+  passed. Downloaded exact Pages artifact 13553888244 and compared live HTTP200
+  root/open/JavaScript byte-for-byte: root/open SHA256
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  `/assets/index-Ca_7nR8A.js` SHA256
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the named artifact tar/empty owned directory; main was exact/clean.
+- Extended isolated transfer results with an independent exact selected `artifacts`
+  array. Planner order/kind/hash/length/coverage stay unchanged; paths come only
+  from captured admitted descriptor manifest-reference and manifest originals/
+  ZIPs. Never fabricate a remote descriptor path or source lookup; inert optional
+  metadata cannot enter the output shape. Mutations do not change future evidence
+  or planner coverage. Genuine host binding, consent, scheduling and live offline
+  integration remain open; no consumer pins, production settings or source work changed.
+- `npm test -- snapshot-transfer snapshot-validation snapshot-bundle --maxWorkers=1`
+  passed all 75 focused units; `npx tsc --noEmit` passed. Actual native HTTPS/retry
+  ZIP browser cases now resolve the selected admitted path, with unchanged full
+  decoder activation and personal-data assertions.
+- Final local `npm test -- --maxWorkers=1` passed all 336 units across 24 files;
+  with the same clean configured fixture-publisher override,
+  `node node_modules\@playwright\test\cli.js test --workers=1` passed all 567
+  browser cases across all three layouts (10.3m), with fresh production
+  build/type-check/fixture publication. The session documentation validator
+  passed seven changed Markdown files and all 153 requirement IDs; locked strict
+  YAML parsing passed all four files; actionlint 1.7.12/ShellCheck 0.11.0 and
+  staged/unstaged `git diff --check` passed. This covers isolated
+  GEN-03/OFF-02/04/06/15 and QUAL-06 prerequisites, not a production downloader.
+
 ## 2026-11-07: shared isolated artifact-attempt reservations
 
 - Continued immediately after published runner verification. Added one explicit

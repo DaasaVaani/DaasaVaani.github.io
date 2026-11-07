@@ -81,6 +81,9 @@ scheduling, consent, production values and actual network accounting remain open
 An explicit shared same-instance reservation ledger additionally prevents
 concurrent artifact attempts from double spending one allowance. Persistent/cross-tab
 coordination and the complete selected-transfer scheduler remain open.
+Selected request identities now include exact publication-relative paths from
+captured admitted descriptor/manifest metadata, including original fallback and
+recovered candidates. Genuine host binding and live scheduling remain open.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

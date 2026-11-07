@@ -5,6 +5,7 @@ import {
 import { ContentError, assertContentPlan } from "../shared/tools/content-state.mjs";
 import { createDownloadPlanner } from "../shared/tools/download-planner-reference.mjs";
 import type { DownloadPlan, TransferPlanningPolicy } from "../shared/tools/download-planner-reference.mjs";
+import type { DownloadRequest } from "../shared/types/download-plan";
 import { admitSnapshotZipStore } from "../shared/tools/snapshot-zip-consumer.mjs";
 import type { AdmittedSnapshotZipStoreMember } from "../shared/tools/snapshot-zip-consumer.mjs";
 import type { ContentPlan, ContentObjectReceipt } from "../shared/types/content";
@@ -49,14 +50,18 @@ export interface SnapshotTransferLimits extends SnapshotBundleLimits {
   maxTransferEncodedBytes: number;
 }
 type TransferLimitField = Exclude<keyof SnapshotTransferLimits, "maxTransferEncodedBytes">;
+export interface SnapshotTransferArtifact extends DownloadRequest {
+  path: string;
+}
 export interface SnapshotTransferPlan {
   plan: DownloadPlan;
+  artifacts: SnapshotTransferArtifact[];
   effectivePolicy: TransferPlanningPolicy;
   adjustments: { field: TransferLimitField; published: number; effective: number }[];
   excludedBundles: { sha256: string; limits: ("maxBundleMembers" | "maxBundleEncodedBytes")[] }[];
 }
 const transferLimitFields = ["maxBundleMembers", "maxBundleEncodedBytes", "maxExtraBytes", "maxExtraPercent"] as const;
-function transferPlan(manifest: SnapshotManifest, policy: TransferPlanningPolicy,
+function transferPlan(manifest: SnapshotManifest, manifestReference: LyricObjectReference, policy: TransferPlanningPolicy,
   originals: ContentObjectReceipt[], verified: readonly string[], input: SnapshotTransferLimits): SnapshotTransferPlan {
   const keys = [...transferLimitFields, "maxTransferEncodedBytes"] as const;
   if (!Array.isArray(verified) || !input || Object.keys(input).sort().join(",") !== [...keys].sort().join(",") ||
@@ -94,7 +99,15 @@ function transferPlan(manifest: SnapshotManifest, policy: TransferPlanningPolicy
   if (plan.transferEncodedBytes > limits.maxTransferEncodedBytes) {
     throw new ContentError("capacity", "Selected artifacts exceed the trusted transfer byte limit");
   }
-  return { plan, effectivePolicy, excludedBundles,
+  const artifacts = plan.requests.map(request => {
+    const reference = request.kind === "bundle" ? manifest.bundles[request.sha256] :
+      request.sha256 === manifestReference.sha256 ? manifestReference : manifest.objects[request.sha256];
+    if (!reference || reference.encodedBytes !== request.encodedBytes) {
+      throw new ContentError("invalid", "Selected artifact differs from admitted publication metadata");
+    }
+    return { ...request, covers: [...request.covers], path: reference.path };
+  });
+  return { plan, artifacts, effectivePolicy, excludedBundles,
     adjustments: transferLimitFields.filter(field => effectivePolicy[field] !== policy[field])
       .map(field => ({ field, published: policy[field], effective: effectivePolicy[field] })) };
 }
@@ -272,7 +285,7 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
     plan: () => structuredClone(plan),
     metadataObjects: () => metadata.map(object => ({ sha256: object.sha256, bytes: new Uint8Array(object.bytes) })),
     transferPlan: (verified: readonly string[], transferLimits: SnapshotTransferLimits) =>
-      transferPlan(manifest, policy.transferPlanning, original.required, verified, transferLimits),
+      transferPlan(manifest, descriptor.manifest, policy.transferPlanning, original.required, verified, transferLimits),
     admitBundle: async (sha256: string, bytes: Uint8Array, bounds: SnapshotBundleLimits, currentSignal?: AbortSignal) => {
       currentSignal?.throwIfAborted();
       if (!bounds || Object.keys(bounds).sort().join(",") !== "maxBundleEncodedBytes,maxBundleMembers" ||

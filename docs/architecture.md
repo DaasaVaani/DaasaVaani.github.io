@@ -66,6 +66,9 @@ Its [shared attempt ledger](snapshot-validation.md#shared-attempt-reservation-le
 provides synchronous nonrefundable same-instance reservations across runners.
 This is a process-local allowance, not a replacement for durable writer fencing,
 actual network accounting or production concurrency policy.
+Admitted transfer results also expose exact selected publication-relative paths,
+independent of planner coverage arrays. No URL template, source lookup or origin
+authentication is inferred; the owning coordinator still establishes the host.
 
 ## Data flow
 

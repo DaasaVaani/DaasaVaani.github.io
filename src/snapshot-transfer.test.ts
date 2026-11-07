@@ -31,6 +31,49 @@ test("admitted transfer planning covers every missing original once without remo
   expect(result.plan.savedCostBytes).toBeGreaterThan(0);
   expect(result.excludedBundles).toEqual([]);
 });
+test("selected bundle paths and request identities come from admitted metadata in exact planner order", async () => {
+  const { fixture, candidate, verified } = await prepare();
+  const result = candidate.transferPlan(verified, limits());
+  expect(result.artifacts).toEqual(result.plan.requests.map(request => {
+    const bundle = fixture.bundles[request.sha256];
+    if (!bundle) throw new Error("Expected synthetic bundle");
+    return { ...request, path: bundle.path };
+  }));
+});
+test("individual fallback paths include exact descriptor manifest policy and item references but never a remote descriptor object", async () => {
+  const fixture = snapshotFixture();
+  const candidate = await inspectSnapshot(fixture.descriptorBytes, read(fixture), snapshotLimits());
+  const result = candidate.transferPlan([], limits());
+  expect(result.artifacts).toEqual(result.plan.requests.map(request => {
+    const reference = request.sha256 === fixture.descriptor.manifest.sha256
+      ? fixture.descriptor.manifest : fixture.manifest.objects[request.sha256];
+    if (!reference) throw new Error("Missing synthetic original");
+    return { ...request, path: reference.path };
+  }));
+  expect(result.artifacts.every(artifact => artifact.kind === "object")).toBe(true);
+  expect(result.artifacts.map(artifact => artifact.sha256).sort()).toEqual([
+    fixture.descriptor.manifest.sha256, ...Object.keys(fixture.manifest.objects),
+  ].sort());
+  expect(result.artifacts.some(artifact => artifact.sha256 === fixture.descriptorHash)).toBe(false);
+});
+test("selected artifact views and planner coverage are independent copies of captured metadata", async () => {
+  const { candidate, verified } = await prepare();
+  const before = candidate.transferPlan(verified, limits());
+  const changed = candidate.transferPlan(verified, limits());
+  const artifact = changed.artifacts[0], request = changed.plan.requests[0];
+  if (!artifact || !request) throw new Error("Expected synthetic request");
+  artifact.path = "untrusted/replacement.zip";
+  artifact.encodedBytes = 1;
+  artifact.covers.length = 0;
+  expect(request).toEqual(before.plan.requests[0]);
+  request.covers.length = 0;
+  changed.artifacts.length = 0;
+  expect(candidate.transferPlan(verified, limits())).toEqual(before);
+});
+test("complete actual verified sets have no selected artifact paths or fabricated requests", async () => {
+  const { candidate } = await prepare();
+  expect(candidate.transferPlan(candidate.plan().required.map(object => object.sha256), limits()).artifacts).toEqual([]);
+});
 test("oversized optional bundles are reported explicitly while eligible bundles and individual objects remain usable", async () => {
   const { fixture, candidate, verified } = await prepare();
   const entries = Object.entries(fixture.bundles).sort((a, b) => a[1].encodedBytes - b[1].encodedBytes);
@@ -41,6 +84,9 @@ test("oversized optional bundles are reported explicitly while eligible bundles 
   expect(result.plan.requests.filter(request => request.kind === "bundle").map(request => request.sha256)).toEqual([small[0]]);
   expect(result.plan.requests.filter(request => request.kind === "object").map(request => request.sha256).sort())
     .toEqual(large[1].members);
+  expect(result.artifacts).toEqual(result.plan.requests.map(request => ({
+    ...request, path: request.kind === "bundle" ? `bundles/${request.sha256}.zip` : `objects/${request.sha256}.json.gz`,
+  })));
   const below = candidate.transferPlan(verified, { ...limits(), maxBundleEncodedBytes: small[1].encodedBytes - 1 });
   expect(below.plan.requests.every(request => request.kind === "object")).toBe(true);
   expect(below.excludedBundles).toHaveLength(2);
@@ -105,6 +151,8 @@ test("unknown optional policy and bundle fields remain inert through strict plan
   });
   const candidate = await inspectSnapshot(fixture.descriptorBytes, read(fixture), snapshotLimits());
   expect(candidate.transferPlan([], limits()).plan.requests.filter(request => request.kind === "bundle")).toHaveLength(2);
+  expect(candidate.transferPlan([], limits()).artifacts.every(artifact =>
+    Object.keys(artifact).sort().join(",") === "covers,encodedBytes,kind,path,sha256")).toBe(true);
 });
 test("fresh recovered candidates retain identical deterministic transfer planning", async () => {
   const { fixture, candidate, verified } = await prepare();

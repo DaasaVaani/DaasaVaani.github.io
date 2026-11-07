@@ -991,12 +991,12 @@ test(`actual selected strict ZIP archives via ${transport} checkpoint only verif
       }
       const plan = candidate.transferPlan(verified, { maxBundleMembers: 100, maxBundleEncodedBytes: 32 * 1024 * 1024,
         maxExtraBytes: 8 * 1024 * 1024, maxExtraPercent: 25, maxTransferEncodedBytes: 131072 });
-      for (const request of plan.plan.requests) {
+      for (const request of plan.artifacts) {
         if (request.kind !== "bundle") throw new Error("Synthetic fixture must select its actual archives");
         const bytes = archives[request.sha256];
         if (!bytes) throw new Error("Missing selected synthetic archive");
         const artifact = {
-          url: `https://snapshot.invalid/bundles/${request.sha256}.zip`, sha256: request.sha256,
+          url: `https://snapshot.invalid/${request.path}`, sha256: request.sha256,
           encodedBytes: request.encodedBytes,
         };
         const httpLimits = { maxEncodedBytes: 32 * 1024 * 1024, noProgressTimeoutMs: 30000, totalTimeoutMs: 1200000 };
@@ -1011,7 +1011,7 @@ test(`actual selected strict ZIP archives via ${transport} checkpoint only verif
         for (const member of members) await writer.putObject(member.sha256, member.bytes);
       }
       await writer.activate((plan, read) => candidate.validate(plan, read));
-      return plan.plan.requests;
+      return plan.artifacts;
     });
     const active = await store.snapshot();
     const original = await store.withActiveReader(async (plan, read) => {
@@ -1025,6 +1025,7 @@ test(`actual selected strict ZIP archives via ${transport} checkpoint only verif
     archives: Object.fromEntries(Object.entries(fixture.archives).map(([hash, bytes]) => [hash, [...bytes]])) });
   expect(result.requests).toHaveLength(2);
   expect(result.requests.every(request => request.kind === "bundle")).toBe(true);
+  expect(result.requests.every(request => request.path === fixture.bundles[request.sha256]?.path)).toBe(true);
   expect(result.active.control.active).toEqual({ sequence: 1, manifestSha256: fixture.descriptor.manifest.sha256 });
   expect(result.active.control.target).toBeNull();
   expect(result.original).toEqual(snapshotPacket(fixture).objects);

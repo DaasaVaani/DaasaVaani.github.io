@@ -107,6 +107,24 @@ It is a synchronous metadata-only operation, not a downloader, ZIP decoder,
 checkpoint, activation or readiness test. It makes no requests or personal/content
 writes. Both newly admitted and recovered candidates offer the same operation.
 
+The result retains the unchanged portable `plan`, effective policy, adjustment
+and excluded-bundle reporting. Its additional `artifacts` array binds every
+selected request in planner order to **captured admitted metadata**, with exactly
+`{ kind, sha256, encodedBytes, covers, path }`. Bundle paths come from the manifest;
+policy/item paths from their original object references; the remote manifest path
+comes from the original descriptor reference, not a reconstructed hash template.
+No remote path is fabricated for locally rooted descriptor evidence.
+A complete verified set produces no artifacts; excluded ZIPs cannot reappear
+in this projection. Both arrays and each coverage array are independent copies;
+mutating a returned artifact cannot change the plan or future candidates.
+Unknown optional metadata does not enter the artifact shape.
+
+Paths are publication-relative identities, not authenticated URLs or a downloader.
+The future coordinator must establish the genuine configured publication origin
+and resolve these admitted paths under that origin before the direct HTTPS runner.
+This API makes no network/storage write, changes no retry/budget behavior and
+does not prove that caller-supplied verified hashes were actually read.
+
 Every call explicitly supplies `SnapshotTransferLimits`:
 
 - positive safe `maxBundleMembers`, `maxBundleEncodedBytes` and
