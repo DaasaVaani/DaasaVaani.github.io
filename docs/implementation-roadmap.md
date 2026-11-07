@@ -94,6 +94,13 @@ Explicit original-evidence reconstruction plus staging can now share one writer
 scope through the [atomic resume API](snapshot-validation.md#atomic-explicit-transfer-resume).
 Fresh-page tests supply no remembered candidate/current descriptor; unsupported,
 missing or corrupt evidence fails without a request, restart or active replacement.
+The approved next live milestone is a visibly limited canonical-text offline
+reader, while the full multilingual/search/verse requirements remain unchanged.
+An [isolated pinned-reader adapter](snapshot-validation.md#isolated-pinned-canonical-reader)
+now reconstructs actual stored metadata and serves copied catalog/selected items
+with exact displayed-version binding and no damage/network fallback. Live
+sequenced publication/state initialization, settings, consent/storage UI and
+application enablement still must close before the milestone becomes usable.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

@@ -24,6 +24,12 @@ support repeated use without accounts or tracking.
 This document defines product behavior, content ownership boundaries, automation,
 and acceptance criteria. It does not select frameworks or implement the product.
 Requirement IDs are stable references for implementation and testing.
+The separately approved staged offline milestone is a clearly labelled, limited
+canonical Kannada text reader. It does not replace the complete offline scope
+below or claim multilingual/search/verse/readiness conformance. Its live
+publication/configuration/consent/storage gates must close before enablement;
+the [current implementation boundary](snapshot-validation.md#isolated-pinned-canonical-reader)
+remains isolated from the application.
 The [design decision record](design-decisions.md) distinguishes selected
 technical directions from unresolved contracts and unverified implementation.
 

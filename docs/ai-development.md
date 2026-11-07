@@ -87,6 +87,12 @@ separate; no production app import, consent or automatic updates are enabled.
 The [explicit atomic resume API](snapshot-validation.md#atomic-explicit-transfer-resume)
 reconstructs from stored original evidence and stages under the same writer
 scope; it never consults a feed or silently restarts missing/unsupported evidence.
+The owner-approved next live milestone is explicitly limited canonical-text
+offline reading; the full approved product scope remains unchanged. Its isolated
+[active-reader adapter](snapshot-validation.md#isolated-pinned-canonical-reader)
+reconstructs actual stored metadata and reads copied catalog/one bounded item
+under active pins, refusing stale displayed identities and damage without network
+fallback. No app import or live unsequenced-feed conversion is enabled.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.

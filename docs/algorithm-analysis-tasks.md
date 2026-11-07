@@ -481,6 +481,14 @@ evidence is not established.
   delayed-acquisition rechecks, explicit departure and retained-reader refusal.
   No timeout steals a live pin. It verifies encoded bytes but supplies no degraded
   readiness/audit or complete decoded capability adapter.
+  The [isolated pinned canonical reader](snapshot-validation.md#isolated-pinned-canonical-reader)
+  additionally repeats bounded original metadata reconstruction under an active
+  reader pin and decodes only one explicitly selected item. Catalog output copies
+  O(N) entries/tags; item selection uses a captured UUID map and bounded decoding.
+  Metadata/gzip/hash copies and original descriptor retention remain additional
+  memory/I/O, with no verified parsed-cache shortcut. Displayed-reference
+  comparison precedes reads to prevent silent cross-version selection. This is
+  not full cross-item validation, global audit or a degraded-readiness flag.
 - **Analysis needed:** integrate the approved reachability rules across production
   consumers/jobs, including native reader lifetime and fencing races. Define audit
   scheduling, verification-cache validity and capability/readiness dependency

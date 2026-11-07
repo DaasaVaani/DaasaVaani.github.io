@@ -568,6 +568,54 @@ active snapshot and committed progress. No automatic deletion or fallback occurs
 If essential metadata was never checkpointed, offline reconstruction is genuinely
 incomplete; this API reports the missing bytes rather than guessing them.
 
+## Isolated pinned canonical reader
+
+The approved next user-visible milestone is an **explicitly limited canonical
+Kannada text offline reader**, not the complete multilingual/search/verse package.
+This approval does not activate publication, production configuration or UI.
+Full product requirements and all source/publication/consent/storage/release
+gates remain unchanged. The real live feed is still legacy/unsequenced; no
+adapter invents a sequence or treats it as an activated staged snapshot.
+
+[The isolated reader](../src/snapshot-reader.ts) supplies the bounded stored-read
+prerequisite for that milestone, mapping to partial UX-01/03 and OFF-07/08/09/16
+with QUAL-06. It is not imported by the application and makes **no requests,
+checkpoints, repairs, activation, personal writes or readiness claims**.
+There are no production database names, limits or fallback defaults.
+
+- `readActiveSnapshotCatalog(store, validationLimits, signal?)` holds the store's
+  actual active-reader pin while reconstructing the candidate from original
+  descriptor/manifest/policy bytes. It returns exactly `{ reference, entries }`;
+  entries are copied known catalog fields in admitted UUID order. It reads no
+  item bodies and is not a completeness/audit certificate.
+- `readActiveSnapshotItem(store, expectedReference, lyricId, validationLimits,
+  signal?)` captures/validates the displayed catalog's exact sequence/manifest
+  identity before active-pin acquisition. If the selected active reference
+  changed, fail `stale` **before reading bytes**, rather than silently loading the
+  same UUID from another version. Under the active pin, reconstruct from original
+  metadata, then read/decode only the selected item's original bytes.
+
+Both use the exact strict validation-bound capture and actual scoped byte checks.
+Missing active content remains `unprepared`; metadata/item damage, unsupported
+evidence or capability, decoder errors and cancellation propagate, never trigger
+a network fallback or successful empty result. An absent/malformed selected
+identity reports `unprepared` without an item lookup or invented text.
+Use a refreshed explicit catalog selection after a stale error; do not silently
+substitute the current feed/version. The native store owns late-read/cancellation
+guards and pin-safe removal/collection.
+
+The admitted candidate additionally exposes `catalog()` and
+`readItem(lyricId, readEncoded, signal?)` for these operations. Catalog fields and
+item tags/lines are independent known-field projections; unknown optional
+metadata stays inert and absent from the returned shape. Requested items retain
+literal title/tags/Kannada/layout/line IDs, with actual encoded length/SHA, complete
+bounded gzip/canonical JSON, schema and item/catalog binding rechecked through
+the existing decoder. These narrower projections do **not** replace complete
+`candidate.validate` before initial activation or prove fonts/verses/search,
+linguistic approval, system-wide degraded readiness or cross-item validity alone.
+Repeated reader calls intentionally repeat bounded metadata verification; no
+unvalidated parsed cache is installed.
+
 ## Provenance and remaining gates
 
 Byte/schema validity also does not authenticate a publisher's protected ledger,

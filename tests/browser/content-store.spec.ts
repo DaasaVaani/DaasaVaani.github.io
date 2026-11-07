@@ -1132,6 +1132,95 @@ test(`isolated serial staging via ${mode} verifies native progress, preserves ac
 });
 }
 
+for (const mode of ["valid", "metadata-damage", "item-damage", "stale-catalog"] as const) {
+test(`pinned canonical snapshot reading offline with ${mode} never mixes versions, fetches lyrics or writes personal state`, async ({ page, context }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), initial = snapshotFixture(), replacement = snapshotFixture({ sequence: 2 });
+  const settings = config(), packet = snapshotPacket(initial), nextPacket = snapshotPacket(replacement);
+  const opened = await page.evaluate(async ({ config, packet, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    const candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async sha256 => {
+      const bytes = packet.objects[sha256];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(candidate.plan());
+      for (const [sha256, bytes] of Object.entries(packet.objects)) await writer.putObject(sha256, new Uint8Array(bytes));
+      await writer.activate((plan, read) => candidate.validate(plan, read));
+    });
+    const catalog = await backend.readActiveSnapshotCatalog(store, limits);
+    const before = await store.snapshot();
+    store.close();
+    return { catalog, before };
+  }, { config: settings, packet, limits: snapshotLimits() });
+  const selected = initial.manifest.catalog[0], expectedItem = initial.items[0];
+  if (!selected || !expectedItem) throw new Error("Missing synthetic selection");
+  if (mode === "stale-catalog") {
+    await page.evaluate(async ({ config, packet, limits }) => {
+      const path = "/isolated-content-store.js";
+      const backend: typeof import("../isolated-content") = await import(path);
+      const store = await backend.ContentStore.open(config);
+      const candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async sha256 => {
+        const bytes = packet.objects[sha256];
+        if (!bytes) throw new Error("Missing synthetic metadata");
+        return new Uint8Array(bytes);
+      }, limits);
+      await store.withWriter((await store.snapshot()).control, async writer => {
+        await writer.begin(candidate.plan());
+        for (const [sha256, bytes] of Object.entries(packet.objects)) await writer.putObject(sha256, new Uint8Array(bytes));
+        await writer.activate((plan, read) => candidate.validate(plan, read));
+      });
+      store.close();
+    }, { config: settings, packet: nextPacket, limits: snapshotLimits() });
+  } else if (mode !== "valid") {
+    const sha256 = mode === "metadata-damage" ? initial.descriptorHash : selected.item;
+    const bytes = initial.objects[sha256];
+    if (!bytes) throw new Error("Missing synthetic damage target");
+    await page.evaluate(async ({ databaseName, sha256, length }) => {
+      const database = await new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open(databaseName);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      await new Promise<void>((resolve, reject) => {
+        const transaction = database.transaction("objects", "readwrite");
+        transaction.objectStore("objects").put({ sha256, encodedBytes: length, bytes: new Blob([new Uint8Array(length)]) });
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+      });
+      database.close();
+    }, { databaseName: settings.databaseName, sha256, length: bytes.length });
+  }
+  const network: string[] = [];
+  page.on("request", request => { if (/\/library\/|\/objects\//.test(request.url())) network.push(request.url()); });
+  await context.setOffline(true);
+  const result = await page.evaluate(async ({ config, reference, lyricId, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config), before = await store.snapshot();
+    let failure = "", item: Awaited<ReturnType<typeof backend.readActiveSnapshotItem>> | null = null;
+    try { item = await backend.readActiveSnapshotItem(store, reference, lyricId, limits); }
+    catch (reason) {
+      if (!(reason instanceof backend.ContentError)) throw reason;
+      failure = reason.code;
+    }
+    const after = await store.snapshot();
+    store.close();
+    return { failure, item, before, after };
+  }, { config: settings, reference: opened.catalog.reference, lyricId: selected.lyricId, limits: snapshotLimits() });
+  expect(result.before).toEqual(result.after);
+  expect(opened.catalog.entries).toEqual(initial.manifest.catalog);
+  expect(result.failure).toBe(mode === "valid" ? "" : mode === "stale-catalog" ? "stale" : "integrity");
+  expect(result.item).toEqual(mode === "valid" ? expectedItem : null);
+  expect(network).toEqual([]);
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
+}
+
 for (const evidence of ["valid", "missing", "corrupt"] as const) {
 test(`fresh-page atomic transfer resume uses only ${evidence} retained evidence and never a current feed or remembered candidate`, async ({ page, context }) => {
   await setup(page);

@@ -92,6 +92,11 @@ The [explicit atomic resume helper](snapshot-validation.md#atomic-explicit-trans
 uses one writer claim for original metadata reconstruction and missing-artifact
 staging, with no lock gap/nested writer or current-feed input. Returned candidates
 are process-local validators, not readiness or permission to omit full activation.
+The [isolated canonical reader](snapshot-validation.md#isolated-pinned-canonical-reader)
+uses `withActiveReader` for both original metadata reconstruction and bounded
+selected-item decoding. It checks the displayed exact snapshot before reading,
+never writes/repairs/fetches and does not treat an active receipt as decoded proof.
+Store pin/late-read/cancellation guards remain the physical lifetime authority.
 
 Every mutation builds the prospective Shared candidate inside one IndexedDB
 read/write transaction, validates its complete logical limits and captured fence,

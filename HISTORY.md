@@ -1,5 +1,48 @@
 # Documentation history
 
+## 2026-11-07: approved limited offline milestone and pinned canonical reader
+
+- Owner explicitly selected the clearly limited prelaunch canonical-text offline
+  milestone rather than waiting to expose any offline reading until the entire
+  multilingual/search/verse package is supported. Full approved requirements,
+  visible limitations and all publication/consent/storage/release gates remain;
+  this is not permission to claim complete offline readiness or fabricate a
+  sequence for the current unsequenced live feed.
+- Atomic recovery `2c0d54b2a10256333f4790ea2df2d4d9f313eccf` passed exact hosted
+  Repository checks/deployment 42350863468 with 369 units/597 browsers (5.1m),
+  and CodeQL 42350863561. Live HTTP200 root/open/JavaScript matched exact Pages
+  artifact 13565478146: root/open SHA256
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  `/assets/index-Ca_7nR8A.js` SHA256
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned named tar/empty directory only; main exact/clean with no unmerged refs.
+- Read-only publisher inspection confirmed clean Library main
+  697069e9e2f7e8e1d260dd8e730f6ba91815b9c0 and no real publication-state branch.
+  Its live legacy manifest remains
+  0b48b8b5ce5c1c1546f19746eae73c0a9248c65ff3dba97ff0b57db2ff8c0a7d.
+  Existing metadata-only baseline review covers 871 identities, with complete
+  original audit/no missing or unresolved objects, but remains review-required;
+  no baseline/anchor approval, state initialization, protection change or Library
+  source/attribution modification was inferred.
+- Continued with an isolated active-reader adapter rather than enable the app
+  against invented sequenced evidence. Added copied known catalog/item projections
+  using the existing bounded decoder and a captured UUID map. Active reads
+  reconstruct original metadata under the native pin, and selected item reads
+  bind the displayed exact snapshot before byte work. Missing/damaged/stale data
+  fails explicitly, with no network fallback, repair, activation or personal write.
+- `npm test -- snapshot-reader snapshot-validation snapshot-staging --maxWorkers=1`
+  passed all 79 focused units; `npx tsc --noEmit` passed. Native `content-store`
+  browsers passed 117 cases across every layout (2.3m), including fresh build/
+  types/fixture publication and offline valid/damaged/stale pinned-reader paths.
+- Final `npm test -- --maxWorkers=1` passed 380 units in 26 files.
+  With the existing pinned fixture-publisher root,
+  `node node_modules\@playwright\test\cli.js test --workers=1` passed all 609
+  browsers across three projects (10.4m), with fresh production build, strict
+  TypeScript and fixture publication. The documentation validator passed 12
+  changed Markdown files/all 153 unique requirement IDs; strict YAML passed
+  all four tracked files; actionlint/ShellCheck and staged/unstaged whitespace
+  passed. No dependency, Library, Shared-pin or Android change was required.
+
 ## 2026-11-07: explicit single-fence retained transfer recovery
 
 - Continued after serial staging published as

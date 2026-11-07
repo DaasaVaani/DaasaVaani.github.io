@@ -9,8 +9,8 @@ import type { DownloadRequest } from "../shared/types/download-plan";
 import { admitSnapshotZipStore } from "../shared/tools/snapshot-zip-consumer.mjs";
 import type { AdmittedSnapshotZipStoreMember } from "../shared/tools/snapshot-zip-consumer.mjs";
 import type { ContentPlan, ContentObjectReceipt } from "../shared/types/content";
-import type { LyricObjectReference } from "../shared/types/lyrics";
-import type { SnapshotManifest } from "../shared/types/snapshot";
+import type { LyricItem, LyricObjectReference } from "../shared/types/lyrics";
+import type { SnapshotCatalogEntry, SnapshotManifest } from "../shared/types/snapshot";
 import type { ContentReader } from "./content-store";
 import { encodedSha256 } from "./encoded-bytes";
 import { TransferError } from "./list-transfer-types";
@@ -34,6 +34,8 @@ export interface SnapshotValidationLimits {
 }
 export interface SnapshotCandidate {
   plan(): ContentPlan;
+  catalog(): SnapshotCatalogEntry[];
+  readItem(lyricId: string, read: ContentReader, signal?: AbortSignal): Promise<LyricItem>;
   metadataObjects(): { sha256: string; bytes: Uint8Array }[];
   transferPlan(verified: readonly string[], limits: SnapshotTransferLimits): SnapshotTransferPlan;
   admitBundle(sha256: string, bytes: Uint8Array, limits: SnapshotBundleLimits,
@@ -284,9 +286,28 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
     { sha256: descriptor.manifest.sha256, bytes: manifestObject.bytes },
     { sha256: manifest.policy, bytes: policyObject.bytes },
   ];
+  const catalog = new Map(manifest.catalog.map(entry => [entry.lyricId, entry]));
   signal?.throwIfAborted();
   return Object.freeze({
     plan: () => structuredClone(plan),
+    catalog: () => manifest.catalog.map(entry => ({
+      lyricId: entry.lyricId, title: entry.title, tags: [...entry.tags], item: entry.item,
+      firstPublishedAt: entry.firstPublishedAt, changedAt: entry.changedAt,
+    })),
+    readItem: async (lyricId: string, currentRead: ContentReader, currentSignal?: AbortSignal) => {
+      currentSignal?.throwIfAborted();
+      const entry = catalog.get(lyricId), object = entry && manifest.objects[entry.item];
+      if (!entry || !object) throw new ContentError("unprepared", "Requested lyric is absent from the pinned snapshot");
+      const item = await decode(currentRead, { ...object, sha256: entry.item }, limits.chunkBytes, currentSignal);
+      assertConsumerItem(item.value, entry);
+      currentSignal?.throwIfAborted();
+      return {
+        format: item.value.format, formatVersion: item.value.formatVersion, canonicalScript: item.value.canonicalScript,
+        lyricId: item.value.lyricId, title: item.value.title, tags: [...item.value.tags],
+        lines: item.value.lines.map(line => line.kind === "line"
+          ? { kind: line.kind, lineId: line.lineId, text: line.text } : { kind: line.kind, text: line.text }),
+      };
+    },
     metadataObjects: () => metadata.map(object => ({ sha256: object.sha256, bytes: new Uint8Array(object.bytes) })),
     transferPlan: (verified: readonly string[], transferLimits: SnapshotTransferLimits) =>
       transferPlan(manifest, descriptor.manifest, policy.transferPlanning, original.required, verified, transferLimits),

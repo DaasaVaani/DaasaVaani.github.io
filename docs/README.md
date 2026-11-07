@@ -49,6 +49,9 @@ connects actual verified progress, selected requests and fenced checkpoints.
 It preserves previous active content and requires separate full validation/activation.
 Its [atomic explicit resume](snapshot-validation.md#atomic-explicit-transfer-resume)
 reconstructs from original stored evidence under the same complete writer scope.
+The [isolated pinned canonical reader](snapshot-validation.md#isolated-pinned-canonical-reader)
+owns copied catalog/single-item projections under actual active-reader pins,
+without network fallback or application enablement.
 
 ## Owners
 

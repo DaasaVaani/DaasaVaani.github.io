@@ -80,6 +80,12 @@ Its [atomic resume entrypoint](snapshot-validation.md#atomic-explicit-transfer-r
 admits captured validation bounds before claiming the writer, reconstructs the
 retained candidate using scoped stored-byte reads and stages within that same
 lock. Missing/unsupported/corrupt evidence is never replaced with a current feed.
+The [isolated pinned reader](snapshot-validation.md#isolated-pinned-canonical-reader)
+reconstructs original metadata within the active store's reader pin and exposes
+copied catalog/selected-item projections. Item reads require the displayed exact
+snapshot reference, refusing an intervening activation before byte reads.
+Actual bounded decoding/item binding remains mandatory; no current-feed fallback,
+personal writes or application readiness integration is supplied.
 
 ## Data flow
 

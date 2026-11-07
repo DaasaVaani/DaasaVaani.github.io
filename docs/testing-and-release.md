@@ -229,6 +229,16 @@ new page receiving only database configuration and validation bounds, not a feed
 descriptor or remembered candidate. Valid retained-only resume fetches missing
 artifacts and separately validates/activates; missing/corrupt original descriptor
 bytes fail before requesting and preserve all stored progress/active/personal data.
+`npm test -- snapshot-reader snapshot-validation snapshot-staging --maxWorkers=1`
+is an incremental pinned-reader check: copied known-field catalog/item shapes,
+literal selected text, metadata-only catalog and selected-item-only body reads,
+captured displayed identity/limits, stale/absent/damaged evidence, inert optional
+fields and cancellation. Native `content-store` browser cases activate real
+synthetic snapshots, turn the browser offline and exercise valid literal reads,
+metadata/item damage and an intervening activation after catalog selection.
+They require explicit failures, no lyric requests and unchanged content/personal
+state during reads. These checks do not enable live publication or prove fonts,
+global audit/degraded readiness, full multilingual/search/verse support or release.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

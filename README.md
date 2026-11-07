@@ -55,6 +55,11 @@ under one writer fence. Success leaves a paused target for separate full validat
 activation; no app import, live consent or readiness UI is enabled.
 Its explicit retained-only resume entrypoint reconstructs metadata and stages
 missing originals under that same fence, with no feed lookup or silent restart.
+The [isolated pinned reader](docs/snapshot-validation.md#isolated-pinned-canonical-reader)
+reconstructs actual stored metadata under an active-reader pin, then serves a
+copied catalog or one bounded canonical item. Exact displayed snapshot binding
+prevents version mixing; damage never falls back to the network. The approved
+limited canonical-text offline milestone is not yet enabled in the application.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an
