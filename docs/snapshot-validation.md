@@ -408,6 +408,82 @@ concurrency, establish consent and preserve target/publication identity under it
 writer fence. No automatic refund, replacement consent, background continuation,
 production defaults or readiness claim is supplied by the ledger.
 
+## Isolated serial transfer staging
+
+[stageSnapshotTransfer](../src/snapshot-staging.ts) connects the admitted candidate,
+durable store, selected paths, actual ZIP admission and bounded retry runner. This
+is an OFF-02/04/06/07/15 and QUAL-06 prerequisite, not application integration,
+automatic download consent or complete production offline support.
+
+Call `stageSnapshotTransfer(store, expected, candidate, options, budget, signal?)`
+with an actual inspected/reconstructed candidate, the captured store fence and
+one explicit `SnapshotAttemptBudget`. Exact `SnapshotStagingOptions` contain:
+
+- `publicationBaseUrl`: trusted HTTPS publication directory, ending in `/`,
+  without credentials, any query or fragment (including empty `?`/`#`);
+- `transferLimits`: the exact five planner limits defined above;
+- `attemptOptions`: the exact five attempt-runner fields defined above.
+
+These settings and nested retry/backoff/HTTP limits are captured and validated
+before entering the writer; no implicit defaults or mutable delayed configuration
+are used. Publication-origin permission/provenance is the caller's obligation;
+an HTTPS address and valid bytes do not authenticate the publisher. Production
+names/limits/host values still belong in owning settings before live integration.
+
+The helper holds one whole-operation `withWriter` scope and uses **one request
+and one awaited checkpoint at a time**. It has no concurrent tasks to detach or
+drain, request pool, timeout lock release or hidden fallback:
+
+1. Begin the candidate target if absent, or require the retained target's exact
+   sequence/manifest/required hash-length set. Never replace a different target,
+   consult a newer feed, delete progress or reinterpret an old plan.
+2. Use metadata receipts only to identify which required objects might exist.
+   Read each through the writer's actual length/SHA/fence checks before marking it
+   verified. Corrupt claimed progress fails explicitly; it is not silently
+   ignored, overwritten, repaired or redownloaded.
+3. Checkpoint missing original descriptor/manifest/policy seeds from the admitted
+   candidate and read them back. Their acquisition occurred before this staging
+   call; do not pretend its reservation counters include their earlier transfer.
+4. Compute the remaining plan from these actual verified hashes. Resolve exact
+   selected paths under the explicit directory, refuse escaping origins/paths/
+   queries/fragments, and preflight **all** selected HTTP identities/limits. Check
+   that one complete attempt per selected artifact fits the remaining shared
+   allowance and each artifact's local attempt allowance before any request.
+   Equality passes. This affordability check is not a promised reservation for
+   future work: retries or other users of the same ledger can consume headroom;
+   each request still reserves synchronously and may explicitly refuse later.
+5. Mark downloading, serially fetch/retry each captured identity using the same
+   budget, then checkpoint only whole verified original objects. ZIPs undergo
+   complete framing/CRC/archive/member proof before any member checkpoint;
+   already verified members are not rewritten. Never persist a ZIP digest,
+   partial response, decoded lyric or fabricated descriptor object.
+6. On success leave the complete target **paused**, not active or ready. Return
+   exactly `{ transfer, fetchedArtifacts, attempts, reservedEncodedBytes }`;
+   counts/reservations describe this call's requests, not reused bytes, earlier
+   discovery or physical bandwidth. An already complete verified target returns
+   zero requests/attempts/reservations but is still not activated.
+
+All errors/cancellation propagate. The store drains its operations and attempts
+the durable paused checkpoint while retaining the lock; distinct pause/drain
+failures stay explicit. A successfully checkpointed earlier artifact remains
+available after a later request/storage failure. No later request starts after
+cancellation or checkpoint failure. The previous active snapshot and personal
+database are not replaced, removed or mutated by staging.
+
+After explicit successful staging, activation remains a separate fenced writer
+operation: `writer.activate((plan, read) => candidate.validate(plan, read, signal))`.
+The full actual decoder/schema/global-identity validation is mandatory even when
+every byte receipt exists. A validation failure keeps the old active snapshot.
+Fresh-process explicit resume reconstructs the candidate through `resumeSnapshot`
+from retained original metadata, then calls the same staging helper with a fresh
+expected fence and explicit authorized allowance. Reconstructing or reopening
+does not grant new consent or refund previous reservations.
+
+Serial staging deliberately does not select production concurrency, integrate
+progress/cancel/removal UI, acquire descriptors, audit/repair damage, change reader
+precedence, establish cross-tab persisted network accounting or enable automatic
+continuation after browser closure.
+
 ## Durable evidence and recovery order
 
 The separate [bounded attempt runner](#isolated-cancellable-attempt-runner) can
@@ -434,9 +510,10 @@ reconstructs it from actual retained evidence in a fresh process:
    with the original exact decoded length, policy verification and all semantic
    bindings. Require the reconstructed plan to equal the retained plan, including
    sequence and manifest identity.
-5. Download/checkpoint missing original items only through a future explicit
-   transport adapter, then use the reconstructed candidate's actual `validate`
-   activation callback. Recovery alone never activates a partial snapshot.
+5. Explicitly [stage missing originals](#isolated-serial-transfer-staging) with
+   the reconstructed candidate and trusted operation inputs, then separately use
+   its actual `validate` activation callback. Recovery or staging alone never
+   activates a partial snapshot.
 
 Inside `withWriter`, use `sha256 => writer.readObject(sha256)` for retained target
 reads. This verifies actual bytes and the captured fence before/after reading

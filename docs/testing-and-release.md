@@ -210,6 +210,17 @@ complete verified sets and independently recovered candidates. Mutation of artif
 paths/lengths/coverage cannot alter planner results or captured evidence. Actual
 native ZIP tests resolve the admitted path rather than reconstructing it from a
 digest, retaining full decoder activation and personal-data preservation.
+`npm test -- snapshot-staging snapshot-attempts snapshot-http snapshot-retry --maxWorkers=1`
+is an incremental staging check. It uses actual admitted/gzip/ZIP bytes with a
+test-only scoped store double to check choreography: exact/one-byte-less allowance,
+corrupt claimed progress, exact retained target, copied nested configuration,
+invalid publication directory/path escape, serial checkpoint failure and native
+cancellation identity. These units do not prove physical IndexedDB/Web Locks.
+The existing `content-store` browser command additionally tests staging through
+real native storage/locks and HTTPS requests: ZIP/individual/retry transfers,
+interrupted later-artifact recovery from retained metadata, capacity/cancellation/
+integrity failure preserving the old reader and all personal data, no ZIP storage,
+paused-only staging completion and separate complete decoder activation.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

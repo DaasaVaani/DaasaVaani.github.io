@@ -84,6 +84,12 @@ coordination and the complete selected-transfer scheduler remain open.
 Selected request identities now include exact publication-relative paths from
 captured admitted descriptor/manifest metadata, including original fallback and
 recovered candidates. Genuine host binding and live scheduling remain open.
+An [isolated serial staging coordinator](snapshot-validation.md#isolated-serial-transfer-staging)
+now connects explicit HTTPS host inputs, actual-byte progress verification,
+shared attempt allowance and selected artifact/original checkpoints inside one
+writer scope. Successful transfer deliberately remains paused, not active/ready;
+complete validator activation is separate. Production host provenance/configuration,
+consent/progress UI, concurrency policy and live reader integration remain open.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

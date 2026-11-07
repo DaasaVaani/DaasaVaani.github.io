@@ -1036,6 +1036,170 @@ test(`actual selected strict ZIP archives via ${transport} checkpoint only verif
 });
 }
 
+for (const mode of ["zip", "individual", "resume", "retry"] as const) {
+test(`isolated serial staging via ${mode} verifies native progress, preserves active readers and requires separate full activation`, async ({ page }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), next = actualBundledSnapshotFixture({ sequence: 2 });
+  const visited: string[] = [];
+  await page.route("https://snapshot.invalid/publication/**", route => {
+    const url = new URL(route.request().url()), sha256 = url.pathname.split("/").pop()?.split(".")[0];
+    const bytes = sha256 && (next.archives[sha256] ?? next.objects[sha256]);
+    if (!sha256 || !bytes) throw new Error("Unexpected synthetic staging request");
+    const first = !visited.includes(url.pathname);
+    visited.push(url.pathname);
+    if (mode === "resume" && visited.length === 2) return route.fulfill({ status: 404,
+      headers: { "Access-Control-Allow-Origin": "*" } });
+    if (mode === "retry" && first) return route.fulfill({ status: 503,
+      headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Expose-Headers": "Retry-After", "Retry-After": "0" } });
+    return route.fulfill({ status: 200, body: Buffer.from(bytes), headers: { "Access-Control-Allow-Origin": "*" } });
+  });
+  const result = await page.evaluate(async ({ config, previous, packet, limits, mode }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    let store = await backend.ContentStore.open(config);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(previous.plan);
+      for (const object of previous.objects) await writer.putObject(object.sha256, new Uint8Array(object.bytes));
+      await writer.activate(async (plan, read) => { for (const object of plan.required) await read(object.sha256); });
+    });
+    let candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async sha256 => {
+      const bytes = packet.objects[sha256];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    const stagingOptions = {
+      publicationBaseUrl: "https://snapshot.invalid/publication/",
+      transferLimits: { maxBundleMembers: mode === "individual" ? 1 : 100, maxBundleEncodedBytes: 32768,
+        maxExtraBytes: 8192, maxExtraPercent: 25, maxTransferEncodedBytes: 131072 },
+      attemptOptions: { httpLimits: { maxEncodedBytes: 32768, noProgressTimeoutMs: 30000, totalTimeoutMs: 120000 },
+        maxAttemptEncodedBytes: 131072, retryAfterReadable: true, isTransientNetworkError: () => false,
+        retryPolicy: { maxAttempts: 2, backoffMs: [0], jitterPercent: 0, maxAutomaticWaitMs: 120000 } },
+    };
+    let interruptedPaths: string[] = [];
+    if (mode === "resume") {
+      interruptedPaths = candidate.transferPlan(candidate.metadataObjects().map(object => object.sha256),
+        stagingOptions.transferLimits).artifacts.map(artifact => `/publication/${artifact.path}`);
+      let interrupted = false;
+      try {
+        await backend.stageSnapshotTransfer(store, (await store.snapshot()).control, candidate,
+          stagingOptions, new backend.SnapshotAttemptBudget(131072));
+      } catch (reason) {
+        if (!(reason instanceof backend.SnapshotAttemptError) || reason.code !== "failed") throw reason;
+        interrupted = true;
+      }
+      if (!interrupted || (await store.snapshot()).control.target?.phase !== "paused") {
+        throw new Error("Synthetic interruption must retain paused progress");
+      }
+      store.close();
+      store = await backend.ContentStore.open(config);
+      const target = (await store.snapshot()).snapshots.find(plan => plan.reference.sequence === 2);
+      if (!target) throw new Error("Missing retained synthetic target");
+      candidate = await store.withWriter((await store.snapshot()).control,
+        writer => backend.resumeSnapshot(target, writer.readObject, limits));
+    }
+    const budget = new backend.SnapshotAttemptBudget(131072);
+    const staged = await backend.stageSnapshotTransfer(store, (await store.snapshot()).control, candidate, stagingOptions, budget);
+    const paused = await store.snapshot();
+    const previousReadable = await store.withActiveReader(async (plan, read) => {
+      for (const object of plan.required) await read(object.sha256);
+      return plan.reference;
+    });
+    const complete = await store.withWriter(paused.control, writer =>
+      writer.activate((plan, read) => candidate.validate(plan, read)));
+    const actual = await store.withActiveReader(async (plan, read) => {
+      const objects: Record<string, number[]> = {};
+      for (const object of plan.required) objects[object.sha256] = [...await read(object.sha256)];
+      return objects;
+    });
+    store.close();
+    return { staged, paused, previousReadable, complete, actual, budget: budget.snapshot(), interruptedPaths };
+  }, { config: config(), previous: fixture(1), packet: snapshotPacket(next), limits: snapshotLimits(), mode });
+  expect(result.paused.control.active).toEqual(fixture(1).plan.reference);
+  expect(result.previousReadable).toEqual(fixture(1).plan.reference);
+  expect(result.paused.control.target).toEqual({ reference: { sequence: 2, manifestSha256: next.descriptor.manifest.sha256 }, phase: "paused" });
+  expect(result.complete.control.active).toEqual({ sequence: 2, manifestSha256: next.descriptor.manifest.sha256 });
+  expect(result.complete.control.target).toBeNull();
+  expect(result.actual).toEqual(snapshotPacket(next).objects);
+  expect(result.paused.objects.some(object => Object.hasOwn(next.archives, object.sha256))).toBe(false);
+  const paths = result.staged.transfer.artifacts.flatMap(artifact => mode === "retry"
+    ? [`/publication/${artifact.path}`, `/publication/${artifact.path}`] : [`/publication/${artifact.path}`]);
+  expect(visited).toEqual([...result.interruptedPaths, ...paths]);
+  if (mode === "resume") expect(result.staged.fetchedArtifacts).toBe(1);
+  expect(result.staged.attempts).toBe(result.staged.fetchedArtifacts * (mode === "retry" ? 2 : 1));
+  expect(result.budget.reservedEncodedBytes).toBe(result.staged.reservedEncodedBytes);
+  expect(result.staged.reservedEncodedBytes).toBe(result.staged.transfer.plan.transferEncodedBytes * (mode === "retry" ? 2 : 1));
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
+}
+
+for (const fault of ["capacity", "cancel", "integrity"] as const) {
+test(`isolated serial staging ${fault} failure pauses its native target without replacing active content or personal data`, async ({ page }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), next = actualBundledSnapshotFixture({ sequence: 2 });
+  const visited: string[] = [];
+  await page.route("https://snapshot.invalid/publication/**", async route => {
+    const sha256 = new URL(route.request().url()).pathname.split("/").pop()?.split(".")[0];
+    const bytes = sha256 && next.archives[sha256];
+    if (!bytes) throw new Error("Unexpected synthetic staging archive");
+    visited.push(route.request().url());
+    if (fault === "cancel") {
+      await page.evaluate(() => window.isolatedAttemptController?.abort(new DOMException("Synthetic departure", "AbortError")));
+      await route.abort();
+    } else await route.fulfill({ status: 200, body: Buffer.from([...bytes].reverse()),
+      headers: { "Access-Control-Allow-Origin": "*" } });
+  });
+  const result = await page.evaluate(async ({ config, previous, packet, limits, fault }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(previous.plan);
+      for (const object of previous.objects) await writer.putObject(object.sha256, new Uint8Array(object.bytes));
+      await writer.activate(async (plan, read) => { for (const object of plan.required) await read(object.sha256); });
+    });
+    const candidate = await backend.inspectSnapshot(new Uint8Array(packet.descriptor), async sha256 => {
+      const bytes = packet.objects[sha256];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    const budget = new backend.SnapshotAttemptBudget(fault === "capacity" ? 1 : 131072);
+    window.isolatedAttemptController = new AbortController();
+    let failure = "";
+    try {
+      await backend.stageSnapshotTransfer(store, (await store.snapshot()).control, candidate, {
+        publicationBaseUrl: "https://snapshot.invalid/publication/",
+        transferLimits: { maxBundleMembers: 100, maxBundleEncodedBytes: 32768, maxExtraBytes: 8192,
+          maxExtraPercent: 25, maxTransferEncodedBytes: 131072 },
+        attemptOptions: { httpLimits: { maxEncodedBytes: 32768, noProgressTimeoutMs: 30000, totalTimeoutMs: 120000 },
+          maxAttemptEncodedBytes: 131072, retryAfterReadable: true, isTransientNetworkError: () => false,
+          retryPolicy: { maxAttempts: 2, backoffMs: [0], jitterPercent: 0, maxAutomaticWaitMs: 120000 } },
+      }, budget, window.isolatedAttemptController.signal);
+    } catch (reason) {
+      if (reason instanceof backend.ContentError || reason instanceof backend.SnapshotAttemptError) failure = reason.code;
+      else if (reason instanceof DOMException) failure = reason.name;
+      else throw reason;
+    } finally { delete window.isolatedAttemptController; }
+    const after = await store.snapshot();
+    const readable = await store.withActiveReader(async (plan, read) => {
+      for (const object of plan.required) await read(object.sha256);
+      return true;
+    });
+    store.close();
+    return { failure, after, readable, budget: budget.snapshot(), metadata: candidate.metadataObjects().map(object => object.sha256) };
+  }, { config: config(), previous: fixture(1), packet: snapshotPacket(next), limits: snapshotLimits(), fault });
+  expect(result.failure).toBe(fault === "capacity" ? "capacity" : fault === "cancel" ? "AbortError" : "failed");
+  expect(result.after.control.active).toEqual(fixture(1).plan.reference);
+  expect(result.after.control.target?.phase).toBe("paused");
+  expect(result.readable).toBe(true);
+  expect(result.after.objects.map(object => object.sha256).sort()).toEqual([...fixture(1).plan.required.map(object => object.sha256),
+    ...result.metadata].sort());
+  expect(visited).toHaveLength(fault === "capacity" ? 0 : 1);
+  expect(result.budget.reservedEncodedBytes).toBe(fault === "capacity" ? 0 :
+    Object.values(next.bundles).find(bundle => visited[0]?.endsWith(bundle.path))?.encodedBytes);
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
+}
+
 test("cancelling native retry backoff durably pauses the target without another request or loss of the active reader", async ({ page }) => {
   await setup(page);
   const personal = await personalSnapshot(page), a = snapshotFixture(), b = snapshotFixture({ sequence: 2 });

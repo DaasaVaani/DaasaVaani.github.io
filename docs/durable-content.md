@@ -82,6 +82,12 @@ can operate inside this scope; it never releases the writer early or checkpoints
 unverified/partial HTTP bytes.
 Multiple runners may share one [in-memory attempt allowance](snapshot-validation.md#shared-attempt-reservation-ledger);
 it does not change database accounting, writer fencing or persisted progress.
+The [isolated serial staging helper](snapshot-validation.md#isolated-serial-transfer-staging)
+owns this complete writer scope, verifies actual retained bytes before reuse and
+serially awaits selected requests/original checkpoints. It never replaces another
+target or activates on transfer completion; success leaves paused progress for
+separate full validation. Existing busy/stale/cancellation/pause-failure behavior
+remains mandatory, with no early writer release or personal-data writes.
 
 Every mutation builds the prospective Shared candidate inside one IndexedDB
 read/write transaction, validates its complete logical limits and captured fence,

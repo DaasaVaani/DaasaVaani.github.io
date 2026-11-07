@@ -44,6 +44,9 @@ The [isolated cancellable runner](snapshot-validation.md#isolated-cancellable-at
 executes bounded retries of one captured artifact, without live snapshot scheduling.
 Its [shared reservation ledger](snapshot-validation.md#shared-attempt-reservation-ledger)
 bounds concurrent same-instance artifact attempts without claiming wire accounting.
+The [isolated serial staging API](snapshot-validation.md#isolated-serial-transfer-staging)
+connects actual verified progress, selected requests and fenced checkpoints.
+It preserves previous active content and requires separate full validation/activation.
 
 ## Owners
 

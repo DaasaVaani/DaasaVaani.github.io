@@ -75,6 +75,11 @@ orchestration or consent; aggregate transport/accounting remains a gate.
 One optional shared in-memory ledger now prevents same-instance concurrent
 artifact reservation double spending. It is not persisted/cross-tab coordination
 or measured bandwidth; production orchestration/accounting remains a gate.
+The isolated staging coordinator uses serial requests/checkpoints under one
+writer fence, actual-byte retained-progress verification and exact selected paths
+under an explicit trusted HTTPS directory. This is an implementation prerequisite,
+not a production concurrency selection. Success leaves a paused target and full
+decoded activation remains separate; live configuration/consent/readiness stay open.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

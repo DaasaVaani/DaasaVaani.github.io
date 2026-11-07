@@ -445,6 +445,15 @@ evidence is not established.
   snapshots. Its synchronous no-await update prevents concurrent promises using
   the same instance from double spending. Reservations remain charged after
   cancellation/failure; no cross-context storage/wire-byte or scheduling proof follows.
+  The [isolated serial staging coordinator](snapshot-validation.md#isolated-serial-transfer-staging)
+  reuses these layers under one writer scope, with actual-byte retained-progress
+  verification and one request/checkpoint at a time. Set/map membership is O(N);
+  actual reads/hashes and serial transactional checkpoint costs additionally
+  scale with object bytes and store metadata. The existing per-checkpoint dataset
+  reads are not a constant-time storage claim. HTTP and ZIP parsing hold only one
+  artifact pipeline at a time, but private/hash/decoder/browser buffers still add
+  memory. Complete transfer leaves paused progress, never a readiness flag.
+  No production concurrency/throughput or physical heap/network proof follows.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

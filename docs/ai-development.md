@@ -79,6 +79,11 @@ attempt reservations and cancellable elapsed-time waits; it still has no live
 app import, consent, snapshot scheduler or production defaults.
 Multiple isolated runners can additionally share an explicit nonrefundable
 in-memory attempt ledger; separate instances/tabs do not share that allowance.
+An [isolated serial staging helper](snapshot-validation.md#isolated-serial-transfer-staging)
+now verifies stored bytes, checkpoints metadata, fetches admitted paths under an
+explicit trusted HTTPS directory and persists only originals. It owns one writer
+scope and leaves the target paused even on success. Complete activation remains
+separate; no production app import, consent or automatic updates are enabled.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.

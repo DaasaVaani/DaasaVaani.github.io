@@ -1,5 +1,5 @@
 import {
-  captureSnapshotHttpRequest, fetchSnapshotArtifact, SnapshotHttpError,
+  captureSnapshotHttpLimits, captureSnapshotHttpRequest, fetchSnapshotArtifact, SnapshotHttpError,
   type SnapshotHttpArtifact, type SnapshotHttpLimits,
 } from "./snapshot-http";
 import { snapshotRetryDecision, type SnapshotRetryPolicy, type SnapshotRetryDecision } from "./snapshot-retry";
@@ -64,21 +64,26 @@ function wait(delayMs: number, signal?: AbortSignal): Promise<void> {
   });
 }
 
-export async function fetchSnapshotWithRetries(input: SnapshotHttpArtifact, options: SnapshotAttemptOptions,
-  signal?: AbortSignal, sharedBudget?: SnapshotAttemptBudget): Promise<SnapshotAttemptResult> {
+export function captureSnapshotAttemptOptions(options: SnapshotAttemptOptions): SnapshotAttemptOptions {
   if (!options || Object.keys(options).sort().join(",") !==
       "httpLimits,isTransientNetworkError,maxAttemptEncodedBytes,retryAfterReadable,retryPolicy" ||
       !Number.isSafeInteger(options.maxAttemptEncodedBytes) || options.maxAttemptEncodedBytes <= 0 ||
       typeof options.retryAfterReadable !== "boolean" || typeof options.isTransientNetworkError !== "function") {
     throw new SnapshotHttpError("invalid", "Explicit attempt budget and retry evidence are required");
   }
+  const httpLimits = captureSnapshotHttpLimits(options.httpLimits);
+  snapshotRetryDecision(undefined, { attempt: 1, nowMs: 0, jitterUnit: 0.5,
+    networkTransient: false, retryAfterReadable: options.retryAfterReadable }, options.retryPolicy);
+  return { ...options, httpLimits, retryPolicy: { ...options.retryPolicy, backoffMs: [...options.retryPolicy.backoffMs] } };
+}
+export async function fetchSnapshotWithRetries(input: SnapshotHttpArtifact, inputOptions: SnapshotAttemptOptions,
+  signal?: AbortSignal, sharedBudget?: SnapshotAttemptBudget): Promise<SnapshotAttemptResult> {
+  const options = captureSnapshotAttemptOptions(inputOptions);
   if (sharedBudget !== undefined && !(sharedBudget instanceof SnapshotAttemptBudget)) {
     throw new SnapshotHttpError("invalid", "Shared reservations require an actual attempt budget");
   }
   const request = captureSnapshotHttpRequest(input, options.httpLimits);
-  snapshotRetryDecision(undefined, { attempt: 1, nowMs: 0, jitterUnit: 0.5,
-    networkTransient: false, retryAfterReadable: options.retryAfterReadable }, options.retryPolicy);
-  const policy = { ...options.retryPolicy, backoffMs: [...options.retryPolicy.backoffMs] };
+  const policy = options.retryPolicy;
   const { maxAttemptEncodedBytes, retryAfterReadable, isTransientNetworkError } = options;
   let attempts = 0, reservedEncodedBytes = 0;
   let previousFailure: unknown;

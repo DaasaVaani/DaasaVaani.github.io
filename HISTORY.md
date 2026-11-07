@@ -1,5 +1,45 @@
 # Documentation history
 
+## 2026-11-07: isolated serial selected-artifact staging
+
+- Continued on clean exact main after selected paths
+  `19b0d61c7f573719d1d4905b4cd47382eed3c1b6` passed exact hosted checks/deployment
+  42324957282 (336 units/567 browsers, 6.5m) and CodeQL 42324956747.
+  Live HTTP200 root/open/JavaScript matched exact Pages artifact 13554094370;
+  root/open SHA256 5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  `/assets/index-Ca_7nR8A.js` SHA256
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the named tar/empty owned directory; main had no unmerged refs.
+- Implemented one isolated serial staging coordinator: exact candidate/retained
+  target binding, actual-byte verified reuse, original metadata checkpoints,
+  explicit trusted HTTPS publication directory, all-selected-request preflight,
+  shared nonrefundable allowance and serial request/original checkpoints under one
+  whole-operation writer fence. Success leaves paused progress, not activation.
+  No production concurrency choice, app import, consent, readiness, source change
+  or consumer pin update accompanies this slice.
+- Extracted existing strict HTTP-limit/attempt-option capture for reuse before
+  writer entry without duplicating validation or issuing fake preflight requests.
+  Existing 118 HTTP/retry/attempt units and strict types passed after extraction.
+  Initial staging unit cancellation assertion evaluated the still-unset signal
+  reason before asynchronous work; changed the fixture to pass an explicit caller
+  AbortError and compare the same identity. Strict types then caught mock generic
+  return erasure/fixture narrowing; retained proper generic store methods and
+  explicit typed fixture branches rather than adding casts. All 135 focused
+  HTTP/retry/attempt/staging units and strict types then passed.
+- First focused native content-store run passed all 96 browser cases across three
+  layouts (2.2m), with fresh production build/strict types/fixture publication.
+  Strengthened resume afterward to interrupt a real later artifact, reopen the
+  database, reconstruct from original stored metadata and stage only missing
+  originals; added path escape and complete per-artifact admission unit cases.
+- Final `npm test -- --maxWorkers=1` passed all 359 units across 25 files.
+  With the configured clean fixture-publisher override,
+  `node node_modules\@playwright\test\cli.js test --workers=1` passed all 588
+  browser cases across every layout (11.4m), including fresh production
+  build/type-check/fixture publication. The session documentation validator passed
+  all 11 changed Markdown files and all 153 requirement IDs; strict locked YAML
+  parsing passed four files; actionlint 1.7.12/ShellCheck 0.11.0 and staged/unstaged
+  `git diff --check` passed. No suite was narrowed, skipped or waived.
+
 ## 2026-11-07: exact selected publication-relative artifact paths
 
 - Continued after shared reservations published as

@@ -17,13 +17,19 @@ export class SnapshotHttpError extends Error {
     this.name = "SnapshotHttpError";
   }
 }
-export function captureSnapshotHttpRequest(artifact: SnapshotHttpArtifact, limits: SnapshotHttpLimits) {
-  if (!artifact || Object.keys(artifact).sort().join(",") !== "encodedBytes,sha256,url" ||
-      typeof artifact.url !== "string" || typeof artifact.sha256 !== "string" || !/^[0-9a-f]{64}$/.test(artifact.sha256) ||
-      !Number.isSafeInteger(artifact.encodedBytes) || artifact.encodedBytes <= 0 ||
-      !limits || Object.keys(limits).sort().join(",") !== "maxEncodedBytes,noProgressTimeoutMs,totalTimeoutMs" ||
+export function captureSnapshotHttpLimits(limits: SnapshotHttpLimits): SnapshotHttpLimits {
+  if (!limits || Object.keys(limits).sort().join(",") !== "maxEncodedBytes,noProgressTimeoutMs,totalTimeoutMs" ||
       Object.values(limits).some(value => !Number.isSafeInteger(value) || value <= 0) ||
       limits.noProgressTimeoutMs > 2147483647 || limits.totalTimeoutMs > 2147483647) {
+    throw new SnapshotHttpError("invalid", "Explicit HTTP safety limits are required");
+  }
+  return { ...limits };
+}
+export function captureSnapshotHttpRequest(artifact: SnapshotHttpArtifact, bounds: SnapshotHttpLimits) {
+  const limits = captureSnapshotHttpLimits(bounds);
+  if (!artifact || Object.keys(artifact).sort().join(",") !== "encodedBytes,sha256,url" ||
+      typeof artifact.url !== "string" || typeof artifact.sha256 !== "string" || !/^[0-9a-f]{64}$/.test(artifact.sha256) ||
+      !Number.isSafeInteger(artifact.encodedBytes) || artifact.encodedBytes <= 0) {
     throw new SnapshotHttpError("invalid", "Explicit artifact identity and HTTP safety limits are required");
   }
   let url: URL;

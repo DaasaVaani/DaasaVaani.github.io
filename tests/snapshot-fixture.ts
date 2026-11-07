@@ -88,7 +88,7 @@ export function snapshotPacket(fixture: ReturnType<typeof snapshotFixture>) {
   return { descriptor: [...fixture.descriptorBytes],
     objects: Object.fromEntries(Object.entries(fixture.objects).map(([hash, bytes]) => [hash, [...bytes]])) };
 }
-type BundleFixtureOptions = Pick<SnapshotFixtureOptions, "manifest" | "policy" | "gzipBytes" | "jsonBytes">;
+type BundleFixtureOptions = Pick<SnapshotFixtureOptions, "sequence" | "manifest" | "policy" | "gzipBytes" | "jsonBytes">;
 export function bundledSnapshotFixture(options: BundleFixtureOptions = {}) {
   const template = snapshotFixture().items[0];
   if (!template) throw new Error("Missing synthetic template");

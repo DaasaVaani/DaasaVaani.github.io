@@ -69,6 +69,13 @@ actual network accounting or production concurrency policy.
 Admitted transfer results also expose exact selected publication-relative paths,
 independent of planner coverage arrays. No URL template, source lookup or origin
 authentication is inferred; the owning coordinator still establishes the host.
+The [isolated serial staging coordinator](snapshot-validation.md#isolated-serial-transfer-staging)
+accepts that explicit trusted HTTPS directory and owns one fenced writer scope.
+It verifies claimed stored progress, checkpoints metadata, preflights the complete
+remaining selection and serially awaits requests and original checkpoints.
+No detached work, concurrent writer mutations or implicit target replacement is
+used. Success leaves the target paused for separate full validator activation;
+live UI/consent, authenticated publication and production settings remain gates.
 
 ## Data flow
 
