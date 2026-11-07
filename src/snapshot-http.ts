@@ -17,7 +17,7 @@ export class SnapshotHttpError extends Error {
     this.name = "SnapshotHttpError";
   }
 }
-function capture(artifact: SnapshotHttpArtifact, limits: SnapshotHttpLimits) {
+export function captureSnapshotHttpRequest(artifact: SnapshotHttpArtifact, limits: SnapshotHttpLimits) {
   if (!artifact || Object.keys(artifact).sort().join(",") !== "encodedBytes,sha256,url" ||
       typeof artifact.url !== "string" || typeof artifact.sha256 !== "string" || !/^[0-9a-f]{64}$/.test(artifact.sha256) ||
       !Number.isSafeInteger(artifact.encodedBytes) || artifact.encodedBytes <= 0 ||
@@ -42,7 +42,7 @@ function capture(artifact: SnapshotHttpArtifact, limits: SnapshotHttpLimits) {
 
 export async function fetchSnapshotArtifact(input: SnapshotHttpArtifact, bounds: SnapshotHttpLimits,
   signal?: AbortSignal): Promise<Uint8Array> {
-  const { artifact, limits } = capture(input, bounds);
+  const { artifact, limits } = captureSnapshotHttpRequest(input, bounds);
   signal?.throwIfAborted();
   const controller = new AbortController();
   const abort = () => controller.abort(signal?.reason);

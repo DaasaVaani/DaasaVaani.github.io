@@ -74,6 +74,9 @@ An isolated direct HTTPS artifact attempt separately enforces caller byte/deadli
 bounds and encoded SHA, with no redirects, automatic retry or application import.
 Its pure retry-decision helper requires explicit clock/jitter/transient/header
 evidence and policy limits, reporting retry/fail/pause without scheduling work.
+The isolated single-artifact runner connects those APIs with explicit conservative
+attempt reservations and cancellable elapsed-time waits; it still has no live
+app import, consent, snapshot scheduler or production defaults.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.

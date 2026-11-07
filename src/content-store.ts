@@ -267,7 +267,7 @@ class ContentWriter implements ContentWriteScope {
     const failures = this.failures.filter(reason => !originalFailure || reason !== originalFailure.reason);
     if (pending.length) failures.unshift(new ContentError("stale", "Writer callback left unawaited operations"));
     if (failures.length) throw new AggregateError(failures, "Content writer scope failed");
-    this.signal?.throwIfAborted();
+    if (!originalFailure || this.signal?.reason !== originalFailure.reason) this.signal?.throwIfAborted();
   }
   private async change(transition: Transition, added?: StoredObject) {
     this.guard();

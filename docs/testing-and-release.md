@@ -190,6 +190,15 @@ weekday validation, malformed/oversized/hidden-header pause, input/overflow refu
 and no clock/random/timer/network side effects. The content-store browser cases
 feed actual native HTTP/redirect/CORS-visible/hidden errors into the real helper
 and verify fail/pause actions with active/personal preservation and no retry request.
+`npm test -- snapshot-attempts snapshot-retry snapshot-http --maxWorkers=1` adds
+actual serial retry-runner coverage: complete attempt exhaustion, same-identity
+requests, backoff/server waits never shortened, cancellation and cleanup, exact
+full-length reservation equality/-1, pre-request refusal, configuration capture,
+explicit network classification, timeout settlement, original causes and no partial
+success. The content-store browser suite retries real native HTTPS ZIP requests,
+checkpoints only verified originals, activates through the full decoder and cancels
+native backoff with a durable paused target/unchanged active reader and personal
+database. Genuine drain/pause failures remain distinct from primary cancellation.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

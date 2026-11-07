@@ -44,6 +44,9 @@ publisher-authentication mechanism or readiness control.
 Its [pure retry decisions](docs/snapshot-validation.md#isolated-retry-decisions)
 classify failures and bound backoff/server waits explicitly, without automatically
 retrying requests or treating hidden headers as an absent server wait.
+An [isolated attempt runner](docs/snapshot-validation.md#isolated-cancellable-attempt-runner)
+now connects these layers for one captured artifact with cancellable waits and
+conservative per-attempt byte reservations. It does not enable live downloads.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

@@ -428,6 +428,14 @@ evidence is not established.
   and explicitly pauses unknown/unreadable/unusable/excessive waits. Native network
   errors require separate transient evidence; no actual retry, clock/random read
   or scheduling side effect occurs.
+  The [isolated attempt runner](snapshot-validation.md#isolated-cancellable-attempt-runner)
+  repeats actual HTTP/byte proof for at most A caller-approved attempts of one
+  artifact. Work scales with transferred/hashed artifact bytes plus A policy
+  evaluations and timer wakeups; complete declared-length reservations prevent
+  spending the per-invocation reservation budget twice. Reservation is conservative,
+  not exact network/heap measurement. Monotonic deadline rechecks avoid shortened
+  waits; abort suppresses later work without releasing an unfinished writer.
+  Whole-snapshot concurrent reservations and production orchestration remain open.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

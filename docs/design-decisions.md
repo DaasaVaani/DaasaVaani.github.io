@@ -68,6 +68,10 @@ header visibility and native failure classification remain production retry gate
 An isolated pure decision helper now applies caller-supplied total-attempt/backoff/
 jitter/wait limits. Unknown/transient evidence and hidden/unusable Retry-After
 must fail/pause explicitly; no actual retry loop or consent is enabled.
+The separate isolated runner executes those decisions for one captured artifact
+with conservative full-length reservations before each attempt and cancellable
+elapsed-time waits. This does not enable a production retry loop, snapshot
+orchestration or consent; aggregate transport/accounting remains a gate.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

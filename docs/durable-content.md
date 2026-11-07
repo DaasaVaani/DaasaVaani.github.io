@@ -74,6 +74,12 @@ and by operation/terminal guards; it does not release the lock ahead of unfinish
 Failure attempts a durable paused target checkpoint while the lock is still held,
 including after cancellation. If that also fails, both errors are surfaced in an
 `AggregateError`; there is no fabricated paused/success state.
+The primary cancellation is not duplicated as a drain failure when all tracked
+operations have settled. Distinct pending-operation, cancellation, drain and pause
+checkpoint failures remain explicit. The
+[isolated attempt runner](snapshot-validation.md#isolated-cancellable-attempt-runner)
+can operate inside this scope; it never releases the writer early or checkpoints
+unverified/partial HTTP bytes.
 
 Every mutation builds the prospective Shared candidate inside one IndexedDB
 read/write transaction, validates its complete logical limits and captured fence,

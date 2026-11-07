@@ -1,5 +1,34 @@
 # Documentation history
 
+## 2026-11-07: isolated cancellable artifact-attempt runner
+
+- The owner reaffirmed continuous direct-main delivery, recommended minor choices
+  and full validation/publication after each coherent task. Website main was clean/
+  current8b04ea8; no new branch, consumer pin or source-review work was introduced.
+- Connected the existing one-attempt HTTP adapter and pure retry decisions for
+  one captured artifact. Explicit settings/context retain identity, policy and
+  conservative full declared-length reservations before every actual request.
+  Failed/partial attempts do not refund reservations; this is not measured
+  physical network bytes or a whole-snapshot concurrent budget.
+- Cancellable monotonic elapsed-time waits never shorten backoff/server delays;
+  terminal failed/paused/capacity errors retain attempts/reservations/decision and
+  original cause. Cancellation and classification failures propagate directly.
+  No production app import, defaults, consent/scheduler/readiness was enabled.
+- First focused106 retry/HTTP units passed; native storage browsers passed72/75.
+  Three new cancellation cases exposed duplicate primary cancellation reporting
+  in the writer's existing finish/drain path, not a runner partial-success issue.
+  Avoided rethrowing that same primary reason during settled drain; distinct
+  operation/drain/pause failures remain errors. Final focused106 units and75
+  native storage browser cases passed with fresh production build/strict types.
+  Actual selected ZIP retries feed full decoded activation; cancellation preserves
+  the prior active reader, target bytes/personal data and a durable paused target.
+- Complete `npm test -- --maxWorkers=1` passed320/320 in24 files.
+  Complete `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed567/567 across desktop/mobile/narrow in9.6m with fresh production build/
+  strict typecheck, zero skipped cases and the configured clean c2837cc fixture
+  publisher. Changed-Markdown checks passed11 files/all153 unchanged requirement IDs;
+  strict YAML4, actionlint1.7.12/ShellCheck0.11.0 and whitespace checks passed.
+
 ## 2026-11-06: main synchronization, historical branch consolidation and retry prerequisite
 
 - At the owner's request, fetched/pruned all four remotes while preserving clean

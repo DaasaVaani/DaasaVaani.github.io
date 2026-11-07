@@ -295,7 +295,66 @@ during actual waits and prove cumulative attempt-byte and selected-target bounds
 before orchestration. These decisions do not implement user consent, automatic
 retry, remote-host CORS validation, production defaults or offline readiness.
 
+## Isolated cancellable attempt runner
+
+[fetchSnapshotWithRetries](../src/snapshot-attempts.ts) connects the single-request
+primitive and pure retry decisions without importing either into the application.
+It implements only one captured artifact's serial attempts, not descriptor
+discovery, snapshot scheduling, consent or activation. Map this prerequisite to
+OFF-06/07/15, SET-01/02 and QUAL-06.
+
+Supply the artifact and exact `SnapshotAttemptOptions`: `httpLimits`,
+`retryPolicy`, `maxAttemptEncodedBytes`, `retryAfterReadable` and
+`isTransientNetworkError`. Reuse the exact HTTP and retry bound shapes above.
+The full configuration, backoff array and artifact identity are captured and
+validated before requesting; no hidden defaults or endpoint changes occur.
+The caller-owned classifier is invoked only for ambiguous `network` failures.
+False means no retry; callback errors propagate rather than silently authorizing
+a retry. Readable-header evidence is explicit, never inferred from a null header.
+
+Before **each** attempt, reserve the complete artifact declared encoded length
+against the positive safe `maxAttemptEncodedBytes`. Equality passes; a missing
+byte refuses the request. Failed/partial attempts retain their full reservation,
+and an unaffordable next attempt refuses before even scheduling backoff. This is
+deliberately conservative admitted-artifact reservation accounting, not measured
+actual received bytes, HTTP overhead, HTTP-decoded wire bytes, an overlong hostile
+response or exact physical bandwidth. It is per invocation/artifact, not a shared
+whole-snapshot budget; future scheduling must reserve across all requests without
+double spending and account for actual transport limits separately.
+
+Each actual attempt uses the same captured direct URL/hash/length and complete
+HTTP cancellation/integrity guards. Eligible failures wait at least the decision's
+required delay, using a monotonic elapsed-time deadline with timer-range chunking;
+an early timer callback cannot shorten the wait. Abort clears the wait/listener,
+preserves the caller reason and suppresses all later attempts. Background timer
+delays are allowed; downloading after browser closure is not promised. Aborted
+HTTP work has settled before a later attempt starts; native hashing remains
+cooperative and can delay cancellation.
+
+Success returns exactly `{ bytes, attempts, reservedEncodedBytes }`, with fully
+verified encoded bytes only. Terminal non-cancellation errors are
+`SnapshotAttemptError`: `code` is `failed`, `paused` or `capacity`; `attempts`,
+`reservedEncodedBytes`, `decision` and the original `cause` are retained. Preflight
+shape/capacity errors use `SnapshotHttpError`; classifier errors and cancellation
+retain their original identity. Never treat a pause, exhausted attempt count or
+reservation refusal as a partial success. Original HTTP status/header, native
+crypto failure and integrity causes remain available for explicit reporting.
+
+The runner does not checkpoint, activate, remove data or record consent. Within
+`store.withWriter`, a runner failure/cancellation uses the existing durable paused
+target path, retaining actual progress and previous active content. The writer
+does not aggregate the primary cancellation a second time as a drain error;
+distinct unfinished-operation/drain/pause failures remain explicit.
+Actual browser cases retry selected ZIPs before original checkpointing/full
+decoded validation and cancel a native attempt while preserving the active reader.
+These prove isolated integration, not live-host permission/authentication,
+production settings, concurrent snapshot scheduling or complete offline readiness.
+
 ## Durable evidence and recovery order
+
+The separate [bounded attempt runner](#isolated-cancellable-attempt-runner) can
+fetch a selected artifact after explicit orchestration admission; it does not
+discover or replace the target during recovery.
 
 Persist `plan()` and all `metadataObjects()` through the scoped writer before
 claiming a locally recoverable metadata checkpoint. Partial individual checkpoints

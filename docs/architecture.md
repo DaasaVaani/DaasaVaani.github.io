@@ -57,6 +57,11 @@ descriptor discovery, selected-plan orchestration or production app import.
 The [pure retry decision layer](snapshot-validation.md#isolated-retry-decisions)
 returns bounded retry/fail/pause actions using explicit attempt, clock, jitter,
 failure/header evidence and policy, without timers or side effects.
+The [isolated attempt runner](snapshot-validation.md#isolated-cancellable-attempt-runner)
+serially executes one captured artifact with conservative full declared-length
+reservations and cancellable monotonic backoff. Previous active content and
+durable paused progress remain the writer's responsibility; no live app import or
+whole-snapshot concurrency/network-budget claim accompanies it.
 
 ## Data flow
 

@@ -17,6 +17,7 @@ type Fixture = { plan: ContentPlan; objects: FixtureObject[]; first: FixtureObje
 declare global {
   interface Window {
     isolatedContentRace?: { release: () => void; reader: Promise<number>; blocker: Promise<void>; pin: string };
+    isolatedAttemptController?: AbortController;
   }
 }
 let compiled: Promise<string> | undefined;
@@ -955,16 +956,19 @@ test("browser-admitted transfer planning uses actual verified metadata, reports 
   expect(await personalSnapshot(page)).toEqual(personal);
 });
 
-for (const transport of ["local", "https"] as const) {
+for (const transport of ["local", "https", "retry"] as const) {
 test(`actual selected strict ZIP archives via ${transport} checkpoint only verified originals and complete full decoder activation`, async ({ page }) => {
   await setup(page);
   const personal = await personalSnapshot(page), fixture = actualBundledSnapshotFixture();
   const fetched: string[] = [];
-  if (transport === "https") await page.route("https://snapshot.invalid/bundles/*", route => {
+  if (transport !== "local") await page.route("https://snapshot.invalid/bundles/*", route => {
     const hash = new URL(route.request().url()).pathname.split("/").pop()?.replace(/\.zip$/, "");
     const bytes = hash ? fixture.archives[hash] : undefined;
     if (!hash || !bytes) throw new Error("Unexpected synthetic archive request");
+    const first = !fetched.includes(hash);
     fetched.push(hash);
+    if (transport === "retry" && first) return route.fulfill({ status: 503,
+      headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Expose-Headers": "Retry-After", "Retry-After": "0" } });
     return route.fulfill({ status: 200, body: Buffer.from(bytes),
       headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/zip" } });
   });
@@ -991,10 +995,17 @@ test(`actual selected strict ZIP archives via ${transport} checkpoint only verif
         if (request.kind !== "bundle") throw new Error("Synthetic fixture must select its actual archives");
         const bytes = archives[request.sha256];
         if (!bytes) throw new Error("Missing selected synthetic archive");
-        const encoded = transport === "https" ? await backend.fetchSnapshotArtifact({
+        const artifact = {
           url: `https://snapshot.invalid/bundles/${request.sha256}.zip`, sha256: request.sha256,
           encodedBytes: request.encodedBytes,
-        }, { maxEncodedBytes: 32 * 1024 * 1024, noProgressTimeoutMs: 30000, totalTimeoutMs: 1200000 }) : new Uint8Array(bytes);
+        };
+        const httpLimits = { maxEncodedBytes: 32 * 1024 * 1024, noProgressTimeoutMs: 30000, totalTimeoutMs: 1200000 };
+        const encoded = transport === "https" ? await backend.fetchSnapshotArtifact(artifact, httpLimits)
+          : transport === "retry" ? (await backend.fetchSnapshotWithRetries(artifact, {
+            httpLimits, maxAttemptEncodedBytes: request.encodedBytes * 3, retryAfterReadable: true,
+            isTransientNetworkError: () => false,
+            retryPolicy: { maxAttempts: 3, backoffMs: [20, 40], jitterPercent: 0, maxAutomaticWaitMs: 120000 },
+          })).bytes : new Uint8Array(bytes);
         const members = await candidate.admitBundle(request.sha256, encoded,
           { maxBundleMembers: 100, maxBundleEncodedBytes: 32 * 1024 * 1024 });
         for (const member of members) await writer.putObject(member.sha256, member.bytes);
@@ -1018,10 +1029,82 @@ test(`actual selected strict ZIP archives via ${transport} checkpoint only verif
   expect(result.active.control.target).toBeNull();
   expect(result.original).toEqual(snapshotPacket(fixture).objects);
   expect(result.active.objects.some(object => Object.hasOwn(fixture.archives, object.sha256))).toBe(false);
-  expect(fetched.sort()).toEqual(transport === "https" ? result.requests.map(request => request.sha256).sort() : []);
+  expect(fetched.sort()).toEqual(transport === "local" ? [] : result.requests.flatMap(request =>
+    transport === "retry" ? [request.sha256, request.sha256] : [request.sha256]).sort());
   expect(await personalSnapshot(page)).toEqual(personal);
 });
 }
+
+test("cancelling native retry backoff durably pauses the target without another request or loss of the active reader", async ({ page }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page), a = snapshotFixture(), b = snapshotFixture({ sequence: 2 });
+  let requests = 0;
+  await page.route("https://snapshot.invalid/retry-cancel", route => {
+    requests++;
+    return route.fulfill({ status: 503, headers: {
+      "Access-Control-Allow-Origin": "*", "Access-Control-Expose-Headers": "Retry-After", "Retry-After": "1",
+    } });
+  });
+  const response = page.waitForResponse("https://snapshot.invalid/retry-cancel");
+  const work = page.evaluate(async ({ config, a, b, limits }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    const store = await backend.ContentStore.open(config);
+    const inspect = (packet: typeof a) => backend.inspectSnapshot(new Uint8Array(packet.descriptor), async hash => {
+      const bytes = packet.objects[hash];
+      if (!bytes) throw new Error("Missing synthetic metadata");
+      return new Uint8Array(bytes);
+    }, limits);
+    const previous = await inspect(a), target = await inspect(b);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(previous.plan());
+      for (const [hash, bytes] of Object.entries(a.objects)) await writer.putObject(hash, new Uint8Array(bytes));
+      await writer.activate((plan, read) => previous.validate(plan, read));
+      await writer.begin(target.plan());
+      for (const object of target.metadataObjects()) await writer.putObject(object.sha256, object.bytes);
+    });
+    const before = await store.snapshot(), controller = new AbortController();
+    window.isolatedAttemptController = controller;
+    const original = Object.entries(b.objects)[0];
+    if (!original) throw new Error("Missing synthetic original");
+    let error = "";
+    try {
+      await store.withWriter(before.control, async () => {
+        await backend.fetchSnapshotWithRetries({ url: "https://snapshot.invalid/retry-cancel",
+          sha256: original[0], encodedBytes: original[1].length }, {
+          httpLimits: { maxEncodedBytes: 65536, noProgressTimeoutMs: 30000, totalTimeoutMs: 1200000 },
+          retryPolicy: { maxAttempts: 3, backoffMs: [1000, 2000], jitterPercent: 0, maxAutomaticWaitMs: 120000 },
+          maxAttemptEncodedBytes: 196608, retryAfterReadable: true, isTransientNetworkError: () => false,
+        }, controller.signal);
+      }, controller.signal);
+    } catch (reason) {
+      if (reason !== controller.signal.reason) throw reason;
+      error = reason instanceof Error ? reason.name : String(reason);
+    }
+    const after = await store.snapshot();
+    const readable = await store.withActiveReader(async (plan, read) => {
+      await previous.validate(plan, read);
+      return true;
+    });
+    delete window.isolatedAttemptController;
+    store.close();
+    return { before, after, error, readable };
+  }, { config: config(), a: snapshotPacket(a), b: snapshotPacket(b), limits: snapshotLimits() });
+  await response;
+  await page.evaluate(() => {
+    if (!window.isolatedAttemptController) throw new Error("Missing native attempt controller");
+    window.isolatedAttemptController.abort();
+  });
+  const result = await work;
+  expect(result.error).toBe("AbortError");
+  expect(requests).toBe(1);
+  expect(result.after.control.active).toEqual(result.before.control.active);
+  expect(result.after.control.target).toEqual({ ...result.before.control.target, phase: "paused" });
+  expect(result.after.objects).toEqual(result.before.objects);
+  expect(result.after.snapshots).toEqual(result.before.snapshots);
+  expect(result.readable).toBe(true);
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
 
 test("native Fetch rejects redirects without contacting the landing address and failed HTTP artifacts preserve active content", async ({ page }) => {
   await setup(page);

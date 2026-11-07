@@ -74,6 +74,10 @@ An isolated pure retry decision prerequisite implements total-attempt/backoff/
 jitter/Retry-After ceilings and explicit failure/pause classification from supplied
 evidence. Timed retries, cumulative network accounting and genuine host evidence
 remain orchestration gates; no live preparation is enabled.
+The isolated single-artifact attempt runner now executes bounded serial retries,
+conservative encoded-length reservations and cancellable elapsed-time backoff.
+Actual native retry/cancellation tests preserve active/personal data; whole-snapshot
+scheduling, consent, production values and actual network accounting remain open.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical
