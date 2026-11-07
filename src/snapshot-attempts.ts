@@ -23,6 +23,30 @@ export class SnapshotAttemptError extends Error {
     this.name = "SnapshotAttemptError";
   }
 }
+export class SnapshotAttemptBudget {
+  readonly maxEncodedBytes: number;
+  #reservedEncodedBytes = 0;
+  constructor(maxEncodedBytes: number) {
+    if (!Number.isSafeInteger(maxEncodedBytes) || maxEncodedBytes <= 0) {
+      throw new SnapshotHttpError("invalid", "An explicit positive safe shared attempt budget is required");
+    }
+    this.maxEncodedBytes = maxEncodedBytes;
+    Object.freeze(this);
+  }
+  snapshot() {
+    return Object.freeze({ maxEncodedBytes: this.maxEncodedBytes, reservedEncodedBytes: this.#reservedEncodedBytes,
+      remainingEncodedBytes: this.maxEncodedBytes - this.#reservedEncodedBytes });
+  }
+  reserve(encodedBytes: number): void {
+    if (!Number.isSafeInteger(encodedBytes) || encodedBytes <= 0) {
+      throw new SnapshotHttpError("invalid", "A complete positive safe artifact reservation is required");
+    }
+    if (encodedBytes > this.maxEncodedBytes - this.#reservedEncodedBytes) {
+      throw new SnapshotHttpError("capacity", "Shared artifact attempt reservation budget is exhausted");
+    }
+    this.#reservedEncodedBytes += encodedBytes;
+  }
+}
 function wait(delayMs: number, signal?: AbortSignal): Promise<void> {
   signal?.throwIfAborted();
   return new Promise((resolve, reject) => {
@@ -41,12 +65,15 @@ function wait(delayMs: number, signal?: AbortSignal): Promise<void> {
 }
 
 export async function fetchSnapshotWithRetries(input: SnapshotHttpArtifact, options: SnapshotAttemptOptions,
-  signal?: AbortSignal): Promise<SnapshotAttemptResult> {
+  signal?: AbortSignal, sharedBudget?: SnapshotAttemptBudget): Promise<SnapshotAttemptResult> {
   if (!options || Object.keys(options).sort().join(",") !==
       "httpLimits,isTransientNetworkError,maxAttemptEncodedBytes,retryAfterReadable,retryPolicy" ||
       !Number.isSafeInteger(options.maxAttemptEncodedBytes) || options.maxAttemptEncodedBytes <= 0 ||
       typeof options.retryAfterReadable !== "boolean" || typeof options.isTransientNetworkError !== "function") {
     throw new SnapshotHttpError("invalid", "Explicit attempt budget and retry evidence are required");
+  }
+  if (sharedBudget !== undefined && !(sharedBudget instanceof SnapshotAttemptBudget)) {
+    throw new SnapshotHttpError("invalid", "Shared reservations require an actual attempt budget");
   }
   const request = captureSnapshotHttpRequest(input, options.httpLimits);
   snapshotRetryDecision(undefined, { attempt: 1, nowMs: 0, jitterUnit: 0.5,
@@ -60,6 +87,13 @@ export async function fetchSnapshotWithRetries(input: SnapshotHttpArtifact, opti
     if (request.artifact.encodedBytes > maxAttemptEncodedBytes - reservedEncodedBytes) {
       throw new SnapshotAttemptError("capacity", attempts, reservedEncodedBytes, null,
         previousFailure ?? new SnapshotHttpError("capacity", "No complete artifact attempt fits the remaining reservation budget"));
+    }
+    if (sharedBudget) {
+      try { sharedBudget.reserve(request.artifact.encodedBytes); }
+      catch (cause) {
+        if (!(cause instanceof SnapshotHttpError) || cause.code !== "capacity") throw cause;
+        throw new SnapshotAttemptError("capacity", attempts, reservedEncodedBytes, null, previousFailure ?? cause);
+      }
     }
     reservedEncodedBytes += request.artifact.encodedBytes;
     attempts++;
@@ -82,7 +116,8 @@ export async function fetchSnapshotWithRetries(input: SnapshotHttpArtifact, opti
         attempts, reservedEncodedBytes, decision, failure);
     }
     previousFailure = failure;
-    if (request.artifact.encodedBytes > maxAttemptEncodedBytes - reservedEncodedBytes) {
+    if (request.artifact.encodedBytes > maxAttemptEncodedBytes - reservedEncodedBytes ||
+        (sharedBudget && request.artifact.encodedBytes > sharedBudget.snapshot().remainingEncodedBytes)) {
       throw new SnapshotAttemptError("capacity", attempts, reservedEncodedBytes, decision, failure);
     }
     await wait(decision.delayMs, signal);

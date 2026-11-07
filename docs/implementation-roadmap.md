@@ -78,6 +78,9 @@ The isolated single-artifact attempt runner now executes bounded serial retries,
 conservative encoded-length reservations and cancellable elapsed-time backoff.
 Actual native retry/cancellation tests preserve active/personal data; whole-snapshot
 scheduling, consent, production values and actual network accounting remain open.
+An explicit shared same-instance reservation ledger additionally prevents
+concurrent artifact attempts from double spending one allowance. Persistent/cross-tab
+coordination and the complete selected-transfer scheduler remain open.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

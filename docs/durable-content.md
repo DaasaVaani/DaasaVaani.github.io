@@ -80,6 +80,8 @@ checkpoint failures remain explicit. The
 [isolated attempt runner](snapshot-validation.md#isolated-cancellable-attempt-runner)
 can operate inside this scope; it never releases the writer early or checkpoints
 unverified/partial HTTP bytes.
+Multiple runners may share one [in-memory attempt allowance](snapshot-validation.md#shared-attempt-reservation-ledger);
+it does not change database accounting, writer fencing or persisted progress.
 
 Every mutation builds the prospective Shared candidate inside one IndexedDB
 read/write transaction, validates its complete logical limits and captured fence,

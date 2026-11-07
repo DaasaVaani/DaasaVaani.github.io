@@ -77,6 +77,8 @@ evidence and policy limits, reporting retry/fail/pause without scheduling work.
 The isolated single-artifact runner connects those APIs with explicit conservative
 attempt reservations and cancellable elapsed-time waits; it still has no live
 app import, consent, snapshot scheduler or production defaults.
+Multiple isolated runners can additionally share an explicit nonrefundable
+in-memory attempt ledger; separate instances/tabs do not share that allowance.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.

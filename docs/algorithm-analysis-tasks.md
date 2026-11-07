@@ -436,6 +436,11 @@ evidence is not established.
   not exact network/heap measurement. Monotonic deadline rechecks avoid shortened
   waits; abort suppresses later work without releasing an unfinished writer.
   Whole-snapshot concurrent reservations and production orchestration remain open.
+  A [shared process-local attempt ledger](snapshot-validation.md#shared-attempt-reservation-ledger)
+  now supplies constant-time checked subtraction/reservation and independent
+  snapshots. Its synchronous no-await update prevents concurrent promises using
+  the same instance from double spending. Reservations remain charged after
+  cancellation/failure; no cross-context storage/wire-byte or scheduling proof follows.
 - **Analysis needed:** integrate those transitions and recovery order across
   production database/filesystem/network effects and the native adapter.
   Compare bounded retry/backoff and resume reconciliation

@@ -199,6 +199,11 @@ success. The content-store browser suite retries real native HTTPS ZIP requests,
 checkpoints only verified originals, activates through the full decoder and cancels
 native backoff with a durable paused target/unchanged active reader and personal
 database. Genuine drain/pause failures remain distinct from primary cancellation.
+The same runner units also validate shared reservation equality/+1, maximum safe
+integer arithmetic, invalid/pre-cancelled no-spend, failed/cancelled no-refund and
+concurrent initial/retry contention. Native browser cases share one ledger across
+three actual HTTPS runners: exactly two affordable requests complete and the third
+fails before requesting, with active content/personal data unchanged.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

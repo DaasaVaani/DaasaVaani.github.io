@@ -62,6 +62,10 @@ serially executes one captured artifact with conservative full declared-length
 reservations and cancellable monotonic backoff. Previous active content and
 durable paused progress remain the writer's responsibility; no live app import or
 whole-snapshot concurrency/network-budget claim accompanies it.
+Its [shared attempt ledger](snapshot-validation.md#shared-attempt-reservation-ledger)
+provides synchronous nonrefundable same-instance reservations across runners.
+This is a process-local allowance, not a replacement for durable writer fencing,
+actual network accounting or production concurrency policy.
 
 ## Data flow
 

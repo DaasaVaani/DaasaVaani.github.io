@@ -1,5 +1,40 @@
 # Documentation history
 
+## 2026-11-07: shared isolated artifact-attempt reservations
+
+- Continued immediately after published runner verification. Added one explicit
+  immutable-ceiling/private-accounting in-memory ledger, optionally shared by
+  artifact runners. Synchronous pre-request check/increment prevents same-instance
+  concurrent double spending; local limits remain unchanged. Failed/cancelled
+  reservations are not refunded; preflight/pre-cancelled requests cost nothing.
+  This remains conservative artifact admission accounting, not physical bandwidth,
+  persisted/cross-tab state or a live production scheduler.
+- First focused invocation caught accidentally nested new unit cases before
+  collection. Moved the existing timeout test's closing scope before the new
+  cases; no existing assertion was removed. All 118 focused HTTP/retry/attempt
+  units and strict TypeScript then passed, including concurrent retry contention,
+  exact/+1 bounds, maximum-safe arithmetic and no-refund behavior.
+- Final local validation: `npm test -- --maxWorkers=1` passed all 332 units
+  across 24 files. With the configured clean fixture-publisher worktree override,
+  `node node_modules\@playwright\test\cli.js test --workers=1` passed all 567
+  browser cases across all three layouts (10.6m), including fresh production
+  build/strict types/fixture publication and actual shared-ledger requests.
+  `npx tsc --noEmit` separately passed after the native browser integration.
+  The session documentation validator passed all 11 changed Markdown documents
+  and all 153 requirement IDs; strict locked YAML parsing passed all four files;
+  actionlint 1.7.12 with ShellCheck 0.11.0 and staged/unstaged `git diff --check`
+  passed. Requirement coverage remains isolated GEN-03/OFF-02/04/06/15 and
+  QUAL-06 prerequisites, not complete offline/release conformance.
+- Prior runnered95e034590e17313a0254537af8b7239dd557a9 passed exact hosted
+  Repository checks/deployment42320515278 and CodeQL42320514765. Hosted320 units/
+  567 browsers(6.5m) confirmed; live root/open/JS matched exact Pages
+  artifact13553705482 HTTP200 byte-for-byte. Root/open SHA256
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  `/assets/index-Ca_7nR8A.js` SHA256
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Cleaned only the exact owned downloaded tar/empty directory; main/worktree exact
+  and clean before continuing. No consumer pins or source work changed.
+
 ## 2026-11-07: isolated cancellable artifact-attempt runner
 
 - The owner reaffirmed continuous direct-main delivery, recommended minor choices

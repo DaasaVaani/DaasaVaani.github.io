@@ -320,7 +320,8 @@ deliberately conservative admitted-artifact reservation accounting, not measured
 actual received bytes, HTTP overhead, HTTP-decoded wire bytes, an overlong hostile
 response or exact physical bandwidth. It is per invocation/artifact, not a shared
 whole-snapshot budget; future scheduling must reserve across all requests without
-double spending and account for actual transport limits separately.
+double spending and account for actual transport limits separately. An optional
+shared ledger now supplies the [same-process reservation prerequisite](#shared-attempt-reservation-ledger).
 
 Each actual attempt uses the same captured direct URL/hash/length and complete
 HTTP cancellation/integrity guards. Eligible failures wait at least the decision's
@@ -349,6 +350,45 @@ Actual browser cases retry selected ZIPs before original checkpointing/full
 decoded validation and cancel a native attempt while preserving the active reader.
 These prove isolated integration, not live-host permission/authentication,
 production settings, concurrent snapshot scheduling or complete offline readiness.
+
+## Shared attempt reservation ledger
+
+`new SnapshotAttemptBudget(maxEncodedBytes)` from
+[the attempt module](../src/snapshot-attempts.ts) creates one explicit positive
+safe encoded-artifact reservation ceiling. Pass the **same instance** as the
+optional fourth argument to `fetchSnapshotWithRetries(artifact, options, signal,
+sharedBudget)` for all runners belonging to the same admitted operation.
+Existing calls without a ledger retain their per-artifact limits unchanged.
+
+Reservations are synchronous, nonrefundable and performed immediately before each
+request, after local shape/bound/cancellation preflight. No await can interleave
+the subtraction/check/increment: concurrent promises sharing this instance cannot
+spend the same remaining reservation twice. Both local per-artifact and shared
+ceilings must admit a complete declared-length attempt; equality passes and one
+byte less refuses. A failed shared reservation changes neither ledger nor local
+attempt count and makes no request. Invalid configuration/pre-cancellation costs
+nothing; any already reserved failed/cancelled/partial attempt remains charged.
+Retry loops check shared affordability before backoff and re-reserve after waiting,
+so another runner consuming the allowance during the wait still blocks the next
+request. Terminal capacity errors retain local attempts/reservations and the
+original prior failure where one exists.
+
+`budget.snapshot()` returns a frozen independent exact
+`{ maxEncodedBytes, reservedEncodedBytes, remainingEncodedBytes }` view.
+The fixed limit is immutable; private accounting cannot be reset or refunded.
+`budget.reserve(encodedBytes)` is available for owning orchestration to charge
+other complete admitted attempts: invalid numbers throw `SnapshotHttpError`
+`invalid`; insufficient allowance throws `capacity`. Use checked subtraction to
+avoid overflow even at the maximum safe integer ceiling.
+
+This is an in-memory, same-instance **artifact reservation** ledger, not actual
+HTTP/wire/heap measurement, persisted progress, cross-tab/worker atomic storage,
+or a complete snapshot scheduler. Creating separate ledgers creates separate
+allowances and does not establish a shared operation limit. The future coordinator
+must own its lifecycle, reserve all artifacts/metadata consistently, limit request
+concurrency, establish consent and preserve target/publication identity under its
+writer fence. No automatic refund, replacement consent, background continuation,
+production defaults or readiness claim is supplied by the ledger.
 
 ## Durable evidence and recovery order
 

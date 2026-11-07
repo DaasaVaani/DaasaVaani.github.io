@@ -47,6 +47,8 @@ retrying requests or treating hidden headers as an absent server wait.
 An [isolated attempt runner](docs/snapshot-validation.md#isolated-cancellable-attempt-runner)
 now connects these layers for one captured artifact with cancellable waits and
 conservative per-attempt byte reservations. It does not enable live downloads.
+Runners can share one explicit in-memory reservation ledger to prevent
+concurrent double spending; that ledger is not physical bandwidth or durable state.
 
 Canonical readers offer [public lyric links](docs/lyric-preview.md#public-lyric-links):
 explicit copy/system sharing of the configured stable Website URL, with an

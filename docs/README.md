@@ -40,6 +40,8 @@ owns explicit failure classification and bounded backoff/Retry-After decisions,
 not an automatic scheduler or live download.
 The [isolated cancellable runner](snapshot-validation.md#isolated-cancellable-attempt-runner)
 executes bounded retries of one captured artifact, without live snapshot scheduling.
+Its [shared reservation ledger](snapshot-validation.md#shared-attempt-reservation-ledger)
+bounds concurrent same-instance artifact attempts without claiming wire accounting.
 
 ## Owners
 

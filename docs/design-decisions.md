@@ -72,6 +72,9 @@ The separate isolated runner executes those decisions for one captured artifact
 with conservative full-length reservations before each attempt and cancellable
 elapsed-time waits. This does not enable a production retry loop, snapshot
 orchestration or consent; aggregate transport/accounting remains a gate.
+One optional shared in-memory ledger now prevents same-instance concurrent
+artifact reservation double spending. It is not persisted/cross-tab coordination
+or measured bandwidth; production orchestration/accounting remains a gate.
 Future personal collections and system-backup activation remain open.
 The [preview guide](lyric-preview.md) defines the current narrower lifecycle,
 not a change to approved production PWA on-demand reading/offline behavior.

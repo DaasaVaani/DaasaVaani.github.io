@@ -1,6 +1,6 @@
 import { afterEach, expect, test, vi } from "vitest";
 import { createHash } from "node:crypto";
-import { fetchSnapshotWithRetries, SnapshotAttemptError, type SnapshotAttemptOptions } from "./snapshot-attempts";
+import { fetchSnapshotWithRetries, SnapshotAttemptBudget, SnapshotAttemptError, type SnapshotAttemptOptions } from "./snapshot-attempts";
 import type { SnapshotHttpArtifact } from "./snapshot-http";
 
 const bytes = new Uint8Array([31, 139, 8, 0, 1, 2]);
@@ -199,3 +199,81 @@ test("a timed-out native request is fully aborted before another attempt starts"
   expect((await work).attempts).toBe(2);
   expect(vi.getTimerCount()).toBe(0);
 });
+  test("shared reservation equality passes and one extra byte fails without changing the ledger", () => {
+    const budget = new SnapshotAttemptBudget(12);
+    budget.reserve(6);
+    const earlier = budget.snapshot();
+    budget.reserve(6);
+    expect(budget.snapshot()).toEqual({ maxEncodedBytes: 12, reservedEncodedBytes: 12, remainingEncodedBytes: 0 });
+    expect(() => budget.reserve(1)).toThrowError(expect.objectContaining({ code: "capacity" }));
+    expect(budget.snapshot().reservedEncodedBytes).toBe(12);
+    expect(earlier).toEqual({ maxEncodedBytes: 12, reservedEncodedBytes: 6, remainingEncodedBytes: 6 });
+    expect(Object.isFrozen(earlier)).toBe(true);
+  });
+  test.each([0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])("invalid shared budget/reservation%s explicitly fails", value => {
+    expect(() => new SnapshotAttemptBudget(value)).toThrowError(expect.objectContaining({ code: "invalid" }));
+    const budget = new SnapshotAttemptBudget(12);
+    expect(() => budget.reserve(value)).toThrowError(expect.objectContaining({ code: "invalid" }));
+    expect(budget.snapshot().reservedEncodedBytes).toBe(0);
+  });
+  test("shared accounting uses safe subtraction at the maximum integer ceiling", () => {
+    const budget = new SnapshotAttemptBudget(Number.MAX_SAFE_INTEGER);
+    budget.reserve(Number.MAX_SAFE_INTEGER - 1);
+    budget.reserve(1);
+    expect(budget.snapshot().remainingEncodedBytes).toBe(0);
+    expect(() => budget.reserve(1)).toThrowError(expect.objectContaining({ code: "capacity" }));
+  });
+  test("concurrent artifact runners synchronously reserve before requests and cannot overspend", async () => {
+    const budget = new SnapshotAttemptBudget(bytes.length * 2);
+    const fetcher = vi.fn().mockImplementation(() => Promise.resolve(response()));
+    vi.stubGlobal("fetch", fetcher);
+    const results = await Promise.allSettled([1, 2, 3].map(() => fetchSnapshotWithRetries(artifact(), options(), undefined, budget)));
+    expect(results.filter(result => result.status === "fulfilled")).toHaveLength(2);
+    const refusal = results.find(result => result.status === "rejected");
+    expect(refusal).toMatchObject({ status: "rejected", reason: { code: "capacity", attempts: 0, reservedEncodedBytes: 0 } });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(budget.snapshot()).toEqual({ maxEncodedBytes: bytes.length * 2, reservedEncodedBytes: bytes.length * 2,
+      remainingEncodedBytes: 0 });
+  });
+  test("two concurrent failures share their retry allowance rather than refunding failed attempts", async () => {
+    fakeTime();
+    const budget = new SnapshotAttemptBudget(bytes.length * 3), fetcher = vi.fn()
+      .mockImplementationOnce(() => Promise.resolve(response(503))).mockImplementationOnce(() => Promise.resolve(response(503)))
+      .mockImplementation(() => Promise.resolve(response()));
+    vi.stubGlobal("fetch", fetcher);
+    const work = Promise.allSettled([1, 2].map(() => fetchSnapshotWithRetries(artifact(), options(), undefined, budget)));
+    await vi.advanceTimersByTimeAsync(1000);
+    const results = await work;
+    expect(results.filter(result => result.status === "fulfilled")).toHaveLength(1);
+    expect(results.find(result => result.status === "rejected")).toMatchObject({
+      status: "rejected", reason: { code: "capacity", attempts: 1, reservedEncodedBytes: bytes.length },
+    });
+    expect(fetcher).toHaveBeenCalledTimes(3);
+    expect(budget.snapshot().reservedEncodedBytes).toBe(bytes.length * 3);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  test("invalid local configuration and pre-cancellation never spend shared reservations", async () => {
+    const budget = new SnapshotAttemptBudget(bytes.length), fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    await expect(fetchSnapshotWithRetries(artifact(), { ...options(), maxAttemptEncodedBytes: 0 }, undefined, budget))
+      .rejects.toMatchObject({ code: "invalid" });
+    const controller = new AbortController();
+    controller.abort();
+    await expect(fetchSnapshotWithRetries(artifact(), options(), controller.signal, budget)).rejects.toBe(controller.signal.reason);
+    expect(budget.snapshot().reservedEncodedBytes).toBe(0);
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+  test("cancelled requests keep their reservation and later invocations cannot reuse it", async () => {
+    const budget = new SnapshotAttemptBudget(bytes.length), controller = new AbortController();
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => new Promise((_resolve, reject) => {
+      init.signal?.addEventListener("abort", () => reject(init.signal?.reason), { once: true });
+    }));
+    const work = fetchSnapshotWithRetries(artifact(), options(), controller.signal, budget);
+    const rejected = expect(work).rejects.toBeInstanceOf(DOMException);
+    controller.abort();
+    await rejected;
+    expect(budget.snapshot().reservedEncodedBytes).toBe(bytes.length);
+    await expect(fetchSnapshotWithRetries(artifact(), options(), undefined, budget)).rejects.toMatchObject({
+      code: "capacity", attempts: 0, reservedEncodedBytes: 0,
+    });
+  });

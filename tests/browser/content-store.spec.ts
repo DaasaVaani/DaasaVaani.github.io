@@ -1118,7 +1118,8 @@ test("native Fetch rejects redirects without contacting the landing address and 
       headers: { ...headers, Location: "https://snapshot.invalid/landing" } });
     if (path === "/unavailable" || path === "/unavailable-hidden") return route.fulfill({ status: 503,
       headers: { ...headers, "Retry-After": "121", ...(path === "/unavailable" ? { "Access-Control-Expose-Headers": "Retry-After" } : {}) } });
-    return route.fulfill({ status: 200, headers, body: Buffer.from(path === "/overlong" ? [...bytes, 0] : [...bytes].reverse()) });
+    return route.fulfill({ status: 200, headers, body: Buffer.from(path === "/overlong" ? [...bytes, 0]
+      : path === "/valid" ? [...bytes] : [...bytes].reverse()) });
   });
   const result = await page.evaluate(async ({ config, packet, bytes, sha256, limits }) => {
     const path = "/isolated-content-store.js";
@@ -1149,17 +1150,35 @@ test("native Fetch rejects redirects without contacting the landing address and 
         { maxAttempts: 3, backoffMs: [1000, 2000], jitterPercent: 20, maxAutomaticWaitMs: 120000 }));
       }
     }
+    const sharedBudget = new backend.SnapshotAttemptBudget(bytes.length * 2);
+    const shared = await Promise.allSettled([1, 2, 3].map(() => backend.fetchSnapshotWithRetries({
+      url: "https://snapshot.invalid/valid", sha256, encodedBytes: bytes.length,
+    }, {
+      httpLimits: { maxEncodedBytes: bytes.length, noProgressTimeoutMs: 30000, totalTimeoutMs: 1200000 },
+      retryPolicy: { maxAttempts: 3, backoffMs: [1000, 2000], jitterPercent: 0, maxAutomaticWaitMs: 120000 },
+      maxAttemptEncodedBytes: bytes.length * 3, retryAfterReadable: true, isTransientNetworkError: () => false,
+    }, undefined, sharedBudget)));
+    const sharedResults = shared.map(result => {
+      if (result.status === "fulfilled") return { status: result.status, attempts: result.value.attempts,
+        bytes: [...result.value.bytes] };
+      if (!(result.reason instanceof backend.SnapshotAttemptError)) throw result.reason;
+      return { status: result.status, code: result.reason.code, attempts: result.reason.attempts };
+    });
     const after = await store.snapshot();
     const readable = await store.withActiveReader(async (plan, read) => {
       for (const object of plan.required) await read(object.sha256);
       return true;
     });
     store.close();
-    return { before, after, failures, decisions, readable };
+    return { before, after, failures, decisions, sharedResults, sharedBudget: sharedBudget.snapshot(), readable };
   }, { config: config(), packet, bytes: [...bytes], sha256: createHash("sha256").update(bytes).digest("hex"), limits: snapshotLimits() });
   expect(result.failures).toEqual([{ code: "network" }, { code: "integrity" }, { code: "integrity" },
     { code: "http", status: 503, retryAfter: "121" }, { code: "http", status: 503, retryAfter: null }]);
-  expect(visited).toEqual(["/redirect", "/overlong", "/wrong", "/unavailable", "/unavailable-hidden"]);
+  expect(visited).toEqual(["/redirect", "/overlong", "/wrong", "/unavailable", "/unavailable-hidden", "/valid", "/valid"]);
+  expect(result.sharedResults).toEqual([{ status: "fulfilled", attempts: 1, bytes: [...bytes] },
+    { status: "fulfilled", attempts: 1, bytes: [...bytes] }, { status: "rejected", code: "capacity", attempts: 0 }]);
+  expect(result.sharedBudget).toEqual({ maxEncodedBytes: bytes.length * 2, reservedEncodedBytes: bytes.length * 2,
+    remainingEncodedBytes: 0 });
   expect(result.decisions).toEqual([{ action: "fail", reason: "permanent" }, { action: "fail", reason: "permanent" },
     { action: "fail", reason: "permanent" }, { action: "pause", reason: "wait-limit", delayMs: 121000 },
     { action: "pause", reason: "retry-after-unavailable", delayMs: null }]);
