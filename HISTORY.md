@@ -1,5 +1,50 @@
 # Documentation history
 
+## 2026-11-07: pinned reader published and ledger infrastructure authorized
+
+- Pinned-reader prerequisite `929a930f67ce1d637317bc28510df886dd02a4a5`
+  passed exact hosted Repository checks/deployment 42354529182: actual 380
+  units/609 browsers (5.6m); CodeQL 42354528842 succeeded at that same head.
+  Live HTTP200 root/open/JavaScript matched exact Pages artifact 13567196713:
+  root/open 621 bytes, SHA256
+  5e41edd9285292259103a6435b18ccd76007891fb45e55b67c917672a3ddddf6;
+  JavaScript 837294 bytes, SHA256
+  e0f33df956f53dcedafaa0721789703f556943dafdd5080ebcec62dee13f5f02.
+  Helper removed only its named download/empty directory; local/remote main
+  were exact, clean and without unmerged refs.
+- Owner selected authorization for protected ledger infrastructure setup, with
+  separate actual baseline/independent anchor approval before initialization.
+  Library state-only rules26756014/26756015 were created and verified for both
+  the root and a nested state ref. Main rules remained byte-identical; no branch,
+  ledger initialization, automation actor or sequenced deployment was created.
+  The current maintenance guide links the authoritative Library setup boundary.
+- An initial full Website unit run during concurrent Library native Git/TLS
+  validation passed379 tests but its configured complete-library boundary case
+  exceeded the existing5000ms timeout (5366ms). This is a failure, not a pass;
+  no timeout/test assertion was relaxed. Awaited Library completion before
+  restarting complete Website validation on the unchanged code.
+- Fresh final `npm test -- --maxWorkers=1` passed380 units/26 files;
+  `node node_modules\@playwright\test\cli.js test --workers=1`, using the pinned
+  fixture-publisher root, passed all609 browsers/three projects (12.3m), with
+  fresh production build/strict types. Documentation2/all153 requirement IDs,
+  strict YAML4, actionlint/ShellCheck and staged/unstaged whitespace passed.
+- Library setup documentation `afbcc8c0201de3218143c5c69d2ee2f34b78a66e`
+  passed exact Repository hygiene42372295259 and existing canonical publisher/
+  deployment42372366665, each with actual306 hosted tests. Verified all873 live
+  files/1198465 bytes against exact Pages artifact13573774722; original descriptor
+  SHA2562dd6fd40448d97356e348924115fecb68bfb6609270001e6c4b48b67cb47682c.
+  Cleaned only the named downloaded tar/empty owned directory.
+- After that settled publication, the final metadata-only approval review
+  reauthenticated ten successful legacy runs, upload/deployed artifact and source
+  bindings, all871 originals and unchanged candidate dates/content. Complete
+  baseline-pin replay passed; review remains `review-required`, sequence:null,
+  204478 bytes, SHA256
+  dc82248fdccfa4142b205e8ea2d89af78be5304bdafe1661e37ef71409cb61ac.
+  Audit SHA256092fe24a0085e8aa6a47df9911391007b7330be1be5a52d9f57cf6c4c56cd1da;
+  latest genuine legacy observation2026-11-07T12:26:00.000Z at Library afbcc8c.
+  Actual baseline approval, independently trusted anchor and real initialization
+  remain separate; preparing/verifying the pin did not grant them.
+
 ## 2026-11-07: approved limited offline milestone and pinned canonical reader
 
 - Owner explicitly selected the clearly limited prelaunch canonical-text offline

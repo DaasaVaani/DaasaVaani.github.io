@@ -29,6 +29,15 @@ cancelled or missing required run blocks further publication until resolved.
 Do not disable protections, force-push, waive tests or infer production activation.
 Source review and post-merge-only real-content generation remain unchanged.
 
+The owner separately authorizes
+[Library publication-state infrastructure setup](https://github.com/DaasaVaani/library/blob/main/docs/publication-ledger.md#approved-infrastructure-setup).
+This is a dedicated state-namespace exception, not a source/development branch
+or general permission to change protections. The separate no-bypass force/delete
+guard and admin-only setup creation/update restriction leave main rules unchanged.
+No state initialization, automation access or live deployment follows from setup
+approval; actual pinned baseline and independently trusted anchor still require
+separate owner approval. Verify the authoritative Library setup guide/live rules.
+
 Only `main` can deploy; a manual main run additionally
 requires the explicit `deploy_main=true` recovery input. Both lint and the complete
 web build/test job must pass in the same workflow before upload/deployment.
