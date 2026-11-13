@@ -45,6 +45,12 @@ this is not complete recitation.
 
 ## Current implementation coverage
 
+The [current Website settings audit](architecture.md#executable-current-website-settings-audit)
+supplies complete required-field/closed-object checks for the current owned web
+tree and exact fixture/public endpoint guards, reader cross-field constraints and
+safety-budget boundary tests. It does not close future production settings,
+native configuration or the remaining application requirement families.
+
 The [isolated Website durable-content prerequisite](durable-content.md) maps to
 OFF-06/07/11/15/16 and QUAL-06: a pinned Shared protocol, dedicated IndexedDB
 checkpoints, whole-operation writer fencing, actual byte verification, atomic

@@ -1,5 +1,78 @@
 # Documentation history
 
+## 2026-11-13: validating saved settings changes for authorized publication
+
+- Owner requested commit/push followed by the next task. Freshly fetched Website
+  main matched the saved worktree base; preserved all staged settings/docs work.
+  Fresh complete single-worker units failed386/387 on the unchanged5000ms
+  complete-library boundary test; the backup case passed in that run.
+- The boundary fixture rebuilt the same eight7MiB item objects three times.
+  Added an explicit test-local typed encoded-item cache to the synthetic fixture
+  helper, preserving complete original hashes/decoded sizes and separate returned
+  buffers. Uncached calls retain their prior behavior. Byte-identical cached/
+  uncached fixtures, altered-item identity and mutation isolation are independently
+  tested. No production logic, timeout or exact64MiB/limit+1 assertion changed.
+- Focused `npm test -- lyric-publication web-settings --maxWorkers=1` passed22;
+  `npx tsc --noEmit` passed. Complete single-worker final code passed387/388 but
+  the existing personal-backup boundary timed out. The documented complete
+  `npm test -- --maxWorkers=2` then passed388/388 across27 files with unchanged
+  timeouts/assertions. Full fresh-build three-project browser validation followed.
+- Current documentation checks passed four changed Markdown files and all153
+  unique requirement IDs. Strict YAML passed4 files, actionlint1.7.12 with
+  ShellCheck0.11.0 and staged/unstaged whitespace passed. Native settings follow-up
+  began independently; Shared pins, real sources and live publication gates remain
+  unchanged.
+- Final `node node_modules\@playwright\test\cli.js test --workers=1` passed609/609
+  across desktop/mobile/narrow in16.3 minutes after fresh fixture publication,
+  strict TypeScript and production build. Used the existing clean c2837cc pinned
+  fixture worktree through the documented local override. Complete full-unit388/
+  browser609 gates now pass; earlier timeouts remain failed historical runs.
+  Fresh main ancestry/admin and active force/delete/PR/check rules were verified
+  before using the existing owner-authorized administrator main routing.
+
+## 2026-11-08: completing current Website settings admission coverage
+
+- Owner requested completion of the two in-progress umbrella tasks. Re-read current
+  product/design/roadmap and checked all four worktrees clean. Actual organization
+  App installations0 and protected publisher secret/variable counts0 remained;
+  interrupted setup form yielded no provisioned identity or authorization.
+  Continued executable settings coverage instead of claiming blocked production
+  features complete or substituting owner credentials.
+- Extracted the existing Website build admission into a directly testable strict
+  helper without adding defaults/dependencies. Added enumeration of every current
+  required root/nested setting, null/unknown-object rejection, integer safety-budget
+  equality/+1 and explicit reader cross-field tests. Tightened fixture descriptor
+  to a dedicated absolute local directory path and independently enforced it at the
+  fixture writer; public endpoints now reject URL normalization/credential and
+  empty-query/fragment ambiguity. Existing owning values/routes remain unchanged.
+- Archived inventory wording: the earlier route row omitted formatVersion and
+  backupFileName, and schema accepted any nonempty fixture descriptor string.
+  Current inventory now covers those existing fields and exact path semantics.
+  This is current Website coverage only, not a native/production-language/offline
+  or full requirement completion claim. Initial focused seven tests and strict
+  types passed; added trailing CR/LF fixture normalization rejection afterward.
+- Full `npm test -- --maxWorkers=1` failed385/387, then a complete unchanged
+  standalone rerun failed385/387 again. The documented two-worker full alternative
+  `npm test -- --maxWorkers=2` also failed385/387. In every run the existing
+  complete-library decoded boundary test in lyric-publication and64MiB/65MiB
+  personal-backup boundary test exceeded their unchanged5000ms timeout.
+  No assertion, threshold, selector or timeout was relaxed, and these failures
+  block commit/push/completion. Browser/build validation was run independently,
+  not presented as a substitute for the failed full unit gate.
+- An initial attempted Website `python tools\check_repository.py` failed because
+  that checker belongs to the other repositories, not Website. Used the existing
+  session documentation validator instead; current four changed Markdown files
+  passed UTF-8/newline/whitespace/fences/links/anchors and all153 unique requirement
+  IDs. Strict YAML passed4 files; actionlint1.7.12 with ShellCheck0.11.0 and
+  staged/unstaged diff checks passed. No publication occurred.
+- Complete `node node_modules\@playwright\test\cli.js test --workers=1` passed609
+  cases across all three configured projects in17.6 minutes, using the clean
+  independently pinned c2837cc fixture worktree and a fresh production build/
+  TypeScript check. Native HTTPS/storage tests and normal personal/content UX
+  stayed included. The runner's owned preview server exited normally.
+  These successful browser/build checks do not waive the failed full unit gate.
+  Current settings changes remain staged/uncommitted; main was not pushed.
+
 ## 2026-11-07: pinned reader published and ledger infrastructure authorized
 
 - Pinned-reader prerequisite `929a930f67ce1d637317bc28510df886dd02a4a5`

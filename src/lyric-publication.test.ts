@@ -1,5 +1,5 @@
 import { afterEach, expect, test, vi } from "vitest";
-import { lyricFixture, lyricId } from "../tests/lyric-fixture";
+import { lyricFixture, lyricId, type LyricFixtureItemCache } from "../tests/lyric-fixture";
 import { loadLyricCatalog, prepareLyrics } from "./lyric-publication";
 import type { LyricItem } from "../shared/types/lyrics";
 
@@ -16,6 +16,19 @@ function serve(fixture: ReturnType<typeof lyricFixture>) {
   }));
   return requests;
 }
+test("reused synthetic objects preserve complete fixture bytes and isolate returned mutation", () => {
+  const cache: LyricFixtureItemCache = new Map();
+  const first = lyricFixture(2, {}, cache), second = lyricFixture(2, {}, cache);
+  expect(first).toEqual(lyricFixture(2));
+  expect(second).toEqual(first);
+  const reference = first.manifest.catalog[0]?.item;
+  if (!reference) throw new Error("Synthetic item reference missing");
+  first.files.get(reference.path)?.fill(0);
+  expect(lyricFixture(2, {}, cache)).toEqual(second);
+  const changed = lyricFixture(2, { item: item => { item.syntheticPadding = "x"; } }, cache);
+  expect(changed).toEqual(lyricFixture(2, { item: item => { item.syntheticPadding = "x"; } }));
+  expect(changed.manifest.catalog[0]?.item.sha256).not.toBe(reference.sha256);
+});
 test("complete preparation validates every UUID object before exposing exact text/layout and never reads source or fixture identities", async () => {
   const fixture = lyricFixture(), requests = serve(fixture), progress: number[] = [];
   const ready = await prepareLyrics(undefined, done => progress.push(done));
@@ -133,7 +146,10 @@ test("configured preparation limits accept exact totals and reject one-byte/one-
 });
 test("actual configured complete-library decoded boundary is accepted and limit+1 refuses all item requests", async () => {
   const each = 7 * 1024 * 1024;
-  const build = (last: number) => lyricFixture(9, { item: (item, index) => { item.syntheticPadding = "x".repeat(index === 9 ? last : each); } });
+  const cachedItems: LyricFixtureItemCache = new Map();
+  const build = (last: number) => lyricFixture(9, {
+    item: (item, index) => { item.syntheticPadding = "x".repeat(index === 9 ? last : each); },
+  }, cachedItems);
   const first = build(each), last = each + __WEB_CONFIG__.lyricPreview.maxDecodedBytes - first.decodedBytes;
   const boundary = build(last);
   expect(boundary.decodedBytes).toBe(__WEB_CONFIG__.lyricPreview.maxDecodedBytes);

@@ -4,7 +4,7 @@
   "required": ["formatVersion", "base", "descriptorUrl", "lyricPreview", "canonicalBaseUrl", "listLinkPath", "listFileName", "backupFileName", "transferChunkBytes", "listCompressionLevel", "demoPort", "appShell", "databaseName", "fontFamily", "readerFontSize", "readerFontSizeMin", "readerFontSizeMax", "readerFontSizeStep", "readerLineHeights", "space", "contentWidth", "readerWidth", "themes", "demoViewports"],
   "properties": {
     "formatVersion": { "const": 1 }, "base": { "type": "string", "pattern": "^/(?:[A-Za-z0-9_-]+/)*$" },
-    "descriptorUrl": { "type": "string", "minLength": 1 },
+    "descriptorUrl": { "type": "string", "pattern": "^/(?:[A-Za-z0-9_-]+/)+latest\\.json$" },
     "lyricPreview": {
       "type": "object", "additionalProperties": false,
       "required": ["descriptorUrl", "pageSize", "maxItems", "maxEncodedBytes", "maxDecodedBytes", "concurrentRequests"],

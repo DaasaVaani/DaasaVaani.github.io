@@ -141,7 +141,7 @@ Initial values and exact field bounds belong only in the linked owning files.
 
 | Owner/source and keys | Current application and validation | Compatibility/open work |
 | --- | --- | --- |
-| [Web settings/schema](../settings/web.schema.json): `base`, `descriptorUrl`, `canonicalBaseUrl`, `listLinkPath`, `listFileName` | Strict build-time settings; fixture artifact entry and minimal-list URL/file projection | Public route/origin changes require old-link/hosting review; distinct real-publication settings below never reinterpret fixture formats |
+| [Web settings/schema](../settings/web.schema.json): `formatVersion`, `base`, `descriptorUrl`, `canonicalBaseUrl`, `listLinkPath`, `listFileName`, `backupFileName` | Strict build-time version/route settings; fixture artifact entry, canonical URL and minimal-list/manual-backup file projection | Public route/origin changes require old-link/hosting review; distinct real-publication settings below never reinterpret fixture formats |
 | [Web settings/schema](../settings/web.schema.json): `lyricPreview.descriptorUrl`, `pageSize`, `maxItems`, `maxEncodedBytes`, `maxDecodedBytes`, `concurrentRequests` | Credential-free absolute HTTPS endpoint, verified metadata/catalog count, bounded requested-item cache/in-flight byte reservations and complete paging; complete-preparation helper retains whole-plan/concurrent-worker validation | Separate prelaunch `lyric-preview-v1`, on-demand online memory-only lifecycle; no persistent offline or complete production-profile claim; see the [reader lifecycle](lyric-preview.md#online-loading-and-failure-behavior) and independent personal v9 protocol below |
 | [Web settings](../settings/web.yml): `transferChunkBytes`, `listCompressionLevel` | Byte allocation/compression controls passed to the dedicated codec worker; schema and actual-ceiling codec tests | Encoding choices do not narrow accepted valid input or change decoded/text limits |
 | [Web settings](../settings/web.yml): `databaseName` | Build-time Dexie/native IndexedDB identity | Changing it is not a migration; it would strand the prior database and requires explicit compatibility handling |
@@ -162,6 +162,40 @@ tables. Build/package checks verify owned settings, resource identity and licens
 distribution. Native independently consumes that same profile; this is not
 production search/transliteration policy or full durable personal/transfer parity.
 Remaining production settings/schemas and lifecycle budgets remain open.
+
+### Executable current Website settings audit
+
+The [build-time admission helper](../tools/validate-web-settings.ts) and
+[settings tests](../src/web-settings.test.ts) map to SET-01/02 and QUAL-06.
+Every current root/nested Web setting is required; every object rejects unknown
+fields and null values. Admission never coerces types, supplies defaults or writes
+personal data. Portable defaults and safety/personal limits retain their independent
+owning schemas and existing checks. The tests enumerate the actual current tree
+so adding a field cannot silently escape required-field/unknown-object checks.
+
+The schema owns each field's exact type, bounds and the owning YAML's current
+initial value. These settings apply at build/startup, not through a remote policy
+refresh. Byte budgets use bytes, request counts/items/page counts use integers,
+timers use milliseconds, font/width/spacing/viewports use CSS pixels, and line
+heights are unitless. Compression level is the codec's0..9 integer setting;
+formatVersion is a compatibility invariant, not a user preference. Changes to
+database/cache identities or public routes require their preserving compatibility
+and deployment review; raising a local ceiling does not validate remote content.
+
+Fixture `descriptorUrl` is a dedicated absolute local directory's `latest.json`
+path with no encoded/traversing segments, query, fragment, backslash or URL
+normalization. The fixture-publisher helper independently enforces this before
+writing. It cannot point at the real Library or arbitrary external content.
+Canonical/public lyric endpoints require explicit credential-free canonical HTTPS
+addresses: normalization, default-port/case rewriting and even empty query/fragment
+delimiters fail. Accepted root/subdirectory addresses remain distinct.
+
+Reader defaults must remain inside strict min/max bounds, steps must fit the range,
+and compact/normal/relaxed line heights must increase. Tests cover schema equality/
+one-below/one-above integer safety budgets, fractional/nonfinite/string refusal and
+schema-valid cross-field inconsistency. No fixture validation proves production
+transliteration, native settings coverage, live offline availability or release
+conformance. Future production settings must receive their own inventory and tests.
 
 ## Runtime boundaries
 

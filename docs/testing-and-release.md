@@ -39,6 +39,14 @@ Executable tooling covers isolated fixture features and the separate real
 canonical prelaunch reader. It does not
 establish complete production-schema/language/lifecycle or release conformance.
 
+`npm test -- web-settings` is the incremental SET-01/02/QUAL-06 build-configuration
+check: every current root/nested field mandatory, every object closed, exact
+fixture/public endpoint grammar, explicit reader cross-field consistency and
+integer safety-budget equality/+1 tests. It exercises the same admission used
+by Vite, without loading remote content or modifying personal state. Complete
+production/native settings coverage remains separate; finalization still requires
+the full commands below.
+
 From Website:
 
 ```powershell

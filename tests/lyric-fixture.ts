@@ -3,14 +3,16 @@ import { gzipSync } from "node:zlib";
 import type { LyricDescriptor, LyricItem, LyricManifest } from "../shared/types/lyrics";
 
 export const lyricId = (index: number) => `10000000-0000-4000-8000-${(index * 16).toString(16).padStart(12, "0")}`;
+type FixtureObject = { path: string; sha256: string; encodedBytes: number; decodedBytes: number };
+export type LyricFixtureItemCache = Map<string, FixtureObject & { bytes: Buffer }>;
 export function lyricFixture(count = 2, edit: {
   item?: (value: LyricItem & Record<string, unknown>, index: number) => void;
   manifest?: (value: LyricManifest & Record<string, unknown>) => void;
   descriptor?: (value: LyricDescriptor & Record<string, unknown>) => void;
-} = {}) {
+} = {}, cachedItems?: LyricFixtureItemCache) {
   const files = new Map<string, Buffer>();
-  function object(value: unknown) {
-    const decoded = Buffer.from(JSON.stringify(value)), encoded = gzipSync(decoded);
+  function object(value: unknown, json = JSON.stringify(value)) {
+    const decoded = Buffer.from(json), encoded = gzipSync(decoded);
     const sha256 = createHash("sha256").update(encoded).digest("hex"), path = `objects/${sha256}.json.gz`;
     files.set(path, encoded);
     return { path, sha256, encodedBytes: encoded.length, decodedBytes: decoded.length };
@@ -25,7 +27,22 @@ export function lyricFixture(count = 2, edit: {
         { kind: "layout", text: " \t " }, { kind: "layout", text: "" },
         { kind: "line", lineId: id.slice(0, -1) + "2", text: "ಅಕ್ಷರ" }] };
     edit.item?.(item, index);
-    manifest.catalog.push({ lyricId: id, title: item.title, tags: [...item.tags], item: object(item) });
+    const key = JSON.stringify(item);
+    const cached = cachedItems?.get(key);
+    let reference: FixtureObject;
+    if (cached) {
+      const { bytes, ...storedReference } = cached;
+      files.set(storedReference.path, Buffer.from(bytes));
+      reference = storedReference;
+    } else {
+      reference = object(item, key);
+      if (cachedItems) {
+        const bytes = files.get(reference.path);
+        if (!bytes) throw new Error("Synthetic item object missing");
+        cachedItems.set(key, { ...reference, bytes: Buffer.from(bytes) });
+      }
+    }
+    manifest.catalog.push({ lyricId: id, title: item.title, tags: [...item.tags], item: reference });
   }
   edit.manifest?.(manifest);
   const descriptor: LyricDescriptor & Record<string, unknown> = { format: "daasavaani-lyrics", formatVersion: 1, manifest: object(manifest) };
