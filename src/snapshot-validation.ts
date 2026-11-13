@@ -36,11 +36,17 @@ export interface SnapshotCandidate {
   plan(): ContentPlan;
   catalog(): SnapshotCatalogEntry[];
   readItem(lyricId: string, read: ContentReader, signal?: AbortSignal): Promise<LyricItem>;
+  inspectItems(read: ContentReader, signal?: AbortSignal): Promise<SnapshotItemInspection[]>;
   metadataObjects(): { sha256: string; bytes: Uint8Array }[];
   transferPlan(verified: readonly string[], limits: SnapshotTransferLimits): SnapshotTransferPlan;
   admitBundle(sha256: string, bytes: Uint8Array, limits: SnapshotBundleLimits,
     signal?: AbortSignal): Promise<AdmittedSnapshotZipStoreMember[]>;
   validate(plan: ContentPlan, read: ContentReader, signal?: AbortSignal): Promise<void>;
+}
+export interface SnapshotItemInspection {
+  lyricId: string;
+  itemSha256: string;
+  problem: "integrity" | "invalid" | "unsupported" | "identity" | null;
 }
 export interface SnapshotBundleLimits {
   maxBundleMembers: number;
@@ -240,6 +246,17 @@ function originals(manifest: SnapshotManifest, receipt: ContentObjectReceipt, li
   }
   return { required, encoded, decoded };
 }
+function recordItemIdentities(item: LyricItem, identities: Map<string, string | undefined>,
+  conflict: (lyricId: string) => void) {
+  for (const line of item.lines) {
+    if (line.kind !== "line") continue;
+    if (identities.has(line.lineId)) {
+      conflict(item.lyricId);
+      const previous = identities.get(line.lineId);
+      if (previous !== undefined) conflict(previous);
+    } else identities.set(line.lineId, item.lyricId);
+  }
+}
 export async function inspectSnapshot(descriptorInput: Uint8Array, read: ContentReader,
   inputLimits: SnapshotValidationLimits, signal?: AbortSignal): Promise<SnapshotCandidate> {
   const limits = captureSnapshotValidationLimits(inputLimits);
@@ -287,6 +304,20 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
     { sha256: manifest.policy, bytes: policyObject.bytes },
   ];
   const catalog = new Map(manifest.catalog.map(entry => [entry.lyricId, entry]));
+  const readItem = async (lyricId: string, currentRead: ContentReader, currentSignal?: AbortSignal): Promise<LyricItem> => {
+    currentSignal?.throwIfAborted();
+    const entry = catalog.get(lyricId), object = entry && manifest.objects[entry.item];
+    if (!entry || !object) throw new ContentError("unprepared", "Requested lyric is absent from the pinned snapshot");
+    const item = await decode(currentRead, { ...object, sha256: entry.item }, limits.chunkBytes, currentSignal);
+    assertConsumerItem(item.value, entry);
+    currentSignal?.throwIfAborted();
+    return {
+      format: item.value.format, formatVersion: item.value.formatVersion, canonicalScript: item.value.canonicalScript,
+      lyricId: item.value.lyricId, title: item.value.title, tags: [...item.value.tags],
+      lines: item.value.lines.map(line => line.kind === "line"
+        ? { kind: line.kind, lineId: line.lineId, text: line.text } : { kind: line.kind, text: line.text }),
+    };
+  };
   signal?.throwIfAborted();
   return Object.freeze({
     plan: () => structuredClone(plan),
@@ -294,19 +325,33 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
       lyricId: entry.lyricId, title: entry.title, tags: [...entry.tags], item: entry.item,
       firstPublishedAt: entry.firstPublishedAt, changedAt: entry.changedAt,
     })),
-    readItem: async (lyricId: string, currentRead: ContentReader, currentSignal?: AbortSignal) => {
+    readItem,
+    inspectItems: async (currentRead: ContentReader, currentSignal?: AbortSignal) => {
       currentSignal?.throwIfAborted();
-      const entry = catalog.get(lyricId), object = entry && manifest.objects[entry.item];
-      if (!entry || !object) throw new ContentError("unprepared", "Requested lyric is absent from the pinned snapshot");
-      const item = await decode(currentRead, { ...object, sha256: entry.item }, limits.chunkBytes, currentSignal);
-      assertConsumerItem(item.value, entry);
-      currentSignal?.throwIfAborted();
-      return {
-        format: item.value.format, formatVersion: item.value.formatVersion, canonicalScript: item.value.canonicalScript,
-        lyricId: item.value.lyricId, title: item.value.title, tags: [...item.value.tags],
-        lines: item.value.lines.map(line => line.kind === "line"
-          ? { kind: line.kind, lineId: line.lineId, text: line.text } : { kind: line.kind, text: line.text }),
+      const result: SnapshotItemInspection[] = manifest.catalog.map(entry => ({
+        lyricId: entry.lyricId, itemSha256: entry.item, problem: null,
+      }));
+      const byId = new Map(result.map(entry => [entry.lyricId, entry]));
+      const identities = new Map<string, string | undefined>(manifest.catalog.map(entry => [entry.lyricId, undefined]));
+      const conflict = (lyricId: string) => {
+        const entry = byId.get(lyricId);
+        if (!entry) throw new ContentError("invalid", "Snapshot identity owner is absent from its catalog");
+        entry.problem = "identity";
       };
+      for (const entry of result) {
+        let item: LyricItem;
+        try { item = await readItem(entry.lyricId, currentRead, currentSignal); }
+        catch (reason) {
+          currentSignal?.throwIfAborted();
+          if (reason instanceof ContentError && reason.code === "integrity") entry.problem = reason.code;
+          else if (reason instanceof SnapshotConsumerError) entry.problem = reason.code;
+          else throw reason;
+          continue;
+        }
+        recordItemIdentities(item, identities, conflict);
+      }
+      currentSignal?.throwIfAborted();
+      return result;
     },
     metadataObjects: () => metadata.map(object => ({ sha256: object.sha256, bytes: new Uint8Array(object.bytes) })),
     transferPlan: (verified: readonly string[], transferLimits: SnapshotTransferLimits) =>
@@ -346,17 +391,15 @@ export async function inspectSnapshot(descriptorInput: Uint8Array, read: Content
       const retainedDescriptor = await readEncoded(currentRead, descriptorReceipt, currentSignal);
       const fresh = await inspectSnapshot(retainedDescriptor, currentRead, limits, currentSignal);
       if (canonicalJson(fresh.plan()) !== canonicalJson(plan)) throw new ContentError("integrity", "Stored snapshot metadata differs from its candidate");
-      const identities = new Set(manifest.catalog.map(entry => entry.lyricId));
+      const identities = new Map<string, string | undefined>(manifest.catalog.map(entry => [entry.lyricId, undefined]));
       for (const entry of manifest.catalog) {
         const object = manifest.objects[entry.item];
         if (!object) throw new ContentError("invalid", "Catalog item object is absent");
         const item = await decode(currentRead, { ...object, sha256: entry.item }, limits.chunkBytes, currentSignal);
         assertConsumerItem(item.value, entry);
-        for (const line of item.value.lines) {
-          if (line.kind !== "line") continue;
-          if (identities.has(line.lineId)) throw new ContentError("invalid", "Lyric line identities conflict across the snapshot");
-          identities.add(line.lineId);
-        }
+        recordItemIdentities(item.value, identities, () => {
+          throw new ContentError("invalid", "Lyric line identities conflict across the snapshot");
+        });
       }
       currentSignal?.throwIfAborted();
     },

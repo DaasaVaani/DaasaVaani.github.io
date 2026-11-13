@@ -46,3 +46,15 @@ export async function verifyActiveSnapshot(store: Pick<ContentStore, "withActive
     };
   }, signal);
 }
+
+export async function inspectActiveSnapshotItems(store: Pick<ContentStore, "withActiveReader">, expected: ContentReference,
+  inputLimits: SnapshotValidationLimits, signal?: AbortSignal) {
+  const key = contentKey(expected), limits = captureSnapshotValidationLimits(inputLimits);
+  return store.withActiveReader(async (plan, read) => {
+    if (contentKey(plan.reference) !== key) throw new ContentError("stale", "Active snapshot changed since inspection selection");
+    const candidate = await resumeSnapshot(plan, read, limits, signal);
+    const items = await candidate.inspectItems(read, signal);
+    signal?.throwIfAborted();
+    return { reference: { ...plan.reference }, items };
+  }, signal);
+}

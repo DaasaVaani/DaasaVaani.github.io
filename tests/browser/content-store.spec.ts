@@ -1132,7 +1132,7 @@ test(`isolated serial staging via ${mode} verifies native progress, preserves ac
 });
 }
 
-for (const mode of ["valid", "metadata-damage", "item-damage", "stale-catalog"] as const) {
+for (const mode of ["valid", "metadata-damage", "item-damage", "item-eviction", "item-short", "item-oversized", "item-nonblob", "stale-catalog"] as const) {
 test(`pinned canonical snapshot reading offline with ${mode} never mixes versions, fetches lyrics or writes personal state`, async ({ page, context }) => {
   await setup(page);
   const personal = await personalSnapshot(page), initial = snapshotFixture(), replacement = snapshotFixture({ sequence: 2 });
@@ -1179,7 +1179,7 @@ test(`pinned canonical snapshot reading offline with ${mode} never mixes version
     const sha256 = mode === "metadata-damage" ? initial.descriptorHash : selected.item;
     const bytes = initial.objects[sha256];
     if (!bytes) throw new Error("Missing synthetic damage target");
-    await page.evaluate(async ({ databaseName, sha256, length }) => {
+    await page.evaluate(async ({ databaseName, sha256, length, mode, maxObjectBytes }) => {
       const database = await new Promise<IDBDatabase>((resolve, reject) => {
         const request = indexedDB.open(databaseName);
         request.onsuccess = () => resolve(request.result);
@@ -1187,13 +1187,18 @@ test(`pinned canonical snapshot reading offline with ${mode} never mixes version
       });
       await new Promise<void>((resolve, reject) => {
         const transaction = database.transaction("objects", "readwrite");
-        transaction.objectStore("objects").put({ sha256, encodedBytes: length, bytes: new Blob([new Uint8Array(length)]) });
+        if (mode === "item-eviction") transaction.objectStore("objects").delete(sha256);
+        else {
+          const bytes = mode === "item-nonblob" ? new Uint8Array(length)
+            : new Blob([new Uint8Array(mode === "item-short" ? length - 1 : mode === "item-oversized" ? maxObjectBytes + 1 : length)]);
+          transaction.objectStore("objects").put({ sha256, encodedBytes: length, bytes });
+        }
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
         transaction.onabort = () => reject(transaction.error);
       });
       database.close();
-    }, { databaseName: settings.databaseName, sha256, length: bytes.length });
+    }, { databaseName: settings.databaseName, sha256, length: bytes.length, mode, maxObjectBytes: settings.maxObjectBytes });
   }
   const network: string[] = [];
   page.on("request", request => { if (/\/library\/|\/objects\//.test(request.url())) network.push(request.url()); });
@@ -1203,6 +1208,18 @@ test(`pinned canonical snapshot reading offline with ${mode} never mixes version
     const backend: typeof import("../isolated-content") = await import(path);
     const store = await backend.ContentStore.open(config), before = await store.snapshot();
     let failure = "", item: Awaited<ReturnType<typeof backend.readActiveSnapshotItem>> | null = null;
+    let inspectionFailure = "", inspection: Awaited<ReturnType<typeof backend.inspectActiveSnapshotItems>> | null = null;
+    let unaffected: Awaited<ReturnType<typeof backend.readActiveSnapshotItem>> | null = null;
+    try { inspection = await backend.inspectActiveSnapshotItems(store, reference, limits); }
+    catch (reason) {
+      if (!(reason instanceof backend.ContentError)) throw reason;
+      inspectionFailure = reason.code;
+    }
+    if (inspection) {
+      const other = inspection.items[1];
+      if (!other || other.problem !== null) throw new Error("Synthetic independent item was not verified");
+      unaffected = await backend.readActiveSnapshotItem(store, reference, other.lyricId, limits);
+    }
     let verificationFailure = "", verification: Awaited<ReturnType<typeof backend.verifyActiveSnapshot>> | null = null;
     try { verification = await backend.verifyActiveSnapshot(store, reference, limits); }
     catch (reason) {
@@ -1216,12 +1233,19 @@ test(`pinned canonical snapshot reading offline with ${mode} never mixes version
     }
     const after = await store.snapshot();
     store.close();
-    return { failure, item, before, after, verificationFailure, verification };
+    return { failure, item, before, after, verificationFailure, verification, inspectionFailure, inspection, unaffected };
   }, { config: settings, reference: opened.catalog.reference, lyricId: selected.lyricId, limits: snapshotLimits() });
   expect(result.before).toEqual(result.after);
   expect(opened.catalog.entries).toEqual(initial.manifest.catalog);
   expect(result.failure).toBe(mode === "valid" ? "" : mode === "stale-catalog" ? "stale" : "integrity");
   expect(result.item).toEqual(mode === "valid" ? expectedItem : null);
+  const diagnosed = mode !== "metadata-damage" && mode !== "stale-catalog";
+  expect(result.inspectionFailure).toBe(diagnosed ? "" : mode === "stale-catalog" ? "stale" : "integrity");
+  expect(result.inspection).toEqual(diagnosed ? { reference: opened.catalog.reference,
+    items: initial.manifest.catalog.map((entry, index) => ({
+      lyricId: entry.lyricId, itemSha256: entry.item, problem: index === 0 && mode !== "valid" ? "integrity" : null,
+    })) } : null);
+  expect(result.unaffected).toEqual(diagnosed ? initial.items[1] : null);
   expect(result.verificationFailure).toBe(mode === "valid" ? "" : mode === "stale-catalog" ? "stale" : "integrity");
   expect(result.verification).toEqual(mode === "valid" ? {
     reference: opened.catalog.reference, verifiedItems: initial.items.length,
@@ -1231,6 +1255,77 @@ test(`pinned canonical snapshot reading offline with ${mode} never mixes version
   expect(await personalSnapshot(page)).toEqual(personal);
 });
 }
+
+test("wrong-sized immutable reuse refuses before materializing damaged bytes and preserves the active root", async ({ page }) => {
+  await setup(page);
+  const personal = await personalSnapshot(page);
+  const result = await page.evaluate(async ({ config, fixture }) => {
+    const path = "/isolated-content-store.js";
+    const backend: typeof import("../isolated-content") = await import(path);
+    let store = await backend.ContentStore.open(config);
+    await store.withWriter((await store.snapshot()).control, async writer => {
+      await writer.begin(fixture.plan);
+      for (const object of fixture.objects) await writer.putObject(object.sha256, new Uint8Array(object.bytes));
+      await writer.activate(async (plan, read) => {
+        for (const object of plan.required) await read(object.sha256);
+      });
+    });
+    const before = await store.snapshot();
+    store.close();
+    const database = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open(config.databaseName);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const oversized = config.maxObjectBytes + 1;
+    await new Promise<void>((resolve, reject) => {
+      const transaction = database.transaction("objects", "readwrite");
+      transaction.objectStore("objects").put({
+        sha256: fixture.first.sha256, encodedBytes: fixture.first.encodedBytes, bytes: new Blob([new Uint8Array(oversized)]),
+      });
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+    database.close();
+    store = await backend.ContentStore.open(config);
+    const original = Blob.prototype.arrayBuffer;
+    let materializations = 0, reuseFailure = "", readFailure = "";
+    Blob.prototype.arrayBuffer = function () {
+      if (this.size === oversized) {
+        materializations++;
+        throw new Error("Damaged oversized bytes must not be materialized");
+      }
+      return original.call(this);
+    };
+    try {
+      try {
+        await store.withWriter((await store.snapshot()).control, async writer => {
+          await writer.begin(fixture.plan);
+          await writer.putObject(fixture.first.sha256, new Uint8Array(fixture.first.bytes));
+        });
+      } catch (reason) {
+        if (!(reason instanceof backend.ContentError)) throw reason;
+        reuseFailure = reason.code;
+      }
+      try { await store.withActiveReader(async (_plan, read) => read(fixture.first.sha256)); }
+      catch (reason) {
+        if (!(reason instanceof backend.ContentError)) throw reason;
+        readFailure = reason.code;
+      }
+    } finally { Blob.prototype.arrayBuffer = original; }
+    const after = await store.snapshot();
+    store.close();
+    return { before, after, materializations, reuseFailure, readFailure };
+  }, { config: config(), fixture: fixture(1) });
+  expect(result.reuseFailure).toBe("integrity");
+  expect(result.readFailure).toBe("integrity");
+  expect(result.materializations).toBe(0);
+  expect(result.after.control.active).toEqual(result.before.control.active);
+  expect(result.after.control.target?.phase).toBe("paused");
+  expect(result.after.objects).toEqual(result.before.objects);
+  expect(await personalSnapshot(page)).toEqual(personal);
+});
 
 for (const evidence of ["valid", "missing", "corrupt"] as const) {
 test(`fresh-page atomic transfer resume uses only ${evidence} retained evidence and never a current feed or remembered candidate`, async ({ page, context }) => {

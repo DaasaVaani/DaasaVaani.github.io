@@ -498,6 +498,18 @@ evidence is not established.
   objects) observed receipts, the validator's global identity set and bounded
   current-item decoding, not all retained item bodies. No cache, scheduler,
   repair, shell/index proof or degraded-readiness result is installed.
+  The separate [canonical item inspector](snapshot-validation.md#isolated-canonical-item-damage-inspection)
+  uses the same identity collector as strict complete validation, retaining
+  line-to-item ownership to mark every observed cross-item collision. Reserved
+  catalog lyric UUIDs disable only the item containing a conflicting line.
+  Its serial time is O(encoded/decoded bytes + items + decoded line IDs); memory
+  is O(items + decoded line IDs), bounded current-item decoding and metadata.
+  It reports explicit per-item problems, not unknown bodies' identities or full
+  degraded readiness. Operational errors/abort reject instead of becoming damage.
+  Physical metadata admission checks strict rows/receipts/roots separately from
+  payload health; a wrong-sized/non-Blob body does not block unaffected reads.
+  Per-object reads and immutable reuse check type/length before allocation/hash.
+  This does not repair corrupt immutable bytes or relax metadata/schema checks.
 - **Analysis needed:** integrate the approved reachability rules across production
   consumers/jobs, including native reader lifetime and fencing races. Define audit
   scheduling, verification-cache validity and capability/readiness dependency

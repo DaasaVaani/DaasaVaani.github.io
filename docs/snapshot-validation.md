@@ -643,9 +643,10 @@ unprepared content and cancellation fail explicitly without partial-success
 counts, empty content or retries. Existing independent selected-item reads remain
 available; verification does not remove roots, mark all content unusable, repair
 immutable objects, fetch replacements, activate a target or touch personal data.
-It is not imported by the application. Same-version repair, damaged-entry/
-capability reporting, readiness dependencies, opportunistic audit scheduling and
-live consent/recovery UI remain open.
+It is not imported by the application. The separate item inspector below can
+identify canonical item problems without changing this all-or-error operation.
+Same-version repair, capability-level reporting/readiness dependencies,
+opportunistic audit scheduling and live consent/recovery UI remain open.
 
 [Units](../src/snapshot-reader.test.ts) cover actual unique counts and repeated
 metadata reads, later-item/metadata damage, hash-valid schema failure, global line
@@ -654,6 +655,66 @@ storage errors and pre/late cancellation. The existing actual IndexedDB/Web Lock
 browser cases also run complete verification offline for valid, metadata-damaged,
 item-damaged and intervening-activation cases, requiring explicit failure or exact
 counts, zero lyric requests and unchanged content/personal state.
+
+## Isolated canonical item-damage inspection
+
+`inspectActiveSnapshotItems(store, expectedReference, validationLimits, signal?)`
+in [the reader adapter](../src/snapshot-reader.ts) supplies a narrower OFF-08/16
+and QUAL-06 diagnostic prerequisite. It captures the selected exact reference and
+strict bounds before acquiring one active-reader pin, refuses stale selections
+before bytes, and reconstructs the original descriptor/manifest/policy. It then
+reads and checks every canonical item through the existing actual hash/length,
+bounded gzip/canonical JSON, schema and item/catalog-binding decoder.
+
+The copied result is exactly `{ reference, items }`, with items in admitted
+catalog order and each row exactly `{ lyricId, itemSha256, problem }`:
+
+| `problem` | Meaning |
+| --- | --- |
+| `null` | The item passed actual byte/decoded checks and the applicable identity checks in this inspection |
+| `integrity` | Required item bytes are absent, length/hash-invalid or fail bounded gzip/canonical JSON validation |
+| `invalid` | Decoded item schema or catalog binding is invalid |
+| `unsupported` | The item requires an unsupported format/capability |
+| `identity` | Decoded line identities conflict with another decoded item's lines or a reserved catalog lyric UUID |
+
+Identity collection is shared with the existing strict complete validator.
+A cross-item line collision marks **all** observed owners, not an arbitrary first
+winner. A line colliding with a reserved lyric UUID marks the item containing
+that line, not the independently valid lyric whose UUID was reserved. Unreadable/
+unsupported bodies contribute no trusted line identities; this diagnostic does
+not pretend to prove unknown contents or replace complete initial validation.
+It retains only problem rows and identity ownership, not all decoded lyric bodies.
+
+Only recognized item-integrity and consumer-schema/capability failures become
+explicit problem rows. Metadata damage/unsupported metadata, missing active
+content, storage failures, stale selections and cancellation reject the operation.
+Cancellation is checked before classifying a typed error, so an integrity-shaped
+abort reason cannot be mistaken for a damaged item. There are no partial-success
+results after an operational failure or successful empty-catalog fallbacks.
+Original exception text is not copied into problem rows.
+
+The report does not write, repair, fetch replacements, deactivate content,
+substitute another version, cache readiness or alter personal state. Independently
+verified items remain available through the existing selected-item reader. A
+`null` problem is point-in-time canonical-item evidence, not proof of shell/
+fonts/search/verse readiness or successful complete first preparation. Do not use
+this diagnostic as an activation validator. The application still imports none
+of these isolated adapters; degraded capability/list readiness, recovery guidance,
+consent and same-version repair remain integration gates.
+
+[Units](../src/snapshot-reader.test.ts) exercise copied ordered reports, missing/
+corrupt bytes, hash-valid schema/major refusal, all owners of three-way collisions,
+reserved-UUID collisions, damaged metadata, captured selections/bounds, stale
+input, pre/late typed cancellation and late storage failure. Actual offline
+IndexedDB/Web Locks tests additionally delete an item row to model eviction,
+corrupt same-length bytes and supply short/oversized/non-Blob payloads. These
+produce the exact affected-entry diagnosis while
+an independently verified other lyric still reads literally, with no lyric
+requests or content/personal writes. Full verification continues to reject either
+missing or corrupt data. Physical opening still rejects malformed receipts/roots/
+unknown fields, but does not mistake a damaged byte payload for globally invalid
+metadata. Separate immutable-reuse tests trap oversized payload materialization,
+require explicit refusal and preserve active content metadata and paused progress.
 
 ## Provenance and remaining gates
 

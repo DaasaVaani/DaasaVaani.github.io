@@ -1,5 +1,58 @@
 # Documentation history
 
+## 2026-11-13: isolated canonical item-damage diagnostics
+
+- After publishing the complete verifier, continued the owner's requested next
+  task without changing the immutable-object repair protocol, consumer pins or
+  live offline gate. Added exact-reference pinned item diagnostics and a candidate
+  inspector using existing actual byte/decoded checks. Explicit problem rows
+  identify integrity, schema, unsupported and global identity failures; they
+  preserve independent reads and never constitute initial activation/readiness.
+- Extracted the complete validator's global identity collector for both strict
+  validation and diagnostic ownership reporting. All observed owners of a shared
+  line are marked; a reserved lyric UUID collision marks only the item containing
+  that line. Operational failures and typed cancellation still reject, with no
+  partial report, automatic repair, root/personal writes or network fallback.
+- Added ten unit cases and a real native item-row eviction scenario, plus
+  diagnostic/independent-read assertions in the existing offline scenarios.
+  `npm test -- snapshot-reader snapshot-validation snapshot-staging --maxWorkers=2`
+  passed97/97; `node node_modules\typescript\bin\tsc --noEmit` passed.
+  `node node_modules\@playwright\test\cli.js test content-store --grep 'pinned canonical snapshot reading offline' --workers=1`
+  passed15/15 across all three projects after a fresh strict production build.
+- Archived guide wording: complete verification previously listed "damaged-entry/
+  capability reporting" as wholly open. The new isolated canonical-item diagnostic
+  narrows that gap only; capability/list readiness, user-facing recovery guidance,
+  immutable same-version repair and genuine publication activation remain open.
+- While checking the physical boundary, found that dataset admission rejected
+  wrong-sized/non-Blob bodies globally, blocking unrelated verified content.
+  Separated strict metadata admission from per-object payload health. Existing
+  reads still reject bad type/length before allocating bytes; immutable reuse
+  now makes that pre-materialization length check explicit as well. Unknown row
+  fields, invalid receipts/roots/control and database layouts remain refused;
+  no schema version, immutable overwrite or readiness fallback was introduced.
+- Stopped the initial planned612-test full browser run before completion after
+  finding this coupled issue; it is not a pass and is not final-tree evidence.
+  Added short/oversized/non-Blob native cases and a dedicated immutable-reuse trap.
+  Fresh focused `npm test -- snapshot-reader snapshot-validation snapshot-staging --maxWorkers=2`
+  passed97/97 and strict types passed.
+  `node node_modules\@playwright\test\cli.js test content-store --grep 'pinned canonical snapshot reading offline|wrong-sized immutable reuse|future or changed database schemas' --workers=1`
+  passed30/30 across all three projects after a fresh strict production build.
+- Archived physical-guide wording: "invalid existing records" previously included
+  payload type/length failure at metadata admission. Invalid metadata remains a
+  hard refusal; isolated payload damage is now an explicit verified-read failure,
+  not a global metadata failure or successful content/readiness claim.
+- Final `npm test -- --maxWorkers=2` passed406/406 across27 files.
+  Complete `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed624/624 across desktop/mobile/narrow in11.2 minutes after fresh fixture
+  publication, strict TypeScript and production build. Used the documented clean
+  pinned c2837cc publisher override; the stopped earlier run was not reused.
+  Documentation passed eight changed Markdown files and all153 unique requirement
+  IDs; strict YAML passed4 files, configured actionlint1.7.12/ShellCheck0.11.0
+  and staged/unstaged whitespace checks passed.
+- Fresh read-only provisioning checks still found organization App installations0,
+  protected publisher environment secrets0 and variables0. No live writer, feed
+  sequence, credential fallback or production offline enablement was assumed.
+
 ## 2026-11-13: complete isolated active-snapshot revalidation
 
 - Continued the owner's authorized main-only implementation after confirming
@@ -36,6 +89,11 @@
   verified complete snapshots or explicitly refused damaged/stale selections,
   with no content/personal changes or lyric requests. Strict YAML passed4 files;
   final documentation and staged/unstaged whitespace checks passed.
+- Published main `d10a74d73ca3f31c1a2af67cad7df9de3aeace6c`.
+  Exact Repository checks43419545071 passed actual396 units/609 browsers and
+  deployment; CodeQL43419544636 passed both languages. Live root/open HTML and
+  837294-byte JavaScript matched Pages artifact14033403965 exactly, with prior
+  runtime hashes unchanged.
 
 ## 2026-11-13: validating saved settings changes for authorized publication
 

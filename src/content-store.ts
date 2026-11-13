@@ -58,7 +58,6 @@ async function dataset(database: ContentDatabase, limits: ContentLimits): Promis
     if (!control || controlCount !== 1) throw new ContentError("invalid", "Content control is missing or duplicated");
     const objects = rows.map(row => {
       if (!row || Object.keys(row).sort().join(",") !== "bytes,encodedBytes,sha256") throw new ContentError("invalid", "Unexpected stored object fields");
-      if (!(row.bytes instanceof Blob) || row.bytes.size !== row.encodedBytes) throw new ContentError("integrity", "Stored object length differs from its receipt");
       return { sha256: row.sha256, encodedBytes: row.encodedBytes };
     });
     const value = { control, snapshots, objects };
@@ -310,8 +309,9 @@ class ContentWriter implements ContentWriteScope {
       throw new ContentError("integrity", "Object does not match the target's required digest or length");
     }
     const existing = await this.store.object(sha256);
-    if (existing && (!(existing.bytes instanceof Blob) || await hash(new Uint8Array(await existing.bytes.arrayBuffer())) !== sha256)) {
-      throw new ContentError("integrity", "Existing immutable object has an incorrect digest");
+    if (existing && (!(existing.bytes instanceof Blob) || existing.bytes.size !== bytes.length ||
+        existing.encodedBytes !== bytes.length || await hash(new Uint8Array(await existing.bytes.arrayBuffer())) !== sha256)) {
+      throw new ContentError("integrity", "Existing immutable object has an incorrect type, digest or length");
     }
     return this.change((value, expected) => recordContentObject(value, expected, { sha256, encodedBytes: bytes.length }, this.store.config),
       { sha256, encodedBytes: bytes.length, bytes: new Blob([bytes]) });

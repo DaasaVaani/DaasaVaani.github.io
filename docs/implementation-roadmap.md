@@ -112,6 +112,14 @@ The isolated adapter also offers
 exact-reference, actual original bytes, full canonical decoding and global
 identities under one pin, with no mutation or cached readiness flag. Same-version
 repair, degraded capability/readiness evaluation and recovery UI remain open.
+The [isolated canonical item inspector](snapshot-validation.md#isolated-canonical-item-damage-inspection)
+now reports specific bad/missing/unsupported/identity-conflicting items without
+deactivating independently verified content. Actual offline item-row eviction
+and corrupt-byte cases retain literal unaffected reads. It neither repairs
+immutable objects nor supplies full degraded capability/list readiness or UI.
+Physical admission no longer globally rejects otherwise valid metadata because
+one payload is short, oversized or non-Blob; actual reads and reuse reject that
+object before materialization, while schema/receipt validation remains strict.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

@@ -55,6 +55,11 @@ without network fallback or application enablement.
 Its [complete active-snapshot check](snapshot-validation.md#isolated-complete-active-snapshot-verification)
 additionally revalidates every canonical original and global identity under one
 pin, without caching a readiness claim or enabling repair.
+Its [canonical item inspector](snapshot-validation.md#isolated-canonical-item-damage-inspection)
+reports specific integrity/schema/capability/identity problems while preserving
+independently verified item reads, not complete degraded readiness or recovery UI.
+Physical metadata admission leaves damaged payloads to per-object byte checks,
+so one wrong-sized/non-Blob item does not block unrelated verified content.
 
 ## Owners
 

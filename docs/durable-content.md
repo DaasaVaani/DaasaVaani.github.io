@@ -37,8 +37,15 @@ database's nonblocking exclusive writer lock, the exact version/store/key/index
 layout, one valid control row, matching plan keys and complete portable metadata
 validation. Missing or corrupt existing control is not initialized away.
 Unsupported Web Locks fail before creating a substitute database. Future versions,
-unexpected schemas and invalid existing records are refused without deletion or
+unexpected schemas and invalid existing metadata records are refused without deletion or
 fallback. An existing unrelated database must never be used as a content database.
+
+Valid writes still store a Blob with its exact receipt. On existing data, opening
+and snapshot inspection validate receipt fields/relationships, not payload health:
+a wrong-sized or non-Blob payload does not prevent independent objects from being
+read. Unknown object fields, bad receipts, invalid roots/control and unsupported
+database layouts still fail closed. Every actual read rejects the damaged payload
+before returning bytes; wrong type/length is checked before materialization.
 
 Snapshots expose metadata only. Blob receipts and their lengths do not prove
 their digest, decoded schema, capability coverage, fonts, app-shell availability
@@ -108,7 +115,8 @@ their subsequent commit still uses the original captured fence.
 
 `putObject` copies input, requires the target's exact digest and encoded length,
 applies the explicit single-object bound and checks actual SHA-256. Reusing a
-stored digest independently verifies the existing immutable Blob. Corrupt reuse
+stored digest independently verifies the existing immutable Blob, checking type/
+length before materialization and hashing. Corrupt reuse
 is refused, not silently repaired or replaced.
 
 `readObject` requires a current target and checks the captured epoch/revision before
@@ -185,6 +193,13 @@ Chromium desktop/mobile/narrow projects use real IndexedDB and Web Locks:
   under one actual reader pin, including offline whole-snapshot success, damaged
   original metadata/items and stale selection; counts require actual bytes and
   full decoded/global-identity validation, with no writes or repair.
+- [canonical item-damage inspection](snapshot-validation.md#isolated-canonical-item-damage-inspection)
+  identifies missing/corrupt item originals under an active pin while independent
+  literal item reads remain usable. Actual item-row deletion models isolated
+  eviction; inspection neither writes readiness nor weakens complete activation.
+  Short, oversized and non-Blob payloads likewise leave independent reads usable.
+  An oversized immutable-reuse trap proves refusal before payload materialization,
+  unchanged active/object metadata, a paused failed target and no implicit repair.
 
 Incremental command:
 

@@ -253,6 +253,19 @@ failure and pre/late cancellation. The offline native browser cases require
 complete canonical verification or explicit failure with zero requests/writes.
 These checks do not enable live publication, scheduling or repair, or prove fonts,
 degraded readiness, full multilingual/search/verse support or release.
+The same selector covers
+[canonical item diagnostics](snapshot-validation.md#isolated-canonical-item-damage-inspection):
+ordered copied problem rows, isolated missing/corrupt item bytes, hash-valid
+invalid/unsupported items, every owner of line collisions, reserved lyric UUIDs,
+metadata refusal and operational-error/typed-cancellation propagation. Offline
+native cases now include actual item-row deletion and require both the affected
+diagnosis and an independent literal unaffected read, with no requests/writes.
+Short, oversized and non-Blob payloads have the same explicit per-item behavior.
+An oversized immutable-reuse trap requires zero payload materializations,
+explicit refusal, preserved active/object metadata and durable pause; existing
+future-schema/control refusal checks remain required.
+Complete validation/activation remains separate and cannot accept a diagnostic
+report as proof of readiness.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

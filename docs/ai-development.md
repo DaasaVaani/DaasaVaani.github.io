@@ -97,6 +97,13 @@ The separate [complete active verification](snapshot-validation.md#isolated-comp
 reconstructs and fully revalidates that exact canonical snapshot under one pin,
 returning unique verified-original counts only on complete success. It supplies
 no cached readiness, repair, damaged-capability map or user-facing audit schedule.
+A separate [canonical item inspector](snapshot-validation.md#isolated-canonical-item-damage-inspection)
+returns exact per-item problems under a pin, preserves independent reads and
+propagates operational failures; it is not an activation validator or list/
+shell/search readiness evaluation.
+Physical metadata admission tolerates damaged payload bodies, not malformed
+receipts or unknown fields; verified reads and immutable reuse still reject bad
+type/length before allocating payload bytes.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.
