@@ -181,6 +181,10 @@ Chromium desktop/mobile/narrow projects use real IndexedDB and Web Locks:
   writer-page death, then completion/activation without a supplied descriptor;
 - missing/corrupt evidence preservation and read-only scoped revision/copy/fence/
   abort/late-use checks.
+- [complete active canonical verification](snapshot-validation.md#isolated-complete-active-snapshot-verification)
+  under one actual reader pin, including offline whole-snapshot success, damaged
+  original metadata/items and stale selection; counts require actual bytes and
+  full decoded/global-identity validation, with no writes or repair.
 
 Incremental command:
 

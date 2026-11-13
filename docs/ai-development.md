@@ -93,6 +93,10 @@ offline reading; the full approved product scope remains unchanged. Its isolated
 reconstructs actual stored metadata and reads copied catalog/one bounded item
 under active pins, refusing stale displayed identities and damage without network
 fallback. No app import or live unsequenced-feed conversion is enabled.
+The separate [complete active verification](snapshot-validation.md#isolated-complete-active-snapshot-verification)
+reconstructs and fully revalidates that exact canonical snapshot under one pin,
+returning unique verified-original counts only on complete success. It supplies
+no cached readiness, repair, damaged-capability map or user-facing audit schedule.
 Do not confuse these isolated prerequisites with live transport or
 advertise these capabilities in app settings or substitute it for complete
 production validation, authenticated publication or live offline preparation.

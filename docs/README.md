@@ -52,6 +52,9 @@ reconstructs from original stored evidence under the same complete writer scope.
 The [isolated pinned canonical reader](snapshot-validation.md#isolated-pinned-canonical-reader)
 owns copied catalog/single-item projections under actual active-reader pins,
 without network fallback or application enablement.
+Its [complete active-snapshot check](snapshot-validation.md#isolated-complete-active-snapshot-verification)
+additionally revalidates every canonical original and global identity under one
+pin, without caching a readiness claim or enabling repair.
 
 ## Owners
 

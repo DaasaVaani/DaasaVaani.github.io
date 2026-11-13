@@ -107,6 +107,11 @@ now reconstructs actual stored metadata and serves copied catalog/selected items
 with exact displayed-version binding and no damage/network fallback. Live
 sequenced publication/state initialization, settings, consent/storage UI and
 application enablement still must close before the milestone becomes usable.
+The isolated adapter also offers
+[complete active-snapshot verification](snapshot-validation.md#isolated-complete-active-snapshot-verification):
+exact-reference, actual original bytes, full canonical decoding and global
+identities under one pin, with no mutation or cached readiness flag. Same-version
+repair, degraded capability/readiness evaluation and recovery UI remain open.
 
 Website UX-01/07 includes [public canonical lyric links](lyric-preview.md#public-lyric-links):
 explicit copy/system sharing with an always-selectable URL, exact canonical

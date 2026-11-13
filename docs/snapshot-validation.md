@@ -616,6 +616,45 @@ linguistic approval, system-wide degraded readiness or cross-item validity alone
 Repeated reader calls intentionally repeat bounded metadata verification; no
 unvalidated parsed cache is installed.
 
+## Isolated complete active-snapshot verification
+
+`verifyActiveSnapshot(store, expectedReference, validationLimits, signal?)` in
+[the same isolated adapter](../src/snapshot-reader.ts) supplies a read-only
+OFF-07/08/16 and QUAL-06 integrity-check prerequisite. It captures the selected
+sequence/manifest and strict bounds before acquiring one active-reader pin.
+A changed selection fails `stale` before object reads. Under that pin it
+reconstructs from original stored evidence, then runs the existing complete
+`candidate.validate` against the exact plan: actual descriptor/manifest/policy
+and every item, encoded SHA/length, bounded decoding, canonical JSON, schema,
+catalog binding and snapshot-wide lyric/line identity uniqueness.
+
+Only successful complete verification returns
+`{ reference, verifiedItems, verifiedObjects, verifiedEncodedBytes }`. Counts
+include unique actually read originals, including the plain descriptor, never
+ZIP archives or repeated metadata-read traffic. Every required hash/length must
+have been observed; receipt presence is not accepted as byte or decoded proof.
+The returned reference is copied. The result is a point-in-time certificate for
+that exact pinned canonical prelaunch snapshot, **not an offline-ready flag**:
+it is not persisted, does not verify shell/fonts/search/verse capabilities, and
+cannot establish that later reads or a subsequently active version remain sound.
+
+Damage, invalid global identities, storage failures, unsupported evidence,
+unprepared content and cancellation fail explicitly without partial-success
+counts, empty content or retries. Existing independent selected-item reads remain
+available; verification does not remove roots, mark all content unusable, repair
+immutable objects, fetch replacements, activate a target or touch personal data.
+It is not imported by the application. Same-version repair, damaged-entry/
+capability reporting, readiness dependencies, opportunistic audit scheduling and
+live consent/recovery UI remain open.
+
+[Units](../src/snapshot-reader.test.ts) cover actual unique counts and repeated
+metadata reads, later-item/metadata damage, hash-valid schema failure, global line
+conflicts despite valid individual reads, captured selections/bounds, stale input,
+storage errors and pre/late cancellation. The existing actual IndexedDB/Web Locks
+browser cases also run complete verification offline for valid, metadata-damaged,
+item-damaged and intervening-activation cases, requiring explicit failure or exact
+counts, zero lyric requests and unchanged content/personal state.
+
 ## Provenance and remaining gates
 
 Byte/schema validity also does not authenticate a publisher's protected ledger,

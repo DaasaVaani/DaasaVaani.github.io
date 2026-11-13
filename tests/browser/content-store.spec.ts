@@ -1203,6 +1203,12 @@ test(`pinned canonical snapshot reading offline with ${mode} never mixes version
     const backend: typeof import("../isolated-content") = await import(path);
     const store = await backend.ContentStore.open(config), before = await store.snapshot();
     let failure = "", item: Awaited<ReturnType<typeof backend.readActiveSnapshotItem>> | null = null;
+    let verificationFailure = "", verification: Awaited<ReturnType<typeof backend.verifyActiveSnapshot>> | null = null;
+    try { verification = await backend.verifyActiveSnapshot(store, reference, limits); }
+    catch (reason) {
+      if (!(reason instanceof backend.ContentError)) throw reason;
+      verificationFailure = reason.code;
+    }
     try { item = await backend.readActiveSnapshotItem(store, reference, lyricId, limits); }
     catch (reason) {
       if (!(reason instanceof backend.ContentError)) throw reason;
@@ -1210,12 +1216,17 @@ test(`pinned canonical snapshot reading offline with ${mode} never mixes version
     }
     const after = await store.snapshot();
     store.close();
-    return { failure, item, before, after };
+    return { failure, item, before, after, verificationFailure, verification };
   }, { config: settings, reference: opened.catalog.reference, lyricId: selected.lyricId, limits: snapshotLimits() });
   expect(result.before).toEqual(result.after);
   expect(opened.catalog.entries).toEqual(initial.manifest.catalog);
   expect(result.failure).toBe(mode === "valid" ? "" : mode === "stale-catalog" ? "stale" : "integrity");
   expect(result.item).toEqual(mode === "valid" ? expectedItem : null);
+  expect(result.verificationFailure).toBe(mode === "valid" ? "" : mode === "stale-catalog" ? "stale" : "integrity");
+  expect(result.verification).toEqual(mode === "valid" ? {
+    reference: opened.catalog.reference, verifiedItems: initial.items.length,
+    verifiedObjects: Object.keys(initial.objects).length, verifiedEncodedBytes: initial.encodedBytes,
+  } : null);
   expect(network).toEqual([]);
   expect(await personalSnapshot(page)).toEqual(personal);
 });

@@ -1,11 +1,10 @@
 import { expect, test, vi } from "vitest";
 import type { ContentStore } from "./content-store";
 import { inspectSnapshot } from "./snapshot-validation";
-import { readActiveSnapshotCatalog, readActiveSnapshotItem } from "./snapshot-reader";
+import { readActiveSnapshotCatalog, readActiveSnapshotItem, verifyActiveSnapshot } from "./snapshot-reader";
 import { snapshotFixture, snapshotLimits } from "../tests/snapshot-fixture";
 
-async function setup() {
-  const fixture = snapshotFixture();
+async function setup(fixture = snapshotFixture()) {
   const read = vi.fn(async (sha256: string) => {
     const bytes = fixture.objects[sha256];
     if (!bytes) throw new Error("Missing synthetic object");
@@ -121,4 +120,83 @@ test("displayed reference is captured before asynchronous active pin acquisition
   const item = context.fixture.items[0];
   if (!item) throw new Error("Missing synthetic item");
   expect(await readActiveSnapshotItem(context.store, reference, item.lyricId, snapshotLimits())).toEqual(item);
+});
+test("complete active verification reads all original evidence and items and counts unique actual bytes only", async () => {
+  const { fixture, read, candidate, store } = await setup();
+  const result = await verifyActiveSnapshot(store, candidate.plan().reference, snapshotLimits());
+  expect(result).toEqual({ reference: candidate.plan().reference, verifiedItems: fixture.items.length,
+    verifiedObjects: Object.keys(fixture.objects).length, verifiedEncodedBytes: fixture.encodedBytes });
+  expect(read.mock.calls.map(([sha256]) => sha256)).toEqual([
+    fixture.descriptor.manifest.sha256, fixture.descriptorHash, fixture.descriptor.manifest.sha256, fixture.manifest.policy,
+    fixture.descriptorHash, fixture.descriptor.manifest.sha256, fixture.manifest.policy,
+    ...fixture.manifest.catalog.map(entry => entry.item),
+  ]);
+  result.reference.sequence++;
+  expect((await verifyActiveSnapshot(store, candidate.plan().reference, snapshotLimits())).reference).toEqual(candidate.plan().reference);
+  expect(result).not.toHaveProperty("ready");
+});
+test.each(["metadata", "item"] as const)("complete active verification fails explicitly on %s damage instead of reporting receipt counts", async role => {
+  const context = await setup(), entry = context.fixture.manifest.catalog[1];
+  if (!entry) throw new Error("Missing synthetic item");
+  const original = context.read.getMockImplementation();
+  if (!original) throw new Error("Missing synthetic reader");
+  context.read.mockImplementation(async sha256 => sha256 === (role === "metadata" ? context.fixture.descriptorHash : entry.item)
+    ? new Uint8Array((await original(sha256)).length) : original(sha256));
+  await expect(verifyActiveSnapshot(context.store, context.candidate.plan().reference, snapshotLimits()))
+    .rejects.toMatchObject({ code: "integrity" });
+});
+test("complete verification detects global line conflicts that independent item reads cannot prove away", async () => {
+  const fixture = snapshotFixture(), first = fixture.items[0]?.lines[0], second = fixture.items[1];
+  if (!first || !second || first.kind !== "line") throw new Error("Missing synthetic line");
+  second.lines = [{ ...first }];
+  const context = await setup(snapshotFixture({ items: fixture.items }));
+  for (const item of fixture.items) {
+    expect(await readActiveSnapshotItem(context.store, context.candidate.plan().reference, item.lyricId, snapshotLimits())).toEqual(item);
+  }
+  await expect(verifyActiveSnapshot(context.store, context.candidate.plan().reference, snapshotLimits()))
+    .rejects.toMatchObject({ code: "invalid" });
+});
+test("complete verification rejects hash-valid malformed item schema and layout instead of trusting encoded receipts", async () => {
+  const context = await setup(snapshotFixture({ item: item => ({ ...item, canonicalScript: "unsupported" }) }));
+  await expect(verifyActiveSnapshot(context.store, context.candidate.plan().reference, snapshotLimits()))
+    .rejects.toMatchObject({ code: "invalid" });
+});
+test("verification captures displayed identity and limits before waiting for the active pin", async () => {
+  const context = await setup(), reference = context.candidate.plan().reference, limits = snapshotLimits();
+  const original = context.store.withActiveReader;
+  context.store.withActiveReader = async (work, signal) => {
+    reference.sequence++;
+    limits.maxItems = 0;
+    return original(work, signal);
+  };
+  expect((await verifyActiveSnapshot(context.store, reference, limits)).reference).toEqual(context.candidate.plan().reference);
+});
+test("stale or invalid selections invalid limits and pre-cancellation produce no verification reads", async () => {
+  const context = await setup(), reference = context.candidate.plan().reference;
+  await expect(verifyActiveSnapshot(context.store, { ...reference, sequence: 2 }, snapshotLimits()))
+    .rejects.toMatchObject({ code: "stale" });
+  await expect(verifyActiveSnapshot(context.store, { ...reference, sequence: 0 }, snapshotLimits()))
+    .rejects.toMatchObject({ code: "invalid" });
+  await expect(verifyActiveSnapshot(context.store, reference, { ...snapshotLimits(), maxItems: 0 }))
+    .rejects.toMatchObject({ code: "invalid" });
+  const controller = new AbortController();
+  controller.abort();
+  await expect(verifyActiveSnapshot(context.store, reference, snapshotLimits(), controller.signal)).rejects.toBe(controller.signal.reason);
+  expect(context.read).not.toHaveBeenCalled();
+});
+test("late cancellation and storage failures are not converted into successful verification or empty content", async () => {
+  const context = await setup(), controller = new AbortController(), original = context.read.getMockImplementation();
+  if (!original) throw new Error("Missing synthetic reader");
+  const cancellation = new Error("Synthetic verification cancellation");
+  const finalHash = context.fixture.manifest.catalog.at(-1)?.item;
+  context.read.mockImplementation(async sha256 => {
+    const bytes = await original(sha256);
+    if (sha256 === finalHash) controller.abort(cancellation);
+    return bytes;
+  });
+  await expect(verifyActiveSnapshot(context.store, context.candidate.plan().reference, snapshotLimits(), controller.signal))
+    .rejects.toBe(cancellation);
+  const failure = new DOMException("Synthetic unavailable storage", "UnknownError");
+  context.read.mockRejectedValue(failure);
+  await expect(verifyActiveSnapshot(context.store, context.candidate.plan().reference, snapshotLimits())).rejects.toBe(failure);
 });

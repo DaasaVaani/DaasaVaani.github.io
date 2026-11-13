@@ -245,8 +245,14 @@ fields and cancellation. Native `content-store` browser cases activate real
 synthetic snapshots, turn the browser offline and exercise valid literal reads,
 metadata/item damage and an intervening activation after catalog selection.
 They require explicit failures, no lyric requests and unchanged content/personal
-state during reads. These checks do not enable live publication or prove fonts,
-global audit/degraded readiness, full multilingual/search/verse support or release.
+state during reads. The same selector also checks the
+[complete active verifier](snapshot-validation.md#isolated-complete-active-snapshot-verification):
+unique actual original counts, full decoded/schema/global line-identity checks,
+captured identity/bounds, stale selection, metadata/later-item damage, storage
+failure and pre/late cancellation. The offline native browser cases require
+complete canonical verification or explicit failure with zero requests/writes.
+These checks do not enable live publication, scheduling or repair, or prove fonts,
+degraded readiness, full multilingual/search/verse support or release.
 
 Native URL construction, chooser/copy/manual controls, canonical-only list
 occurrences and focused reading use the

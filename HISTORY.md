@@ -1,5 +1,42 @@
 # Documentation history
 
+## 2026-11-13: complete isolated active-snapshot revalidation
+
+- Continued the owner's authorized main-only implementation after confirming
+  Website, Android and Library were clean; their prior settings/token tasks were
+  already committed/published. Chose a nonmutating offline-recovery prerequisite
+  rather than silently changing Shared's immutable-object repair protocol or
+  treating the legacy live feed as sequenced.
+- Added `verifyActiveSnapshot`: exact captured reference/bounds, one active-reader
+  pin, original-evidence reconstruction, existing complete decoded/global-identity
+  validator and unique actually observed original counts. It returns no partial
+  success, persisted readiness, network fallback, repair or application enablement.
+  Existing independent selected-item reading is unchanged.
+- Added eight unit cases and complete-verification assertions to the four existing
+  native offline reader scenarios. The first focused run passed18/19: the late
+  cancellation test evaluated `signal.reason` before its asynchronous abort.
+  Fixed that assertion by supplying an explicit known cancellation identity,
+  without altering production behavior. `npm test -- snapshot-reader` then
+  passed19/19 and `node node_modules\typescript\bin\tsc --noEmit` passed.
+- Archived wording: the previous ALG-10 isolated-reader paragraph said it was
+  "not full cross-item validation, global audit or a degraded-readiness flag."
+  Catalog/individual reads still do not provide those guarantees; the separate
+  complete verifier now covers only full canonical snapshot integrity. Scheduling,
+  degraded capability/readiness evaluation, same-version repair and live recovery
+  remain unimplemented.
+- Complete `npm test -- --maxWorkers=2` passed396/396 across27 files.
+  `python C:\Users\pots\.copilot\session-state\07e66fba-1298-4e18-a7f3-425107e370c0\files\validate-first-use-docs.py`
+  passed eight changed Markdown files and all153 unique requirement IDs.
+  Configured actionlint1.7.12 with ShellCheck0.11.0 passed; current main/admin
+  routing and the independent no-bypass force/delete guard were reverified.
+- Full `node node_modules\@playwright\test\cli.js test --workers=1` passed609/609
+  across desktop/mobile/narrow in12.7 minutes after fresh fixture publication,
+  strict TypeScript and production build. Used the documented clean pinned
+  c2837cc fixture publisher override. All12 native offline reader scenarios also
+  verified complete snapshots or explicitly refused damaged/stale selections,
+  with no content/personal changes or lyric requests. Strict YAML passed4 files;
+  final documentation and staged/unstaged whitespace checks passed.
+
 ## 2026-11-13: validating saved settings changes for authorized publication
 
 - Owner requested commit/push followed by the next task. Freshly fetched Website

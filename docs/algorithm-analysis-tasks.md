@@ -488,7 +488,16 @@ evidence is not established.
   Metadata/gzip/hash copies and original descriptor retention remain additional
   memory/I/O, with no verified parsed-cache shortcut. Displayed-reference
   comparison precedes reads to prevent silent cross-version selection. This is
-  not full cross-item validation, global audit or a degraded-readiness flag.
+  not full cross-item validation or a degraded-readiness flag by itself.
+  [Complete active verification](snapshot-validation.md#isolated-complete-active-snapshot-verification)
+  separately reconstructs and runs the existing whole canonical validator inside
+  one active-reader pin, with exact displayed-reference binding. Unique observed
+  hash/length counts include every required original, not repeated metadata
+  traffic. Time is O(total encoded/decoded bytes + catalog entries + line IDs),
+  with bounded repeated metadata reads; additional memory includes O(original
+  objects) observed receipts, the validator's global identity set and bounded
+  current-item decoding, not all retained item bodies. No cache, scheduler,
+  repair, shell/index proof or degraded-readiness result is installed.
 - **Analysis needed:** integrate the approved reachability rules across production
   consumers/jobs, including native reader lifetime and fencing races. Define audit
   scheduling, verification-cache validity and capability/readiness dependency
