@@ -102,7 +102,7 @@ export function PersonalBackup({ labels, store }: { labels: Labels; store: Perso
         <p>{labels.backupReplacementNotice}</p><p>{labels.listName}: {names.join(" / ")}</p>
       </aside>)}
       <label htmlFor={`${id}-data`}>{labels.backupPreview}</label>
-      <textarea id={`${id}-data`} readOnly rows={10} value={candidate.text} style={{ width: "100%", boxSizing: "border-box" }} />
+      <textarea id={`${id}-data`} readOnly rows={10} value={candidate.text} />
       <p>{labels.backupReplacementNotice}</p>
       {stale && <p role="alert">{labels.backupStale}</p>}
       <button disabled={Boolean(busy) || Boolean(stale)} onClick={() => void restore()}>{labels.backupReplace}</button>

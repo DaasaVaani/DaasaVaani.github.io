@@ -342,6 +342,14 @@ is incremental only; complete finalization/push validation remains mandatory.
 This is bounded UX-11/QUAL-01 regression evidence, not an automated WCAG audit,
 exhaustive keyboard/screen-reader/scaling coverage, native-platform proof or a
 formal accessibility-conformance claim.
+The same accessibility selector also exercises the personal-backup preview
+textarea in every theme/UI locale, online and after an actual installed-interface
+offline reload. It requires exact owned text/surface/border colors, inherited
+interface font, full-width/no-overflow layout, measured4.5:1 text and3:1 boundary/
+focus contrast, keyboard select-all and read-only deletion refusal. Preview/
+selection/cancellation preserve the complete personal database and request no
+Library data. The existing `personal-backup` suite independently retains explicit
+confirmed replacement, worker/quota/stale-fence and cancellation behavior.
 Native10/20/30/40/50/60/70-to80 database cases structurally
 type legacy favorites/entries while preserving their raw values and every
 list/occurrence ID, refreshing the local fence and rolling back invalid or

@@ -818,7 +818,12 @@ text are preserved.
 Import retains a validated candidate plus the observed local fence. A complete
 read-only JSON preview exposes every value as text, with platform/date,
 collection counts, exact recitation IDs and equal-name groups derived with the
-pinned Unicode16 profile. Existing-data export is offered before replacement.
+pinned Unicode16 profile. The selectable textarea shares the normal interface
+font and theme text/surface/border tokens, responsive full-width control layout
+and visible keyboard focus outline. It stays read-only, including during keyboard
+selection/deletion, online and in the installed offline interface. Styling never
+changes the validated candidate, locale, saved data or confirmation requirements.
+Existing-data export is offered before replacement.
 Choosing/previewing a file changes no personal data. Confirmation invokes the
 atomic replacement above; peer edits disable confirmation and require a new
 preview. Same-name lists remain independent; this is not minimal-list import,

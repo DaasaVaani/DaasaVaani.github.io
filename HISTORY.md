@@ -1,5 +1,42 @@
 # Documentation history
 
+## 2026-11-16: themed selectable personal-backup preview
+
+- Continued after publishing the recovered accessibility task. Found the existing
+  backup textarea omitted normal interface font/theme/border/focus rules, relying
+  on browser appearance and redundant inline width/box-sizing. Added textarea to
+  existing shared control selectors and removed the inline layout only. Preserved
+  read-only complete text, label, row count, candidate/fence/confirmation and all
+  backup formats/settings; no dependencies or generated resources changed.
+- Added six theme/locale scenarios in the actual accessibility suite, each online
+  and after installed-interface offline reload. They require exact theme colors,
+  inherited font, contrast/boundary/focus thresholds, complete keyboard selection,
+  read-only deletion refusal, bounded responsive layout and complete personal-data
+  preservation through preview/cancel, without Library requests.
+- The initial regression command found no matching tests because the new block
+  was accidentally inserted inside an existing callback; moved it to top-level
+  before using it as evidence. The properly discovered dark desktop case then
+  failed on real unthemed text: actual white versus configured dark-theme text.
+  Applied the existing CSS rules rather than adding another palette.
+- First complete focused run passed48/66; all18 new cases failed because the test
+  used Ctrl+Home/Ctrl+Shift+End for whole-value selection. Switched to the platform
+  select-all shortcut (`ControlOrMeta+A`), retaining the exact full-length
+  selection assertion. Fresh
+  `node node_modules\@playwright\test\cli.js test accessibility personal-backup --workers=1`
+  passed66/66 across all projects after strict fresh production build, including
+  existing confirmed restore, quota/worker/stale/cancellation regression cases.
+- Archived styling: the previous backup preview applied only inline100% width/
+  border-box sizing and browser-default textarea colors/font/focus. Shared themed
+  control styling now owns it; this does not alter backup content or readiness.
+- Final `npm test -- --maxWorkers=2` passed406/406 across27 files.
+  Complete `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed660/660 across desktop/mobile/narrow in12.9 minutes after a fresh strict
+  TypeScript/production build and the documented clean pinned c2837cc fixture
+  publisher override. Documentation4/153 unique requirement IDs, strict YAML4,
+  actionlint1.7.12 with ShellCheck0.11.0 and staged/unstaged whitespace passed.
+  Fresh main remained exact origin; administrator routing and independent
+  no-bypass force/delete protection were reverified before authorized publication.
+
 ## 2026-11-16: rendered reading-theme and keyboard accessibility baseline
 
 - Owner requested commit/push and next work. Fresh Website main was clean and
@@ -58,6 +95,11 @@
   and whitespace passed. The interrupted run remains failed history, not reused
   evidence. Reverified current administrator routing and no-bypass force/delete
   guard before authorized main publication.
+- Published main `fb5f448837da54ca7bbf3b8c7783c5374e199de3`.
+  Exact Repository checks43860599361 passed actual406 units/642 browsers and
+  deployment; CodeQL43860599690 passed both languages. Live root/open HTML and
+  837294-byte JavaScript matched Pages artifact14223535753 exactly; prior
+  runtime hashes stayed unchanged.
 
 ## 2026-11-13: isolated canonical item-damage diagnostics
 

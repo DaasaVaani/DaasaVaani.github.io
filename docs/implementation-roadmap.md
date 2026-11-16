@@ -170,6 +170,10 @@ skip-to-main traversal for English/Kannada across Light/Dark/Warm and all
 configured browser layouts. It preserves canonical text and personal state;
 complete keyboard/screen-reader/scaling/platform coverage remains open, with no
 formal accessibility-conformance claim.
+The complete personal-backup JSON preview also uses the same themed/font/focus
+control styles. Actual online/offline checks preserve read-only text, full keyboard
+selection, responsive layout and unchanged personal data through cancellation;
+backup schema/confirmation and offline lyric readiness are unchanged.
 
 The fixture capability is deliberately named `fixture-catalog-v1`; all UIs label
 synthetic records and unavailable features. Android bundles no lyrics and requires

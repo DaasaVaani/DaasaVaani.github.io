@@ -1,7 +1,9 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import messages from "../../shared/generated/web/ui.json" with { type: "json" };
-import { personalSnapshot, serveLyrics } from "../lyric-browser";
+import { config, personalSnapshot, serveLyrics } from "../lyric-browser";
 import { lyricId } from "../lyric-fixture";
+import { gzipSync } from "node:zlib";
+import backupVectors from "../../shared/fixtures/personal/full-backup.json" with { type: "json" };
 
 async function contrast(element: Locator, property: "color" | "outlineColor" | "borderTopColor", minimum: number) {
   await expect(element).toBeVisible();
@@ -101,6 +103,7 @@ for (const language of ["en", "kn"] as const) {
         await contrast(control, "borderTopColor", 3);
         await keyboardFocus(page, control);
       }
+
       await keyboardFocus(page, selected);
       await keyboardFocus(page, page.getByRole("navigation").getByRole("link", { name: labels.library, exact: true }));
       await page.emulateMedia({ colorScheme: theme === "dark" ? "light" : "dark" });
@@ -137,6 +140,88 @@ for (const language of ["en", "kn"] as const) {
       await expect(line).toHaveText("ರಾಮ ಕೃಷ್ಣ");
       await expect(page.locator("html")).toHaveAttribute("lang", language);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    });
+  }
+}
+
+for (const language of ["en", "kn"] as const) {
+  for (const theme of ["light", "dark", "warm"] as const) {
+    test(`${language} ${theme} read-only backup preview has themed text boundaries and keyboard focus online and offline`, async ({ page, context }) => {
+      const fixture = backupVectors.accepted[1]?.value;
+      if (!fixture || fixture.platform !== "web") throw new Error("Missing permitted web backup fixture");
+      const labels = messages[language], requests: string[] = [];
+      page.on("request", request => { if (request.url().includes("/library/")) requests.push(request.url()); });
+      await page.goto("/#/settings");
+      await page.getByRole("button", { name: messages[language].languageName, exact: true }).click();
+      await expect(page.locator("html")).toHaveAttribute("lang", language);
+      await page.getByRole("button", { name: labels[theme], exact: true }).click();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+      await page.reload();
+      await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+      const backup = page.getByRole("region", { name: labels.backupTitle, exact: true });
+      await expect(backup).toBeVisible();
+      const before = await personalSnapshot(page);
+      for (const offline of [false, true]) {
+        await context.setOffline(offline);
+        if (offline) {
+          await page.reload();
+          await expect(backup).toBeVisible();
+        }
+        await backup.getByLabel(labels.backupChoose, { exact: true }).setInputFiles({
+          name: "synthetic-theme.dvbackup.json.gz", mimeType: "application/gzip",
+          buffer: gzipSync(Buffer.from(JSON.stringify(fixture))),
+        });
+        const preview = backup.getByRole("textbox", { name: labels.backupPreview, exact: true });
+        await expect(preview).toBeVisible();
+        await expect(preview).toHaveAttribute("readonly", "");
+        expect(JSON.parse(await preview.inputValue())).toEqual(fixture);
+        const styles = await preview.evaluate(element => {
+          const computed = getComputedStyle(element), root = getComputedStyle(document.documentElement);
+          const parent = element.parentElement;
+          if (!parent) throw new Error("Backup preview has no surrounding surface");
+          const color = document.createElement("span");
+          parent.appendChild(color);
+          const resolved: Record<string, string> = {};
+          try {
+            for (const token of ["text", "surface", "border"]) {
+              color.style.color = root.getPropertyValue(`--${token}`);
+              resolved[token] = getComputedStyle(color).color;
+            }
+          } finally { color.remove(); }
+          return {
+            text: computed.color, surface: computed.backgroundColor, border: computed.borderTopColor,
+            font: computed.fontFamily, surroundingFont: getComputedStyle(parent).fontFamily,
+            resolved, minWidth: computed.minWidth,
+          };
+        });
+        expect(styles.text).toBe(styles.resolved.text);
+        expect(styles.surface).toBe(styles.resolved.surface);
+        expect(styles.border).toBe(styles.resolved.border);
+        expect(styles.font).toBe(styles.surroundingFont);
+        expect(styles.minWidth).toBe("0px");
+        await contrast(preview, "color", 4.5);
+        await contrast(preview, "borderTopColor", 3);
+        await keyboardFocus(page, preview);
+        await preview.press("ControlOrMeta+A");
+        expect(await preview.evaluate(element => {
+          if (!(element instanceof HTMLTextAreaElement)) throw new Error("Expected backup textarea");
+          return element.selectionStart === 0 && element.selectionEnd === element.value.length;
+        })).toBe(true);
+        await preview.press("Backspace");
+        expect(JSON.parse(await preview.inputValue())).toEqual(fixture);
+        expect(await personalSnapshot(page)).toEqual(before);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        expect(await preview.evaluate(element => element.getBoundingClientRect().width))
+          .toBeLessThanOrEqual(await backup.evaluate(element => element.getBoundingClientRect().width));
+        await backup.getByRole("button", { name: labels.cancel, exact: true }).click();
+        await expect(preview).toHaveCount(0);
+        expect(await personalSnapshot(page)).toEqual(before);
+        await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+        expect(requests).toEqual([]);
+        expect(new URL(page.url()).pathname).toBe(config.base);
+      }
+      await context.setOffline(false);
     });
   }
 }
