@@ -1,5 +1,64 @@
 # Documentation history
 
+## 2026-11-16: rendered reading-theme and keyboard accessibility baseline
+
+- Owner requested commit/push and next work. Fresh Website main was clean and
+  exact origin at a92d11d; no pending changes needed a separate empty commit.
+  Continued with application accessibility evidence independently of the blocked
+  secure publisher installation, not more feed/credential prerequisites.
+- Added actual computed-color checks for existing4.5:1 text and3:1 interactive
+  boundaries/focus. Six theme/locale journeys cover Light/Dark/Warm and English/
+  Kannada in all three browser projects: Settings text/controls/navigation,
+  skip-to-main traversal, explicit-theme reload/media independence, literal
+  canonical reading and permitted fixture selected-line highlighting. Focus
+  checks preserve exact personal data, canonical text/layout and request counts.
+  No production styles/settings/defaults/dependencies or behavior changed.
+- Initial focused18-case run was stopped after repeated failures. An isolated
+  desktop case showed the test wrongly expected first Tab to focus the skip link,
+  despite the existing navigation adapter deliberately focusing main. Corrected
+  the test to check main, traverse backwards by the actual header-link count and
+  activate skip normally. A second isolated run exposed a hidden retained
+  fixture eyebrow selector on the canonical route; corrected it to test the
+  actual fixture caption on its visible route. The next complete focused run
+  failed18/18 because the test selected the fixture's first line ("Kannada")
+  instead of its existing literal synthetic "Rama Krishna" line. Corrected the
+  locator, without changing application behavior or assertions/thresholds.
+- `node node_modules\@playwright\test\cli.js test accessibility --workers=1`
+  then passed18/18 after a fresh strict production build.
+  Tightened the test measurement helper to also refuse opacity/images on higher
+  ancestors even after finding an opaque surface; full final-tree validation
+  follows. These checks are a bounded accessibility baseline, not a WCAG or
+  exhaustive screen-reader/native/scaling conformance claim.
+- Archived coverage wording: the previous QUAL-01 table described only a keyboard
+  focus entrypoint, and left "Full keyboard/screen-reader/contrast/scaling/platform
+  journeys" unverified. The new measured samples narrow that gap only; exhaustive
+  journeys and supported-device evidence remain open.
+- Final `npm test -- --maxWorkers=2` passed406/406 across27 files.
+  Documentation validation passed four changed Markdown files and all153 unique
+  requirement IDs; strict YAML passed4 files, configured actionlint1.7.12 with
+  ShellCheck0.11.0 and staged/unstaged whitespace checks passed.
+- The final complete
+  `node node_modules\@playwright\test\cli.js test --workers=1` started642 tests
+  after a fresh strict production build, but its process ended unexpectedly with
+  exit1073807364 before completion. This is not a successful full-suite result.
+  Two subsequent independent PowerShell probes, including a minimal
+  `Write-Output`/`Get-Date` probe, failed before output with exit-1073741502
+  (`0xC0000142`, Windows process initialization failure). Command execution,
+  final process/port cleanup inspection, Git commit/push and hosted verification
+  could not proceed. Changes remain uncommitted; rerun the complete applicable
+  final-tree checks after command execution recovers before publication.
+- Command execution recovered on the owner's next continuation. Freshly fetched
+  main still matched a92d11d, all saved edits were preserved, and preview port4173
+  had no listener. Reran full `npm test -- --maxWorkers=2`:406/406 across27 files.
+  Complete `node node_modules\@playwright\test\cli.js test --workers=1`
+  passed642/642 across desktop/mobile/narrow in11.9 minutes after fresh pinned
+  fixture publication and strict production build. All18 final rendered
+  accessibility scenarios passed with the tightened ancestor checks.
+  Documentation4/153 unique IDs, strict YAML4, actionlint1.7.12/ShellCheck0.11.0
+  and whitespace passed. The interrupted run remains failed history, not reused
+  evidence. Reverified current administrator routing and no-bypass force/delete
+  guard before authorized main publication.
+
 ## 2026-11-13: isolated canonical item-damage diagnostics
 
 - After publishing the complete verifier, continued the owner's requested next
@@ -52,6 +111,11 @@
 - Fresh read-only provisioning checks still found organization App installations0,
   protected publisher environment secrets0 and variables0. No live writer, feed
   sequence, credential fallback or production offline enablement was assumed.
+- Published main `a92d11dcfef5ddbe9ae13719266fa11a63e36e27`.
+  Exact Repository checks43424274338 passed actual406 units/624 browsers and
+  deployment; CodeQL43424274915 passed both languages. Live root/open HTML and
+  837294-byte JavaScript matched Pages artifact14036605214 exactly; production
+  runtime hashes remained unchanged.
 
 ## 2026-11-13: complete isolated active-snapshot revalidation
 

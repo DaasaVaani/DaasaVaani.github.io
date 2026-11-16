@@ -316,7 +316,33 @@ override/reload and independent theme/canonical Kannada behavior.
 Appearance journeys exercise actual media changes, persisted Warm/Follow device,
 configured palettes and independent Kannada UI/canonical text. Pure checks enforce
 at least4.5:1 normal text/accent contrast on configured reading surfaces and3:1
-interactive-boundary contrast. Native10/20/30/40/50/60/70-to80 database cases structurally
+interactive-boundary contrast.
+The [rendered accessibility suite](../tests/browser/accessibility.spec.ts) applies
+those same thresholds to actual Chromium computed foreground/background colors:
+Settings headings, active/inactive navigation and theme buttons, text/select
+controls, notices, literal canonical lyrics, muted helper text and selected
+fixture-line highlights. It checks both inside/outside input/select boundaries
+and visible solid3px/offset4px keyboard-modality focus outlines against their
+surrounding surface. Measurement resolves transparent ancestors and refuses
+unsupported colors, translucent exposed backgrounds, ancestor opacity or
+background images rather than reporting a fabricated passing contrast.
+
+Each Light/Dark/Warm theme is exercised in both English/Kannada UI on every
+configured desktop/mobile/narrow project. Reload retains explicit appearance;
+opposite system media does not replace it or write personal state. From the
+intended initial main focus, actual Shift+Tab reaches the skip link; Enter moves
+back to main without changing the hash route, and Tab enters main controls.
+Focused control/link samples use explicit keyboard modality without activation.
+Canonical lyric text/line/layout projections, personal data and item request
+counts remain unchanged during focus checks. Synthetic fixture highlighting
+tests literal permitted text, not linguistic conformance.
+
+`node node_modules\@playwright\test\cli.js test accessibility --workers=1`
+is incremental only; complete finalization/push validation remains mandatory.
+This is bounded UX-11/QUAL-01 regression evidence, not an automated WCAG audit,
+exhaustive keyboard/screen-reader/scaling coverage, native-platform proof or a
+formal accessibility-conformance claim.
+Native10/20/30/40/50/60/70-to80 database cases structurally
 type legacy favorites/entries while preserving their raw values and every
 list/occurrence ID, refreshing the local fence and rolling back invalid or
 over-capacity legacy data/schema, add configured reading defaults only to existing
@@ -629,7 +655,7 @@ IDs or a release acceptance declaration.
 | EXP-02/04 | Web/native explicit entire-verified-catalog canonical selection, current/session-last-opened exclusion, honest sole/current/error states and ordinary typed favorite/list/history controls; web on-demand selected-object requests, native prepared-only/no-request selection and truthful original collection/unsaved-preview/Settings/Back continuity | Reviewed Explore groups/first-publication dates, Practice and complete persistent active-snapshot offline discovery remain incomplete; consumers adopt Shared and validate independently |
 | XFER-01/02/03/04/05/06/08 | Bounded web worker/native v1/v2 codecs with independent vectors, explicit previews/transactional new-list saves and saved-v2 exports, actual cross-client v2 codec round trips, catalog-only details, browser share/copy adapters and native complete-link chooser/payload/Back/fallback/no-write checks | Real receiving-app/provider/device interoperability, direct native file sharing and verified App Links incomplete; manual full backups are covered separately under XFER-09 |
 | SET-01/02 | Owned settings/schema guards, Shared policy binding and immutable clean fixture-tool pin | Complete production settings inventory, language/protocol/backup contracts and all compatibility fixtures pending |
-| QUAL-01/02/03 | Semantic browser controls, keyboard focus entrypoint, standalone canonical reading and no video/tracking dependencies | Full keyboard/screen-reader/contrast/scaling/platform journeys remain unverified; no formal conformance claim |
+| QUAL-01/02/03 | Semantic browser controls, measured rendered theme contrast/focus and skip-link traversal in both UI locales, standalone canonical reading and no video/tracking dependencies | Exhaustive keyboard/screen-reader/contrast/scaling/platform journeys remain unverified; no formal conformance claim |
 
 ## Shared submodule updates
 

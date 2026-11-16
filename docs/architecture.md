@@ -425,6 +425,13 @@ The configured initial theme remains Light, not implicit Follow device.
 Owned web settings define all three palettes; portable defaults/allowed choices
 use Shared's strict UI-defaults schema. Text/accent/highlight and interactive
 boundary contrast are executable numeric checks, not font/device-matrix proof.
+The [rendered browser baseline](testing-and-release.md#current-executable-checks)
+additionally measures actual computed text/control/highlight colors and keyboard
+focus outlines in Settings and literal canonical/fixture reading across all three
+palettes and both UI locales. It tests existing skip-to-main traversal without
+changing the hash route, theme persistence/media independence and nonmutating
+reader focus. This does not constitute a formal accessibility-conformance claim
+or exhaustive screen-reader/scaling/supported-device evidence.
 
 ### Lyric reading preferences
 

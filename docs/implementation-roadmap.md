@@ -163,6 +163,14 @@ backup remains intentionally inactive.
 | P7 | Separate native real canonical full preparation/reading and whole-prepared-catalog discovery in memory; session-local Library and independent Favorites literal filtering/complete paging/reader/Back return context, original collection/unsaved-preview/Learning context through successive choices and Settings, fixture search, Room9 typed favorites/durable lists/occurrences/preferences/recent history/learning labels and offline filtered Learning view before preparation, preserving upgrades, independent font/density/locale/theme and skippable setup, bounded v1/v2 preview/save/re-export, explicit complete-link Sharesheet handoff with copy/file fallbacks and reader/list navigation, individual/ordered Recite with exact Continue, manual backup v3, core and connected tests | Bookmarks/verse Practice, complete recitation/device evidence, system-backup activation, signed App Links/receiving-app matrix, direct file sharing, durable preparation/recovery and full parity/device matrix |
 | P3/P8/P9 | Dependency-ordered Shared/fixture-publisher pins; full web fixture CI/Pages and native build/core/lint CI | Initial release: production publication/signing, device CI and release readiness. Later release: YouTube ingestion automation and its provider clarification |
 
+Current Website UX-11/QUAL-01 evidence includes an actual
+[rendered theme/keyboard baseline](testing-and-release.md#current-executable-checks):
+computed text/control/selected-highlight contrast, visible focus outlines and
+skip-to-main traversal for English/Kannada across Light/Dark/Warm and all
+configured browser layouts. It preserves canonical text and personal state;
+complete keyboard/screen-reader/scaling/platform coverage remains open, with no
+formal accessibility-conformance claim.
+
 The fixture capability is deliberately named `fixture-catalog-v1`; all UIs label
 synthetic records and unavailable features. Android bundles no lyrics and requires
 explicit complete fixture preparation before reading; in-memory preparation is
